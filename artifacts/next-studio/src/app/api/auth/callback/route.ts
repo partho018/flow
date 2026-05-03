@@ -80,32 +80,37 @@ export async function GET(req: NextRequest) {
     const profileImage = profileData.profile_picture_url || "";
 
     // 4. SAVE/UPDATE PROFILE IN DATABASE
-    // We store the token which will be used for replying to comments
-    await db.insert(profiles).values({
-      id: String(profileData.id || igUserId),
-      userId: session.user.id,
-      name: username,
-      email: `${username}@instagram.com`,
-      joined: new Date().toISOString(),
-      plan: "free",
-      status: "active",
-      followersCount: followersCount,
-      igUsername: username,
-      igImage: profileImage,
-      accessToken: finalToken,
-      updatedAt: new Date()
-    }).onConflictDoUpdate({
-      target: profiles.userId,
-      set: {
-        id: String(profileData.id || igUserId),
-        name: username,
-        followersCount: followersCount,
-        igUsername: username,
-        igImage: profileImage,
-        accessToken: finalToken,
-        updatedAt: new Date()
-      }
-    });
+    // We ensure a 1-to-1 mapping between Google User and Instagram Account.
+    // If this user already has a profile, or if this Instagram ID is already linked to another user,
+    // we clean up the old data before creating the new connection.
+    try {
+      await db.transaction(async (tx) => {
+        // Delete any existing profile for this Google user (cleanup old connection)
+        await tx.delete(profiles).where(eq(profiles.userId, session.user.id));
+        
+        // Delete any existing profile that might be using this Instagram ID (stolen from another user)
+        await tx.delete(profiles).where(eq(profiles.id, String(profileData.id || igUserId)));
+
+        // Now safe to insert the fresh connection
+        await tx.insert(profiles).values({
+          id: String(profileData.id || igUserId),
+          userId: session.user.id,
+          name: username,
+          email: `${username}@instagram.com`,
+          joined: new Date().toISOString(),
+          plan: "free",
+          status: "active",
+          followersCount: followersCount,
+          igUsername: username,
+          igImage: profileImage,
+          accessToken: finalToken,
+          updatedAt: new Date()
+        });
+      });
+    } catch (dbErr) {
+      console.error("Database upsert failed:", dbErr);
+      throw dbErr; // Let the outer catch handle it
+    }
 
 
     const redirectUrl = new URL(`/?ig_connected=true&ig_username=${encodeURIComponent(username)}&ig_user_id=${profileData.id || igUserId}&ig_image=${encodeURIComponent(profileImage)}`, req.url);
