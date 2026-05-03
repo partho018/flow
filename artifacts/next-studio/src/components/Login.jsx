@@ -67,11 +67,11 @@ export function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6 font-sans relative overflow-hidden">
-      {/* Decorative background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] opacity-20 pointer-events-none" />
+    <div className="min-h-screen bg-[#f8f9fc] flex items-center justify-center p-6 font-sans relative overflow-hidden">
+      {/* Decorative background glow - soft for light mode */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px] opacity-30 pointer-events-none" />
       
-      <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 bg-card border border-border rounded-2xl overflow-hidden shadow-2xl shadow-black relative z-10">
+      <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 bg-card border border-border/50 rounded-3xl overflow-hidden shadow-[0_30px_70px_-15px_rgba(0,0,0,0.1)] relative z-10">
         
         {/* Left Side: Brand & Visuals */}
         <div className="hidden lg:flex flex-col p-10 bg-primary text-primary-foreground relative">
