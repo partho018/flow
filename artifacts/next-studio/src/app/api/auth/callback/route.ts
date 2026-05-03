@@ -86,7 +86,7 @@ export async function GET(req: NextRequest) {
     try {
       await db.transaction(async (tx) => {
         // Delete any existing profile for this Google user (cleanup old connection)
-        await tx.delete(profiles).where(eq(profiles.userId, session.user.id));
+        await tx.delete(profiles).where(eq(profiles.userId, session.user.id as string));
         
         // Delete any existing profile that might be using this Instagram ID (stolen from another user)
         await tx.delete(profiles).where(eq(profiles.id, String(profileData.id || igUserId)));
@@ -94,7 +94,7 @@ export async function GET(req: NextRequest) {
         // Now safe to insert the fresh connection
         await tx.insert(profiles).values({
           id: String(profileData.id || igUserId),
-          userId: session.user.id,
+          userId: session.user.id as string,
           name: username,
           email: `${username}@instagram.com`,
           joined: new Date().toISOString(),
