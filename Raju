@@ -1,0 +1,55 @@
+modules = ["nodejs-24", "python-3.11"]
+
+[deployment]
+router = "application"
+deploymentTarget = "autoscale"
+
+[deployment.postBuild]
+args = ["pnpm", "store", "prune"]
+env = { "CI" = "true" }
+
+[workflows]
+runButton = "Project"
+
+[agent]
+stack = "PNPM_WORKSPACE"
+expertMode = true
+
+[postMerge]
+path = "scripts/post-merge.sh"
+timeoutMs = 20000
+
+[[ports]]
+localPort = 8080
+externalPort = 80
+
+[[ports]]
+localPort = 8081
+externalPort = 8081
+
+[[ports]]
+localPort = 8082
+externalPort = 3002
+
+[[ports]]
+localPort = 20594
+externalPort = 3000
+
+[[ports]]
+localPort = 20595
+externalPort = 3001
+
+[userenv]
+
+[userenv.shared]
+INSTAGRAM_APP_ID = "1492460995870901"
+INSTAGRAM_ACCOUNT_ID = "17841432881748389"
+WEBHOOK_VERIFY_TOKEN = "abdce1d1dba6aa60585fbdfc75623af9"
+VITE_INSTAGRAM_APP_ID = "1492460995870901"
+FACEBOOK_APP_ID = "1120693127788451"
+
+[userenv.development]
+APP_URL = "http://localhost:3000"
+
+[userenv.production]
+APP_URL = "https://flow-next-studio.vercel.app"
