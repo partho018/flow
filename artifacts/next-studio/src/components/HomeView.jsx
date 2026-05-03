@@ -35,7 +35,7 @@ export function HomeView({ greeting, automations, onNew, igConnected, igUsername
             <motion.div 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="relative overflow-hidden group p-6 rounded-[24px] bg-gradient-to-r from-primary to-primary/80 text-white shadow-xl shadow-primary/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              className="relative overflow-hidden group p-6 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-white shadow-xl shadow-primary/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
             >
               <div className="space-y-1 relative z-10">
                 <h3 className="text-xl font-black tracking-tight flex items-center gap-2">Unlock Pro Power!</h3>
@@ -44,7 +44,7 @@ export function HomeView({ greeting, automations, onNew, igConnected, igUsername
               <button 
                 onClick={onUpgrade}
                 disabled={isBanned}
-                className={`relative z-10 px-6 py-3 bg-white text-primary rounded-xl font-black text-xs shadow-lg hover:scale-105 active:scale-95 transition-all flex-shrink-0 ${isBanned ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+                className={`relative z-10 px-6 py-3 bg-white text-primary rounded-lg font-black text-xs shadow-lg hover:scale-105 active:scale-95 transition-all flex-shrink-0 ${isBanned ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
               >
                 Upgrade to Pro
               </button>

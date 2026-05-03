@@ -15,6 +15,8 @@ import { ContactsView } from "./components/ContactsView";
 import { InstagramConnect } from "./components/InstagramConnect";
 import { ProductsView } from "./components/ProductsView";
 import { CountrySelector, PhoneInput, COUNTRIES } from "./components/CountrySelector";
+import { LoadingScreen } from "./components/LoadingScreen";
+
 
 const PLAN_LIMITS = { free: 1, creator: 10, pro: 100, business: Infinity };
 
@@ -38,6 +40,8 @@ export default function App() {
   const [announcement, setAnnouncement] = useState(null);
   const [showAnn, setShowAnn] = useState(false);
   const [hasPassword, setHasPassword] = useState(false);
+  const [isMaintenance, setIsMaintenance] = useState(false);
+  const [systemLoading, setSystemLoading] = useState(true);
 
 
 
@@ -51,7 +55,8 @@ export default function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setPageLoading(false);
-    }, 700); // 700ms for a snappier feel
+    }, 400); // 400ms for a snappier feel
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -199,6 +204,15 @@ export default function App() {
 
     }
     
+    // Fetch System Status (Maintenance Mode)
+    fetch('/api/system-status')
+      .then(res => res.json())
+      .then(data => {
+        setIsMaintenance(data.maintenance);
+        setSystemLoading(false);
+      })
+      .catch(() => setSystemLoading(false));
+
     // Fetch Announcement (Global - shows even for unauthenticated users if desired)
     fetch('/api/announcement', { cache: 'no-store' })
       .then(res => res.json())
@@ -405,19 +419,35 @@ export default function App() {
 
   const connectUrl = `${appUrl}/api/auth/connect`;
   
-  if (status === 'loading') {
+  // Maintenance Page
+  if (isMaintenance && session?.user?.email !== 'parthosamadder00@gmail.com') {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-background">
-        <motion.div 
-          animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-          className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-2xl shadow-primary/20"
+      <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#0a0a0b] text-white p-6 text-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="max-w-md space-y-6"
         >
-          <Zap size={24} className="text-white fill-white" />
+          <div className="w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-8 border border-primary/20">
+            <Activity size={40} className="text-primary animate-pulse" />
+          </div>
+          <h1 className="text-4xl font-black tracking-tight">System Maintenance</h1>
+          <p className="text-muted-foreground leading-relaxed">
+            We're currently performing some scheduled maintenance to improve your experience. 
+            We'll be back online shortly. Thank you for your patience!
+          </p>
+          <div className="pt-8 border-t border-white/5">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-primary">Status: Offline for updates</p>
+          </div>
         </motion.div>
       </div>
     );
   }
+
+  if (status === 'loading' || systemLoading) {
+    return <LoadingScreen message="Initializing Studio" />;
+  }
+
 
   if (status === 'unauthenticated' && !authed) return <Login onLogin={() => setAuthed(true)} />;
 
@@ -432,50 +462,13 @@ export default function App() {
             key="loader"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, scale: 1.05 }}
-            transition={{ duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }}
-            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background"
-          >
-            <div className="relative">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                className="w-24 h-24 rounded-full border-2 border-primary/10 border-t-primary shadow-[0_0_40px_-10px_rgba(51,77,255,0.3)]"
-              />
-              <motion.div 
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: [0.8, 1.1, 1], opacity: 1 }}
-                transition={{ 
-                  scale: { repeat: Infinity, duration: 1.5, repeatType: "reverse" },
-                  opacity: { duration: 0.5 }
-                }}
-                className="absolute inset-0 flex items-center justify-center"
-              >
-                <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center shadow-2xl shadow-primary/40">
-                  <Zap size={24} className="text-white fill-white" />
-                </div>
-              </motion.div>
-            </div>
+            transition={{ duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] }}
 
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="mt-8 flex flex-col items-center"
-            >
-              <h1 className="text-xl font-black tracking-tighter text-foreground">FlowStudio</h1>
-              <div className="mt-4 flex items-center gap-1">
-                {[0, 1, 2].map((i) => (
-                  <motion.div
-                    key={i}
-                    animate={{ scale: [1, 1.5, 1], opacity: [0.3, 1, 0.3] }}
-                    transition={{ repeat: Infinity, duration: 1, delay: i * 0.2 }}
-                    className="w-1.5 h-1.5 bg-primary rounded-full"
-                  />
-                ))}
-              </div>
-            </motion.div>
+          >
+            <LoadingScreen message="Optimizing Experience" />
           </motion.div>
         ) : !authed ? (
+
           <motion.div
             key="login"
             initial={{ opacity: 0 }}
@@ -490,7 +483,8 @@ export default function App() {
             key="app"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            transition={{ duration: 0.4, delay: 0 }}
+
             className="flex h-screen overflow-hidden"
           >
             <Sidebar 
@@ -524,18 +518,20 @@ export default function App() {
 
               {showAnn && announcement && (
                 <div className="bg-primary text-white overflow-hidden relative z-[60] shadow-md">
-                  <div className="max-w-7xl mx-auto px-6 py-2.5 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <span className="px-2 py-0.5 rounded-md bg-white/20 text-[10px] font-black tracking-widest uppercase">
+                  <div className="max-w-7xl mx-auto px-6 py-2.5 flex items-center justify-center relative min-h-[44px]">
+                    <div className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2">
+                      <span className="px-2 py-0.5 rounded-md bg-white/20 text-[10px] font-black tracking-widest uppercase shrink-0">
                         {announcement.type || 'Update'}
                       </span>
-                      <p className="text-xs md:text-sm font-bold tracking-tight">
-                        {announcement.text}
-                      </p>
                     </div>
+                    
+                    <p className="text-xs md:text-sm font-bold tracking-tight text-center px-12">
+                      {announcement.text}
+                    </p>
+
                     <button 
                       onClick={() => setShowAnn(false)}
-                      className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
+                      className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 p-1.5 hover:bg-white/10 rounded-lg transition-colors shrink-0"
                     >
                       <X size={16} />
                     </button>

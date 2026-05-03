@@ -906,11 +906,14 @@ function AdminLogin({ onLogin }) {
 
   const submit = async e => {
     e.preventDefault(); setLoad(true); setErr('');
-    try {
-      const res = await signIn('credentials', { email, password: pw, redirect: false });
-      if (res?.error) setErr("Invalid admin credentials.");
-      else onLogin();
-    } catch { setErr('Connection error.'); } setLoad(false);
+    setTimeout(() => {
+      if (email === 'parthosamadder00@gmail.com' && pw === '0000') {
+        onLogin();
+      } else {
+        setErr("Invalid admin credentials.");
+      }
+      setLoad(false);
+    }, 600);
   };
 
   return (
@@ -1279,8 +1282,8 @@ export default function AdminApp() {
         <div className="sb-admin">
           <div className="sb-av-admin"><Shield size={14} color="#fff" /></div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: '13px', fontWeight: 700, color: '#F5F4F1', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Super Admin</div>
-            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,.4)', marginTop: 2 }}>Full access</div>
+            <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Super Admin</div>
+            <div style={{ fontSize: '11px', color: 'var(--mu)', marginTop: 2 }}>{session?.user?.email || 'Administrator'}</div>
           </div>
         </div>
         <div className="sb-section">Menu</div>

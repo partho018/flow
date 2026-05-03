@@ -137,7 +137,7 @@ export function Sidebar({ activeView, onViewChange, isDarkMode, onToggleDarkMode
         <div className="p-3 border-t border-border bg-muted/10">
           <button 
             onClick={() => { onUpgrade(); onClose(); }}
-            className="w-full mb-2 flex items-center justify-center gap-2 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-bold hover:brightness-110 transition-all"
+            className="w-full mb-2 flex items-center justify-center gap-2 py-2 rounded-md bg-primary text-primary-foreground text-xs font-bold hover:brightness-110 transition-all"
           >
             <Crown size={14} /> Upgrade Plan
           </button>
