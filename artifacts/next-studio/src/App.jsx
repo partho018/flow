@@ -735,26 +735,26 @@ export default function App() {
 
               {/* Billing Details Modal */}
               {showBillingModal && (
-                <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
-                  <div className="absolute inset-0 bg-background/80 backdrop-blur-sm animate-in fade-in duration-300" onClick={() => setShowBillingModal(false)} />
-                  <div className="relative w-full max-w-4xl bg-background border border-border rounded-[32px] shadow-2xl overflow-hidden flex flex-col md:flex-row animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+                <div className="fixed inset-0 z-[1000] flex flex-col items-center overflow-y-auto p-4 md:p-6">
+                  <div className="fixed inset-0 bg-background/80 backdrop-blur-sm animate-in fade-in duration-300" onClick={() => setShowBillingModal(false)} />
+                  <div className="relative w-full max-w-4xl bg-background border border-border rounded-[24px] md:rounded-[32px] shadow-2xl flex flex-col md:flex-row md:max-h-[90vh] my-auto animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
                     
                     {/* Left Side: Form */}
-                    <div className="flex-1 p-8 md:p-12 overflow-y-auto max-h-[85vh] custom-scrollbar">
-                      <div className="flex items-center gap-3 mb-8">
+                    <div className="flex-1 p-6 md:p-12 md:overflow-y-auto custom-scrollbar">
+                      <div className="flex items-center gap-3 mb-6 md:mb-8">
                         <button onClick={handleBillingBack} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors text-muted-foreground hover:text-foreground group">
                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="group-hover:-translate-x-0.5 transition-transform"><polyline points="15 18 9 12 15 6"/></svg>
                         </button>
                         <div>
-                          <h2 className="text-2xl font-black tracking-tight text-foreground">Billed To</h2>
-                          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-0.5">Checkout Information</p>
+                          <h2 className="text-xl md:text-2xl font-black tracking-tight text-foreground">Billed To</h2>
+                          <p className="text-[9px] md:text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-0.5">Checkout Information</p>
                         </div>
                       </div>
 
-                      <div className="space-y-6">
+                      <div className="space-y-5 md:space-y-6">
                         {/* Full Name */}
                         <div>
-                          <label className="block text-[11px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1">Full Name</label>
+                          <label className="block text-[10px] md:text-[11px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1">Full Name</label>
                           <div className={`flex items-center rounded-2xl border transition-all duration-200 ${
                             billingErrors.fullName ? 'border-destructive bg-destructive/5' : 'border-border bg-muted/20 focus-within:bg-background focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10'
                           }`}>
@@ -763,7 +763,7 @@ export default function App() {
                               placeholder="Your full name"
                               value={billingDetails.fullName}
                               onChange={e => { setBillingDetails(p => ({...p, fullName: e.target.value})); setBillingErrors(p => ({...p, fullName: ''})); }}
-                              className="flex-1 px-5 py-4 text-sm font-black bg-transparent outline-none placeholder:text-muted-foreground/30"
+                              className="flex-1 px-4 md:px-5 py-3.5 md:py-4 text-sm font-black bg-transparent outline-none placeholder:text-muted-foreground/30"
                             />
                           </div>
                           {billingErrors.fullName && <p className="text-destructive text-[10px] font-bold mt-1.5 ml-1">{billingErrors.fullName}</p>}
@@ -771,7 +771,7 @@ export default function App() {
 
                         {/* Phone Number */}
                         <div>
-                          <label className="block text-[11px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1">Phone Number</label>
+                          <label className="block text-[10px] md:text-[11px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1">Phone Number</label>
                           <PhoneInput
                             value={billingDetails.phone}
                             country={billingDetails.phoneCountry}
@@ -782,22 +782,22 @@ export default function App() {
                           {billingErrors.phone && <p className="text-destructive text-[10px] font-bold mt-1.5 ml-1">{billingErrors.phone}</p>}
                         </div>
 
-                        <div className="pt-6 mt-6 border-t border-border/50">
-                          <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2.5 bg-primary/10 rounded-xl">
-                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-primary">
+                        <div className="pt-5 md:pt-6 mt-5 md:mt-6 border-t border-border/50">
+                          <div className="flex items-center gap-3 mb-5 md:mb-6">
+                            <div className="p-2 md:p-2.5 bg-primary/10 rounded-xl">
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-primary">
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
                               </svg>
                             </div>
                             <div>
-                              <h3 className="text-lg font-black tracking-tight text-foreground">Billing Address</h3>
-                              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Global Support</p>
+                              <h3 className="text-base md:text-lg font-black tracking-tight text-foreground">Billing Address</h3>
+                              <p className="text-[9px] md:text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Global Support</p>
                             </div>
                           </div>
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <label className="block text-[11px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1">Country</label>
+                              <label className="block text-[10px] md:text-[11px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1">Country</label>
                               <CountrySelector
                                 value={billingDetails.billingCountry}
                                 onChange={c => { setBillingDetails(p => ({...p, billingCountry: c.name})); setBillingErrors(p => ({...p, country: ''})); }}
@@ -807,14 +807,14 @@ export default function App() {
                             </div>
 
                             <div>
-                              <label className="block text-[11px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1">State / Province</label>
+                              <label className="block text-[10px] md:text-[11px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1">State / Province</label>
                               <div className="flex items-center rounded-2xl border border-border bg-muted/20 focus-within:bg-background focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all duration-200">
                                 <input
                                   type="text"
                                   placeholder="e.g. New York"
                                   value={billingDetails.state}
                                   onChange={e => setBillingDetails(p => ({...p, state: e.target.value}))}
-                                  className="flex-1 px-5 py-4 text-sm font-black bg-transparent outline-none placeholder:text-muted-foreground/30"
+                                  className="flex-1 px-4 md:px-5 py-3.5 md:py-4 text-sm font-black bg-transparent outline-none placeholder:text-muted-foreground/30"
                                 />
                               </div>
                             </div>
@@ -824,8 +824,8 @@ export default function App() {
                     </div>
 
                     {/* Right Side: Summary Card */}
-                    <div className="w-full md:w-[360px] bg-muted/30 p-8 md:p-12 border-l border-border flex flex-col justify-between relative overflow-hidden">
-                      <div className="absolute top-[-10%] right-[-10%] w-[200px] h-[200px] bg-primary/10 blur-[80px] rounded-full" />
+                    <div className="w-full md:w-[360px] bg-muted/30 p-6 pb-12 md:p-12 border-t md:border-t-0 md:border-l border-border flex flex-col justify-between relative md:overflow-hidden">
+                      <div className="absolute top-[-10%] right-[-10%] w-[150px] md:w-[200px] h-[150px] md:h-[200px] bg-primary/10 blur-[60px] md:blur-[80px] rounded-full" />
                       
                       <div className="relative z-10">
                         <div className="mb-8 flex justify-between items-center">
@@ -868,7 +868,7 @@ export default function App() {
                         </div>
                       </div>
 
-                      <div className="relative z-10 pt-8">
+                      <div className="relative z-10 pt-6 md:pt-8">
                         <button
                           onClick={handleProceedToPayment}
                           disabled={isProcessing}
