@@ -95,9 +95,9 @@ export async function GET(req: NextRequest) {
       accessToken: finalToken,
       updatedAt: new Date()
     }).onConflictDoUpdate({
-      target: profiles.id,
+      target: profiles.userId,
       set: {
-        userId: session.user.id,
+        id: String(profileData.id || igUserId),
         name: username,
         followersCount: followersCount,
         igUsername: username,

@@ -100,7 +100,7 @@ export async function GET(req: NextRequest) {
       dmsSent: profile.dmsUsed || 0,
       followersCount: currentFollowers,
       commentsCaught: profile.commentsCaught || 0,
-      igUsername: (profile as any).igUsername || profile.name || null,
+      igUsername: (profile as any).igUsername || null,
       igImage: (profile as any).igImage || null,
       linkClicks: 0,
       hasPassword: !!user.password
