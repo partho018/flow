@@ -10,7 +10,7 @@ import { normalizeEmail } from "@/lib/utils";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
 
-  secret: process.env.AUTH_SECRET,
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
   adapter: DrizzleAdapter(db),
   session: {
     strategy: "jwt",
@@ -74,4 +74,3 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
 });
-
