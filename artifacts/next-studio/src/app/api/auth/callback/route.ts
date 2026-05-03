@@ -115,15 +115,7 @@ export async function GET(req: NextRequest) {
 
 
     const redirectUrl = new URL(`/?ig_connected=true&ig_username=${encodeURIComponent(username)}&ig_user_id=${profileData.id || igUserId}&ig_image=${encodeURIComponent(profileImage)}`, req.url);
-    const response = NextResponse.redirect(redirectUrl);
-    
-    response.cookies.set("ig_token", finalToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 24 * 60 * 60,
-    });
-
-    return response;
+    return NextResponse.redirect(redirectUrl);
   } catch (err: any) {
     const errMsg = err?.message || "Connection failed. Please try again.";
     console.error("Instagram OAuth error:", errMsg, err);

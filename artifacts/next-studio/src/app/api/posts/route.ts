@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
       where: eq(profiles.userId, session.user.id)
     });
 
-    const token = req.cookies.get("ig_token")?.value || profile?.accessToken || process.env.ACCESS_TOKEN;
+    const token = profile?.accessToken || process.env.ACCESS_TOKEN;
     if (!token) {
       return NextResponse.json({ error: "Instagram not connected" }, { status: 401 });
     }

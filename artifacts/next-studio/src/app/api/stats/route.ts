@@ -3,7 +3,6 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from "next/server";
 import { db, followers, profiles, users } from "@workspace/db";
 import { count, eq } from "drizzle-orm";
-import { cookies } from "next/headers";
 import { auth } from "@/auth";
 
 export async function GET(req: NextRequest) {
@@ -52,8 +51,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Try to get fresh data from Instagram if we have a token
-    const cookieStore = await cookies();
-    const token = cookieStore.get("ig_token")?.value || (profile as any).accessToken;
+    const token = (profile as any).accessToken;
     let currentFollowers = (profile as any).followersCount || 0;
 
     if (token) {
