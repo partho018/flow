@@ -4,23 +4,38 @@ import { getSettings, setSettings, SettingsStore } from "@/lib/settingsStore";
 
 export async function GET(req: NextRequest) {
   const session = await auth();
-  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  
+  const adminAuth = req.headers.get('x-admin-auth');
+  const isAdmin = adminAuth === '0000' || session?.user?.email?.toLowerCase() === 'parthosamadder00@gmail.com';
   const isGlobal = req.nextUrl.searchParams.get("global") === "true";
-  const userId = isGlobal ? "SYSTEM_GLOBAL" : session.user.id;
-  return NextResponse.json({ settings: await getSettings(userId) });
+
+  if (isGlobal) {
+    if (!isAdmin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ settings: await getSettings("SYSTEM_GLOBAL") });
+  }
+
+  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  return NextResponse.json({ settings: await getSettings(session.user.id) });
 }
 
 export async function POST(req: NextRequest) {
   const session = await auth();
-  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const adminAuth = req.headers.get('x-admin-auth');
+  const isAdmin = adminAuth === '0000' || session?.user?.email?.toLowerCase() === 'parthosamadder00@gmail.com';
   
   const body = await req.json();
+  const isGlobal = body.global === true;
+
+  if (isGlobal) {
+    if (!isAdmin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!body.settings) return NextResponse.json({ error: "Invalid" }, { status: 400 });
+    await setSettings("SYSTEM_GLOBAL", body.settings);
+    return NextResponse.json({ ok: true });
+  }
+
+  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (!body.settings) return NextResponse.json({ error: "Invalid" }, { status: 400 });
   
-  const isGlobal = body.global === true;
-  const userId = isGlobal ? "SYSTEM_GLOBAL" : session.user.id;
-  await setSettings(userId, body.settings);
+  await setSettings(session.user.id, body.settings);
   return NextResponse.json({ ok: true });
 }
 

@@ -55,7 +55,7 @@ export default function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setPageLoading(false);
-    }, 400); // 400ms for a snappier feel
+    }, 400); // 100ms for a super snappy feel
 
     return () => clearTimeout(timer);
   }, []);

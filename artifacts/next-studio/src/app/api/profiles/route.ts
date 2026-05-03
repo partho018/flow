@@ -8,7 +8,13 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   const session = await auth();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const adminAuth = req.headers.get('x-admin-auth');
+  const isAdmin = adminAuth === '0000' || session?.user?.email?.toLowerCase() === 'parthosamadder00@gmail.com';
+
+  if (!isAdmin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
 
   try {
     // Raw SQL: NextAuth creates "user" table (singular). All 5 real users are here.
@@ -61,7 +67,13 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const session = await auth();
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const adminAuth = req.headers.get('x-admin-auth');
+  const isAdmin = adminAuth === '0000' || session?.user?.email?.toLowerCase() === 'parthosamadder00@gmail.com';
+
+  if (!isAdmin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
 
   const body = await req.json();
   const { id, userId, ...updateData } = body;

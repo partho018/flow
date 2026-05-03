@@ -143,11 +143,15 @@ textarea.inp{resize:vertical;min-height:80px;line-height:1.6}
 .af-row:last-child{border-bottom:none}
 
 /* login */
-.login-bg{position:fixed;inset:0;background:var(--sb);display:flex;align-items:center;justify-content:center;z-index:500}
-.login-card{width:380px;background:var(--s);border:1px solid var(--b);border-radius:16px;padding:36px;box-shadow:0 24px 60px rgba(0,0,0,.4)}
-.inp-wrap{position:relative}.inp-wrap .inp{padding-right:42px}
-.eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--mu2);cursor:pointer;display:flex;padding:3px}
-.err-box{background:#FEF2F2;border:1px solid rgba(185,28,28,.15);color:var(--red);border-radius:8px;padding:10px 14px;font-size:12.5px;font-weight:500;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.login-bg{position:fixed;inset:0;background:#ffffff;display:flex;align-items:center;justify-content:center;z-index:500;background-image:radial-gradient(circle at 2px 2px, rgba(0,0,0,0.02) 1px, transparent 0);background-size:24px 24px}
+.login-card{width:420px;background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:24px;padding:48px;box-shadow:0 20px 80px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.1)}
+.inp-wrap{position:relative;margin-bottom:18px}
+.inp-wrap .inp{padding:12px 14px;padding-left:40px;background:#fcfcfb;border:1px solid rgba(0,0,0,0.08);border-radius:12px;font-size:14px;transition:all .2s ease}
+.inp-wrap .inp:focus{background:#fff;border-color:var(--acc);box-shadow:0 0 0 4px rgba(51,77,255,0.08)}
+.inp-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--mu2);pointer-events:none}
+.eye-btn{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--mu2);cursor:pointer;display:flex;padding:4px;transition:color .2s}
+.eye-btn:hover{color:var(--acc)}
+.err-box{background:#FFF5F5;border:1px solid rgba(224,36,36,0.1);color:#C53030;border-radius:12px;padding:12px 16px;font-size:13px;font-weight:500;margin-bottom:20px;display:flex;align-items:center;gap:10px}
 
 @media (max-width: 1024px) {
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
@@ -907,53 +911,75 @@ function AdminLogin({ onLogin }) {
   const submit = async e => {
     e.preventDefault(); setLoad(true); setErr('');
     setTimeout(() => {
-      if (email === 'parthosamadder00@gmail.com' && pw === '0000') {
+      const targetEmail = 'parthosamadder00@gmail.com';
+      const targetPw = '0000';
+
+      if (email.toLowerCase() === targetEmail && pw === targetPw) {
         onLogin();
       } else {
-        setErr("Invalid admin credentials.");
+        setErr("Invalid credentials. Access denied.");
       }
       setLoad(false);
-    }, 600);
+    }, 200);
   };
 
   return (
     <div className="login-bg">
       <div className="login-card fi">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 28 }}>
-          <div className="sb-mark"><Zap size={13} color="#fff" strokeWidth={2.5} /></div>
-          <div>
-            <div style={{ fontFamily: 'var(--fh)', fontWeight: 700, fontSize: '15px', color: 'var(--ink)' }}>DM Studio</div>
-            <div className="sb-badge" style={{ color: 'var(--acc)', background: 'rgba(200,65,10,.1)', marginTop: 3 }}>ADMIN</div>
+        <div style={{ textAlign: 'center', marginBottom: 36 }}>
+          <div style={{ 
+            width: 56, height: 56, borderRadius: 18, background: 'var(--acc)', 
+            display: 'flex', alignItems: 'center', justifyContent: 'center', 
+            margin: '0 auto 20px', boxShadow: '0 12px 24px rgba(51,77,255,0.2)' 
+          }}>
+            <Zap size={24} color="#fff" fill="#fff" />
           </div>
+          <h1 style={{ fontFamily: 'var(--fh)', fontWeight: 800, fontSize: '26px', color: 'var(--ink)', letterSpacing: '-0.8px', marginBottom: 8 }}>Welcome Back</h1>
+          <p style={{ fontSize: '14px', color: 'var(--mu)', lineHeight: 1.5 }}>Authorized personnel only. Please sign in to access the DM Studio management console.</p>
         </div>
-        <div style={{ fontFamily: 'var(--fh)', fontWeight: 700, fontSize: '22px', color: 'var(--ink)', letterSpacing: '-.5px', marginBottom: 6 }}>Admin Access</div>
-        <div style={{ fontSize: '13px', color: 'var(--mu)', marginBottom: 22, lineHeight: 1.6 }}>Restricted to super admins only. Log in with your credentials.</div>
+
         <form onSubmit={submit}>
-          <div style={{ marginBottom: 14 }}>
-            <div className="ilbl"><Mail size={9} /> Admin Email</div>
-            <div className="inp-wrap">
-              <input className="inp" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="admin@domain.com" autoFocus style={{ fontSize: 15 }} />
-            </div>
+          <div className="inp-wrap">
+            <Mail className="inp-icon" size={16} />
+            <input 
+              className="inp" 
+              type="email" 
+              value={email} 
+              onChange={e => setEmail(e.target.value)} 
+              placeholder="Admin Email" 
+              autoFocus 
+            />
           </div>
           
-          <div style={{ marginBottom: 20 }}>
-            <div className="ilbl"><Lock size={9} /> Password</div>
-            <div className="inp-wrap">
-              <input className="inp" type={show ? 'text' : 'password'} value={pw} onChange={e => setPw(e.target.value)} placeholder="••••••••" style={{ letterSpacing: pw && !show ? '2px' : 'normal', fontSize: 15 }} />
-              <button type="button" className="eye-btn" onClick={() => setShow(p => !p)}>{show ? <EyeOff size={14} /> : <Eye size={14} />}</button>
-            </div>
+          <div className="inp-wrap" style={{ marginBottom: 24 }}>
+            <Lock className="inp-icon" size={16} />
+            <input 
+              className="inp" 
+              type={show ? 'text' : 'password'} 
+              value={pw} 
+              onChange={e => setPw(e.target.value)} 
+              placeholder="Access Key" 
+              style={{ letterSpacing: pw && !show ? '4px' : 'normal' }}
+            />
+            <button type="button" className="eye-btn" onClick={() => setShow(p => !p)}>
+              {show ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
           </div>
 
-          {err && <div className="err-box"><AlertTriangle size={12} style={{flexShrink:0}} />{err}</div>}
+          {err && <div className="err-box"><AlertTriangle size={14} style={{flexShrink:0}} /> {err}</div>}
           
-          <button type="submit" className="btn-p" style={{ width: '100%', padding: 12, justifyContent: 'center' }} disabled={load || !email || !pw}>
-            {load ? <><RefreshCw size={13} style={{ animation: 'spin 1s linear infinite' }} /> Accessing...</> : 'Access Admin Panel →'}
+          <button type="submit" className="btn-p" style={{ 
+            width: '100%', padding: '14px', justifyContent: 'center', 
+            borderRadius: 12, fontSize: '15px', background: 'var(--acc)',
+            boxShadow: '0 8px 20px rgba(51,77,255,0.15)'
+          }} disabled={load || !email || !pw}>
+            {load ? (
+              <><RefreshCw size={16} style={{ animation: 'spin 1s linear infinite', marginRight: 8 }} /> Authenticating...</>
+            ) : (
+              'Enter Dashboard'
+            )}
           </button>
         </form>
-
-        <div style={{ marginTop: 24, textAlign: 'center', fontSize: '12px', color: 'var(--mu)', fontFamily: 'var(--fb)', opacity: 0.7 }}>
-          Authorized access only. Registration is disabled.
-        </div>
       </div>
     </div>
   );
@@ -1105,7 +1131,13 @@ function AdminSettings({ announcement, onSave, onMenuToggle }) {
 
 /* ─────────── ROOT ─────────── */
 export default function AdminApp() {
-  const [authed, setAuthed] = useState(false);
+  const [authed, setAuthed] = useState(() => {
+    // Check if we have an active admin session in this browser window
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('admin_authed') === 'true';
+    }
+    return false;
+  });
   const [view, setView] = useState('overview');
   const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -1124,19 +1156,20 @@ export default function AdminApp() {
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (status === 'authenticated') {
-      setAuthed(true);
+    // Admin access is now completely independent of Google login status.
+    // We only rely on the 'authed' state which is set via the password form.
+    if (authed) {
       fetchUsers();
       fetchPricing();
       fetchOrders();
-    } else if (status === 'unauthenticated') {
-      setAuthed(false);
     }
-  }, [session, status]);
+  }, [authed]);
 
   const fetchPricing = async () => {
     try {
-      const res = await fetch('/api/settings?global=true');
+      const res = await fetch('/api/settings?global=true', {
+        headers: { 'x-admin-auth': '0000' }
+      });
       if (!res.ok) return;
       const text = await res.text();
       if (!text) return;
@@ -1152,7 +1185,9 @@ export default function AdminApp() {
   const fetchUsers = async () => {
     setLoadingUsers(true);
     try {
-      const res = await fetch('/api/profiles');
+      const res = await fetch('/api/profiles', {
+        headers: { 'x-admin-auth': '0000' }
+      });
       if (!res.ok) return;
       const text = await res.text();
       if (!text) return;
@@ -1170,7 +1205,9 @@ export default function AdminApp() {
     setLoadingOrders(true);
     setOrderError(null);
     try {
-      const res = await fetch('/api/admin/orders');
+      const res = await fetch('/api/admin/orders', {
+        headers: { 'x-admin-auth': '0000' }
+      });
       if (!res.ok) return;
       const text = await res.text();
       if (!text) return;
@@ -1221,7 +1258,10 @@ export default function AdminApp() {
 
       const saveRes = await fetch('/api/settings', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-auth': '0000'
+        },
         body: JSON.stringify({ settings: updatedSettings, global: true })
       });
       
@@ -1243,7 +1283,10 @@ export default function AdminApp() {
     try {
       const res = await fetch('/api/profiles', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-auth': '0000'
+        },
         body: JSON.stringify({
           id: u.id,
           userId: u.userId,
@@ -1261,7 +1304,10 @@ export default function AdminApp() {
   };
 
   if (!authed) return (
-    <div className="shell"><style>{CSS}</style><AdminLogin onLogin={() => setAuthed(true)} /></div>
+    <div className="shell"><style>{CSS}</style><AdminLogin onLogin={() => {
+      setAuthed(true);
+      sessionStorage.setItem('admin_authed', 'true');
+    }} /></div>
   );
 
   return (
