@@ -380,9 +380,9 @@ export default function App() {
   };
 
   // Actions
-  const handleNew = () => {
+  const handleNew = (initialData = {}) => {
     if (automations.length >= PLAN_LIMITS[plan]) setShowUpgradeModal(true);
-    else setEditing({ id: 'new' });
+    else setEditing({ id: 'new', ...initialData });
   };
 
   const handleSave = data => {
@@ -570,6 +570,7 @@ export default function App() {
                   onConnect={isBanned ? null : () => setShowConnectIG(true)}
                   onMenuToggle={() => setMenuOpen(true)} 
                   isBanned={isBanned}
+                  onViewAutomations={() => setView('automations')}
                 />
               ) : view === 'automations' ? (
                 <AutoList 
