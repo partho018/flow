@@ -1414,6 +1414,14 @@ export default function AdminApp() {
     sessionStorage.setItem('admin_last_active', Date.now().toString());
   };
 
+  const handleAdminLogout = () => {
+    sessionStorage.removeItem('admin_authed');
+    sessionStorage.removeItem('admin_last_active');
+    setAuthed(false);
+    // Optional: Also sign out of NextAuth to be safe
+    signOut({ callbackUrl: '/admin' });
+  };
+
   if (!authed) return (
     <div className="shell"><style>{CSS}</style><AdminLogin onLogin={handleAdminLogin} /></div>
   );
@@ -1449,7 +1457,7 @@ export default function AdminApp() {
           </div>
         ))}
         <div className="sb-foot">
-          <button className="sb-logout" onClick={() => signOut()}><LogOut size={14} /> Sign out</button>
+          <button className="sb-logout" onClick={handleAdminLogout}><LogOut size={14} /> Sign out</button>
         </div>
       </aside>
 
