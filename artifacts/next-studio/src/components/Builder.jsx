@@ -74,7 +74,7 @@ function Section({ id, num, title, description, isOpen, onToggle, isDone, childr
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="p-3 pt-0 border-t border-border/50">
+            <div className="p-3 pt-4 border-t border-border/50">
               {children}
             </div>
           </motion.div>
@@ -159,7 +159,7 @@ export function Builder({ automation, onBack, onSave }) {
     trigger: !!triggerType,
     post: triggerType === 'story' || !!selectedPost,
     kw: anyKw || keywords.length > 0,
-    reply: triggerType === 'story' || replies.length > 0,
+    reply: (triggerType === 'comment' || triggerType === 'live') ? (replies.length > 0) : (triggerType === 'story' || true),
   };
 
   return (
@@ -243,7 +243,7 @@ export function Builder({ automation, onBack, onSave }) {
                 </button>
               ))}
             </div>
-          </Section> Section
+          </Section>
 
           {/* Step 2: Content (Posts) */}
           {triggerType === 'comment' && (
@@ -299,8 +299,8 @@ export function Builder({ automation, onBack, onSave }) {
               <div className="space-y-6">
                  <div className="flex items-center justify-between p-4 bg-muted/30 border border-border/50 rounded-2xl">
                     <div className="flex items-center gap-3 text-muted-foreground">
-                      <Zap size={16} />
-                      <p className="text-xs font-bold">Trigger on any comment</p>
+                       <Zap size={16} />
+                       <p className="text-xs font-bold">Trigger on any comment</p>
                     </div>
                     <button 
                       onClick={() => setAnyKw(!anyKw)}
@@ -343,74 +343,70 @@ export function Builder({ automation, onBack, onSave }) {
             </Section>
           )}
 
-          {/* Response Logic (Simplified Visualization) */}
-          {triggerType && (
-            <div className="space-y-4 pt-8">
-              <div className="flex items-center gap-3">
-                <h4 className="text-[9px] font-black uppercase tracking-widest text-muted-foreground whitespace-nowrap">Response Workflow</h4>
-                <div className="h-[1px] w-full bg-border/50" />
+          {/* Step 4: Comment Replies */}
+          {(triggerType === 'comment' || triggerType === 'live') && (
+            <Section 
+              num={triggerType === 'comment' ? "4" : "3"} 
+              title="Comment Replies" 
+              description="Set up random replies to user comments."
+              isOpen={openSection === 'replies'}
+              onToggle={() => setOpenSection(openSection === 'replies' ? null : 'replies')}
+              isDone={isDone.reply}
+            >
+              <div className="space-y-4 sm:space-y-5">
+                 <div className="flex items-center justify-between px-1">
+                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Add Random Comment Replies</p>
+                 </div>
+                 <div className="space-y-3">
+                   {replies.map((reply, idx) => (
+                     <motion.div 
+                       key={idx} 
+                       initial={{ opacity: 0, x: -10 }} 
+                       animate={{ opacity: 1, x: 0 }}
+                       className="flex items-center gap-3 group"
+                     >
+                       <div className="w-1.5 h-1.5 rounded-full bg-border group-hover:bg-primary transition-colors shrink-0" />
+                       <div className="flex-1">
+                         <input 
+                           value={reply}
+                           onChange={e => {
+                             const newReps = [...replies];
+                             newReps[idx] = e.target.value;
+                             setReps(newReps);
+                           }}
+                           className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-2xl text-xs font-medium focus:ring-4 focus:ring-primary/5 focus:border-primary/20 focus:bg-card transition-all outline-none"
+                           placeholder="Type a reply..."
+                         />
+                       </div>
+                       <button 
+                         onClick={() => setReps(replies.filter((_, i) => i !== idx))}
+                         className="p-2.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl transition-all"
+                       >
+                         <Trash2 size={16} />
+                       </button>
+                     </motion.div>
+                   ))}
+                 </div>
+                 
+                 <button 
+                   onClick={() => setReps([...replies, ''])}
+                   className="w-full py-4 border-2 border-dashed border-border/60 hover:border-primary/30 rounded-[24px] text-muted-foreground hover:text-primary transition-all flex items-center justify-center gap-2 group bg-muted/5 hover:bg-primary/5"
+                 >
+                   <Plus size={18} className="group-hover:scale-125 transition-transform" />
+                   <span className="text-xs font-bold uppercase tracking-tight">Add New Reply</span>
+                 </button>
+
+                 <button 
+                   onClick={() => setOpenSection(null)}
+                   className="w-full py-4 bg-primary text-primary-foreground rounded-[24px] text-sm font-bold shadow-lg shadow-primary/20 hover:brightness-110 active:scale-[0.98] transition-all"
+                 >
+                   Confirm
+                 </button>
               </div>
-
-              <div className="relative space-y-6">
-                {/* Visual Connector Line */}
-                <div className="absolute left-[15px] top-3 bottom-3 w-0.5 bg-border rounded-full" />
-
-                {/* Response Item 1 */}
-                <div className="relative pl-10">
-                  <div className="absolute left-0 top-0 w-8 h-8 rounded-full bg-primary border-2 border-background flex items-center justify-center text-primary-foreground shadow-md z-10">
-                    <MessageCircle size={14} />
-                  </div>
-                  <EditableText 
-                    label="Step 1: The Opening"
-                    value={openingMsg} 
-                    onChange={setOM} 
-                  />
-                </div>
-
-                {/* Response Item 2 */}
-                <div className="relative pl-10">
-                  <div className="absolute left-0 top-0 w-8 h-8 rounded-full bg-amber-500 border-2 border-background flex items-center justify-center text-white shadow-md z-10">
-                    <Info size={14} />
-                  </div>
-                  <EditableText 
-                    label="Step 2: Follow Verification"
-                    value={followMsg} 
-                    onChange={setFM} 
-                  />
-                </div>
-
-                {/* Response Item 3 */}
-                <div className="relative pl-10">
-                  <div className="absolute left-0 top-0 w-8 h-8 rounded-full bg-green-500 border-2 border-background flex items-center justify-center text-white shadow-md z-10">
-                    <Link size={14} />
-                  </div>
-                  <div className="space-y-4">
-                    <EditableText 
-                      label="Step 3: The Link Reveal"
-                      value={thankMsg} 
-                      onChange={setTM} 
-                    />
-                    <div className="p-4 bg-card border border-border rounded-xl space-y-3">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Link size={12} className="text-primary" />
-                        <h5 className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Main Call to Action</h5>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div className="space-y-1">
-                          <label className="text-[8px] font-bold text-muted-foreground uppercase">Button Text</label>
-                          <input value={thankBtn} onChange={e => setTB(e.target.value)} className="w-full px-3 py-2 bg-muted/40 border border-border rounded-lg text-[10px] outline-none focus:border-primary/50 transition-all" />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[8px] font-bold text-muted-foreground uppercase">Target URL</label>
-                          <input value={thankUrl} onChange={e => setTU(e.target.value)} className="w-full px-3 py-2 bg-muted/40 border border-border rounded-lg text-[10px] outline-none focus:border-primary/50 transition-all" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            </Section>
           )}
+
+
         </div>
       </main>
 
