@@ -35,7 +35,7 @@ export function AutoList({ automations, onNew, onEdit, onDelete, onUpgrade, onMe
         <div className="max-w-6xl mx-auto space-y-8">
           
           {/* Unlock Pro Banner */}
-          <section className="bg-primary rounded-[20px] p-6 text-white shadow-xl shadow-primary/20 relative overflow-hidden group">
+          <section className="bg-primary rounded-lg p-6 text-white shadow-xl shadow-primary/20 relative overflow-hidden group">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
               <div className="space-y-1 text-center md:text-left">
                 <h2 className="text-xl font-black tracking-tight flex items-center justify-center md:justify-start gap-2">
@@ -70,7 +70,7 @@ export function AutoList({ automations, onNew, onEdit, onDelete, onUpgrade, onMe
           </div>
 
           {/* List Table */}
-          <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-sm">
+          <div className="bg-card border border-border rounded-lg overflow-hidden shadow-sm">
             <div className="hidden md:grid grid-cols-12 gap-4 px-8 py-5 border-b border-border bg-muted/20">
               <div className="col-span-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Image</div>
               <div className="col-span-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Name</div>

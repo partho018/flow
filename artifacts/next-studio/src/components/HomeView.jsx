@@ -53,7 +53,7 @@ export function HomeView({ greeting, automations, onNew, igConnected, igUsername
             <motion.div 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="relative overflow-hidden group p-6 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-white shadow-xl shadow-primary/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              className="relative overflow-hidden group p-6 rounded-lg bg-gradient-to-r from-primary to-primary/80 text-white shadow-xl shadow-primary/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
             >
               <div className="space-y-1 relative z-10">
                 <h3 className="text-xl font-black tracking-tight flex items-center gap-2">Unlock Pro Power!</h3>
@@ -162,7 +162,7 @@ export function HomeView({ greeting, automations, onNew, igConnected, igUsername
                         <button 
                           key={a.id}
                           onClick={() => onNew({ triggerType: a.trigger })}
-                          className={`relative group p-6 rounded-[24px] bg-card border-2 transition-all text-left flex flex-col gap-4 hover:shadow-xl hover:-translate-y-1 ${a.isPro ? 'border-amber-400/20 hover:border-amber-400' : 'border-border hover:border-primary/40'}`}
+                          className={`relative group p-6 rounded-lg bg-card border-2 transition-all text-left flex flex-col gap-4 hover:shadow-xl hover:-translate-y-1 ${a.isPro ? 'border-amber-400/20 hover:border-amber-400' : 'border-border hover:border-primary/40'}`}
                         >
                           {a.badge && (
                             <span className={`absolute top-4 right-4 px-2.5 py-1 rounded-full text-[8px] font-black text-white uppercase tracking-widest ${a.badgeCol}`}>
@@ -197,7 +197,7 @@ export function HomeView({ greeting, automations, onNew, igConnected, igUsername
                     <button onClick={onViewAutomations} className="text-[10px] font-bold text-primary hover:underline">View all +</button>
                   </div>
                   
-                  <div className="flex-1 bg-card border border-border rounded-[32px] p-4 lg:p-6 shadow-sm overflow-hidden flex flex-col">
+                  <div className="flex-1 bg-card border border-border rounded-lg p-4 lg:p-6 shadow-sm overflow-hidden flex flex-col">
                     {automations.filter(a => a.active).length === 0 ? (
                       <div className="flex-1 flex flex-col items-center justify-center text-center space-y-3">
                         <div className="w-12 h-12 bg-muted/50 rounded-2xl flex items-center justify-center text-muted-foreground/30">
@@ -231,7 +231,7 @@ export function HomeView({ greeting, automations, onNew, igConnected, igUsername
               </div>
 
               {/* Growth Trend Section - Clean & Simple */}
-              <section className="bg-card border border-border rounded-[32px] p-6 lg:p-10 space-y-10 shadow-sm">
+              <section className="bg-card border border-border rounded-lg p-6 lg:p-10 space-y-10 shadow-sm">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="space-y-1">
                     <h3 className="text-xl font-bold tracking-tight text-foreground">Growth Trend</h3>
