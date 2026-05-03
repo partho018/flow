@@ -197,17 +197,20 @@ export default function App() {
         })
         .catch(err => console.error("Failed to load stats:", err));
 
-      // Fetch Announcement
-      fetch('/api/announcement')
-        .then(res => res.json())
-        .then(data => {
-          if (data.enabled) {
-            setAnnouncement(data);
-            setShowAnn(true);
-          }
-        })
-        .catch(err => console.error("Failed to load announcement:", err));
     }
+    
+    // Fetch Announcement (Global - shows even for unauthenticated users if desired)
+    fetch('/api/announcement')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.enabled) {
+          setAnnouncement(data);
+          setShowAnn(true);
+        } else {
+          setShowAnn(false);
+        }
+      })
+      .catch(err => console.error("Failed to load announcement:", err));
   }, [status]); // Removed igConnected from dependencies to avoid loop
 
 
