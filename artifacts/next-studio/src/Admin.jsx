@@ -1,4 +1,5 @@
 "use client";
+// Last fix: 2026-05-03 18:45
 import { useState, useEffect } from "react";
 import {
   Users, DollarSign, Activity, Shield, Zap, Settings, LogOut,
@@ -6,172 +7,141 @@ import {
   Eye, EyeOff, Lock, RefreshCw, UserPlus, Gift,
   Home, Plus, ChevronRight, X, CheckCircle, Ban, ArrowUpRight,
   ArrowDownRight, BarChart2, TrendingUp, Filter, Mail, UserSquare, Phone,
-  Download, Search, Edit2, CreditCard, Save, ShoppingBag, Tag, Menu, Trash2
+  Download, Search, Edit2, CreditCard, Save, ShoppingBag, Tag, Menu, Trash2,
+  Power, Bell
 } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 /* ─────────── CSS ─────────── */
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
 :root{
-  --bg:#fff;--s:#fff;--b:#F1F1EF;--b2:#E5E5E2;
+  --bg:#FAFAF9;--s:#fff;--b:#F1F1EF;--b2:#E5E5E2;
   --ink:#0A0A09;--ink2:#262624;--ink3:#52524E;
   --mu:#8E8E87;--mu2:#C2C2B9;
   --acc:#334DFF;--acc2:#4D66FF;
   --green:#10B981;--red:#EF4444;
   --amber:#F59E0B;--blue:#3B82F6;
   --sb:#090908;
-  --fh:'Bricolage Grotesque',sans-serif;
-  --fb:'Geist',sans-serif;
-  --fm:'Geist Mono',monospace;
+  --fh:'DM Sans',sans-serif;
+  --fb:'DM Sans',sans-serif;
+  --p20:rgba(51,77,255,.08);
 }
 body{background:var(--bg);color:var(--ink);font-family:var(--fb);-webkit-font-smoothing:antialiased}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:99px}
 .shell{display:flex;height:100vh;overflow:hidden}
-.aside{width:260px;flex-shrink:0;height:100vh;display:flex;flex-direction:column;background:#fff;border-right:1px solid var(--b)}
+.aside{width:270px;flex-shrink:0;height:100vh;display:flex;flex-direction:column;background:#fff;border-right:1px solid var(--b)}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.scroll{flex:1;overflow-y:auto}
+.scroll{flex:1;overflow-y:auto;background:var(--bg)}
 
 /* sidebar */
-.sb-brand{padding:24px 20px 20px;display:flex;align-items:center;gap:11px}
-.sb-mark{width:34px;height:34px;border-radius:10px;background:var(--acc);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(51,77,255,.2)}
-.sb-name{font-family:var(--fh);font-weight:700;font-size:16px;color:var(--ink);letter-spacing:-.2px}
-.sb-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;background:var(--acc);color:#fff;margin-top:2px;font-family:var(--fm);letter-spacing:1px;text-transform:uppercase;display:inline-block}
-.sb-admin{margin:0 14px 16px;padding:12px;background:var(--bg);border:1px solid var(--b);border-radius:12px;display:flex;align-items:center;gap:10px}
-.sb-av-admin{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));flex-shrink:0;display:flex;align-items:center;justify-content:center}
-.sb-section{padding:18px 20px 8px;font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu)}
-.sb-item{display:flex;align-items:center;gap:12px;padding:10px 14px;margin:2px 10px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;color:var(--mu);transition:all .2s;border:1px solid transparent}
-.sb-item:hover{color:var(--ink);background:var(--bg)}
-.sb-item.on{color:var(--acc);background:rgba(51,77,255,.05);border-color:rgba(51,77,255,.1)}
+.sb-brand{padding:32px 24px 24px;display:flex;align-items:center;gap:12px}
+.sb-mark{width:40px;height:40px;border-radius:12px;background:var(--acc);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 8px 20px rgba(51,77,255,.25)}
+.sb-name{font-family:var(--fh);font-weight:900;font-size:18px;color:var(--ink);letter-spacing:-.8px}
+.sb-badge{font-size:9px;font-weight:900;padding:2px 8px;border-radius:6px;background:var(--ink);color:#fff;margin-top:2px;font-family:var(--fm);letter-spacing:1px;text-transform:uppercase;display:inline-block}
+.sb-admin{margin:0 16px 24px;padding:16px;background:#fff;border:1px solid var(--b);border-radius:16px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.02)}
+.sb-av-admin{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--acc),var(--acc2));flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(51,77,255,.15)}
+.sb-section{padding:20px 24px 8px;font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--mu2)}
+.sb-item{display:flex;align-items:center;gap:14px;padding:11px 16px;margin:3px 12px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:700;color:var(--ink3);transition:all .2s;border:1px solid transparent}
+.sb-item:hover{color:var(--ink);background:#f4f4f3}
+.sb-item.on{color:var(--acc);background:rgba(51,77,255,.06);border-color:rgba(51,77,255,.08)}
 .sb-item.on svg{color:var(--acc)}
-.sb-count{margin-left:auto;font-size:10px;font-weight:800;padding:2px 6px;border-radius:6px;background:var(--ink);color:#fff;font-family:var(--fm)}
-.sb-foot{padding:16px;border-top:1px solid var(--b);margin-top:auto}
-.sb-logout{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:10px;background:var(--bg);border:1px solid var(--b);color:var(--ink3);font-family:var(--fb);font-size:13.5px;font-weight:600;cursor:pointer;transition:all .2s}
-.sb-logout:hover{background:#fff;border-color:var(--mu2);color:var(--red)}
+.sb-count{margin-left:auto;font-size:10px;font-weight:800;padding:2px 8px;border-radius:8px;background:var(--ink);color:#fff;font-family:var(--fm)}
+.sb-foot{padding:20px 16px;border-top:1px solid var(--b);margin-top:auto}
+.sb-logout{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:12px;background:#fff;border:1px solid var(--b);color:var(--ink3);font-family:var(--fb);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.sb-logout:hover{background:#fff;border-color:var(--red);color:var(--red);box-shadow:0 4px 12px rgba(239,68,68,.08)}
 
 /* topbar */
-.topbar{height:50px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid var(--b);background:var(--s);flex-shrink:0}
-.tb-title{font-family:var(--fh);font-weight:700;font-size:15px;color:var(--ink);letter-spacing:-.3px}
+.topbar{height:64px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 32px;border-bottom:1px solid var(--b);background:#fff;z-index:10}
+.tb-title{font-family:var(--fh);font-weight:900;font-size:18px;color:var(--ink);letter-spacing:-.5px}
 
 /* buttons */
-.btn-p{background:var(--ink);color:#F5F4F1;border:none;padding:8px 16px;border-radius:8px;font-family:var(--fh);font-weight:700;font-size:12.5px;cursor:pointer;transition:all .13s;display:inline-flex;align-items:center;gap:6px}
-.btn-p:hover{background:var(--ink2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.btn-p{background:var(--ink);color:#fff;border:none;padding:10px 20px;border-radius:12px;font-family:var(--fh);font-weight:800;font-size:14px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+.btn-p:hover{background:var(--ink2);transform:translateY(-1px);box-shadow:0 8px 16px rgba(0,0,0,.12)}
+.btn-p:active{transform:translateY(0)}
 .btn-p:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.btn-p.acc{background:var(--acc)}.btn-p.acc:hover{background:var(--acc2)}
-.btn-p.sm{padding:6px 12px;font-size:12px}
-.btn-g{background:transparent;color:var(--mu);border:1px solid var(--b);padding:6px 12px;border-radius:8px;font-family:var(--fb);font-weight:500;font-size:12px;cursor:pointer;transition:all .12s;display:inline-flex;align-items:center;gap:5px}
-.btn-g:hover{color:var(--ink);border-color:var(--b2);background:var(--bg)}
-.btn-red{background:transparent;color:var(--red);border:1px solid rgba(185,28,28,.2);padding:6px 10px;border-radius:7px;font-family:var(--fb);font-weight:500;font-size:12px;cursor:pointer;transition:all .12s;display:inline-flex;align-items:center;gap:5px}
-.btn-red:hover{background:rgba(185,28,28,.06);border-color:rgba(185,28,28,.35)}
-.btn-grn{background:transparent;color:var(--green);border:1px solid rgba(26,107,62,.2);padding:6px 10px;border-radius:7px;font-family:var(--fb);font-weight:500;font-size:12px;cursor:pointer;transition:all .12s;display:inline-flex;align-items:center;gap:5px}
-.btn-grn:hover{background:rgba(26,107,62,.06);border-color:rgba(26,107,62,.35)}
+.btn-p.acc{background:var(--acc)}.btn-p.acc:hover{background:var(--acc2);box-shadow:0 8px 20px rgba(51,77,255,.2)}
+.btn-p.sm{padding:8px 16px;font-size:13px;border-radius:10px}
+.btn-g{background:#fff;color:var(--ink3);border:1px solid var(--b);padding:8px 16px;border-radius:10px;font-family:var(--fb);font-weight:700;font-size:13px;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:8px;box-shadow:0 1px 2px rgba(0,0,0,.02)}
+.btn-g:hover{color:var(--ink);border-color:var(--b2);background:#fff;box-shadow:0 4px 8px rgba(0,0,0,.04)}
+.btn-red{background:rgba(239,68,68,.05);color:var(--red);border:1px solid rgba(239,68,68,.1);padding:8px 14px;border-radius:10px;font-family:var(--fb);font-weight:700;font-size:13px;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-red:hover{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.2)}
 
 /* stat */
-.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
-.stat-card{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:18px 20px;transition:border-color .13s,box-shadow .13s;position:relative;overflow:hidden}
-.stat-card:hover{border-color:var(--b2);box-shadow:0 2px 12px rgba(0,0,0,.05)}
-.stat-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--acc);transform:scaleY(0);transform-origin:bottom;transition:transform .2s}
-.stat-card:hover::before{transform:scaleY(1)}
-.stat-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
-.delta-up{background:#ECFDF5;color:var(--green);display:flex;align-items:center;gap:2px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px}
-.stat-num{font-family:var(--fh);font-size:32px;font-weight:700;color:var(--ink);line-height:1;letter-spacing:-1.5px}
-.stat-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--mu);margin-top:7px;font-family:var(--fm)}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:#fff;border:1px solid var(--b);border-radius:20px;padding:24px;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1);position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.02)}
+.stat-card:hover{border-color:var(--acc2);box-shadow:0 12px 30px rgba(51,77,255,.08);transform:translateY(-2px)}
+.stat-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.stat-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+.delta-up{background:rgba(16,185,129,.1);color:var(--green);display:flex;align-items:center;gap:2px;font-size:11px;font-weight:800;padding:3px 10px;border-radius:99px}
+.stat-num{font-family:var(--fh);font-size:36px;font-weight:900;color:var(--ink);line-height:1;letter-spacing:-1.8px}
+.stat-lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--mu);margin-top:10px;font-family:var(--fm)}
 
 /* table */
-.tbl-wrap{background:var(--s);border:1px solid var(--b);border-radius:12px;overflow:hidden}
-.tbl-ctrl{padding:12px 16px;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.srch{display:flex;align-items:center;gap:7px;padding:7px 12px;background:var(--bg);border:1px solid var(--b);border-radius:8px;flex:1;min-width:200px;max-width:280px}
-.srch input{background:none;border:none;outline:none;font-family:var(--fb);font-size:13px;color:var(--ink);width:100%}
+.tbl-wrap{background:#fff;border:1px solid var(--b);border-radius:24px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.02)}
+.tbl-ctrl{padding:20px 24px;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:#fafafa}
+.srch{display:flex;align-items:center;gap:10px;padding:10px 16px;background:#fff;border:1px solid var(--b);border-radius:12px;flex:1;min-width:260px;max-width:340px;transition:all .2s;box-shadow:0 1px 2px rgba(0,0,0,.02)}
+.srch:focus-within{border-color:var(--acc);box-shadow:0 0 0 4px rgba(51,77,255,.08)}
+.srch input{background:none;border:none;outline:none;font-family:var(--fb);font-size:14px;color:var(--ink);width:100%}
 .srch input::placeholder{color:var(--mu2)}
-.col-hd{display:flex;padding:8px 16px;background:var(--bg);border-bottom:1px solid var(--b)}
-.col-h{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--mu);font-family:var(--fm)}
-.urow{display:flex;align-items:center;padding:11px 16px;border-bottom:1px solid var(--b);transition:background .1s}
+.col-hd{display:flex;padding:12px 24px;background:#fcfcfc;border-bottom:1px solid var(--b)}
+.col-h{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:var(--mu);font-family:var(--fm)}
+.urow{display:flex;align-items:center;padding:14px 24px;border-bottom:1px solid var(--b);transition:all .15s ease}
 .urow:last-child{border-bottom:none}
-.urow:hover{background:#FAFAF9}
-.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.urow:hover{background:#f9f9f8}
+.av{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-size:14px;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.05)}
 
 /* pills */
-.plan-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:99px;font-size:10.5px;font-weight:700;font-family:var(--fm)}
-.pp-free{background:var(--bg);color:var(--mu);border:1px solid var(--b)}
-.pp-pro{background:#FEF3C7;color:var(--amber)}
-.pp-business{background:#EFF6FF;color:var(--blue)}
-.sp{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:99px;font-size:10.5px;font-weight:700;font-family:var(--fm)}
-.sp-a{background:#ECFDF5;color:var(--green)}
-.sp-b{background:#FEF2F2;color:var(--red)}
-.sp-p{background:#FEF3C7;color:var(--amber)}
-.sp-c{background:#F1F1EF;color:var(--mu)}
-
-/* usage bar */
-.ubar{width:70px}
-.ubar-track{height:4px;background:var(--b);border-radius:99px;overflow:hidden;margin-top:3px}
-.ubar-fill{height:100%;border-radius:99px}
+.plan-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:800;font-family:var(--fm);text-transform:uppercase;letter-spacing:0.5px}
+.pp-free{background:#F1F1EF;color:var(--ink3);border:1px solid var(--b2)}
+.pp-pro{background:#FFFBEB;color:var(--amber);border:1px solid rgba(245,158,11,.2)}
+.pp-business{background:#EFF6FF;color:var(--blue);border:1px solid rgba(59,130,246,.2)}
+.sp{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:800;font-family:var(--fm);text-transform:uppercase;letter-spacing:0.5px}
+.sp-a{background:#ECFDF5;color:var(--green);border:1px solid rgba(16,185,129,.2)}
+.sp-b{background:#FEF2F2;color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.sp-p{background:#FFFBEB;color:var(--amber);border:1px solid rgba(245,158,11,.2)}
+.sp-c{background:#F1F1EF;color:var(--mu);border:1px solid var(--b2)}
 
 /* modal */
-.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px}
-.modal{background:var(--s);border:1px solid var(--b);border-radius:14px;width:100%;max-width:500px;box-shadow:0 20px 60px rgba(0,0,0,.15);overflow:hidden}
-.modal-head{padding:16px 20px;border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between}
-.modal-body{padding:20px 20px 35px;max-height:75vh;overflow-y:auto}
-.modal-foot{padding:13px 20px;border-top:1px solid var(--b);display:flex;justify-content:flex-end;gap:8px}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);z-index:300;display:flex;align-items:center;justify-content:center;padding:24px}
+.modal{background:#fff;border:1px solid var(--b);border-radius:28px;width:100%;max-width:540px;box-shadow:0 30px 90px rgba(0,0,0,.25);overflow:hidden}
+.modal-head{padding:24px 32px;border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between}
+.modal-body{padding:32px;max-height:75vh;overflow-y:auto}
+.modal-foot{padding:20px 32px;border-top:1px solid var(--b);display:flex;justify-content:flex-end;gap:12px;background:#fafafa}
 
 /* inp */
-.inp{width:100%;background:var(--bg);border:1px solid var(--b);border-radius:8px;padding:10px 13px;color:var(--ink);font-family:var(--fb);font-size:13px;outline:none;transition:border .12s,box-shadow .12s}
-.inp:focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(20,20,18,.06)}
+.inp{width:100%;background:#fff;border:1px solid var(--b);border-radius:12px;padding:12px 16px;color:var(--ink);font-family:var(--fb);font-size:14px;outline:none;transition:all .2s;box-shadow:0 1px 2px rgba(0,0,0,.02)}
+.inp:focus{border-color:var(--acc);box-shadow:0 0 0 4px rgba(51,77,255,.08)}
 .inp::placeholder{color:var(--mu2)}
-textarea.inp{resize:vertical;min-height:80px;line-height:1.6}
-.ilbl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:var(--mu);margin-bottom:6px;font-family:var(--fm);display:flex;align-items:center;gap:5px}
+textarea.inp{resize:vertical;min-height:100px;line-height:1.6}
+.ilbl{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:1.8px;color:var(--mu);margin-bottom:8px;font-family:var(--fm);display:flex;align-items:center;gap:6px}
 
 /* tabs */
-.tabs{display:flex;gap:2px;padding:3px;background:var(--bg);border:1px solid var(--b);border-radius:9px}
-.tab{padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;color:var(--mu);transition:all .12s;white-space:nowrap}
-.tab.on{background:var(--s);color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-
-/* plan card */
-.plan-card{border:2px solid var(--b);border-radius:11px;padding:16px 18px;cursor:pointer;transition:all .14s;position:relative}
-.plan-card:hover{border-color:var(--b2)}
-.plan-card.sel{border-color:var(--ink);background:#FAFAF9}
-
-/* revenue bars */
-.rev-bars{display:flex;align-items:flex-end;gap:5px;height:72px}
-.rev-bar{flex:1;border-radius:4px 4px 0 0;background:var(--ink);opacity:.12;transition:opacity .2s;cursor:pointer}
-.rev-bar:hover{opacity:.3}
-.rev-bar.hi{opacity:.85;background:var(--acc)}
-
-/* activity */
-.af-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--b)}
-.af-row:last-child{border-bottom:none}
+.tabs{display:flex;gap:4px;padding:4px;background:#f1f1ef;border-radius:12px}
+.tab{padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;color:var(--mu);transition:all .2s;white-space:nowrap}
+.tab.on{background:#fff;color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.06)}
 
 /* login */
-.login-bg{position:fixed;inset:0;background:#ffffff;display:flex;align-items:center;justify-content:center;z-index:500;background-image:radial-gradient(circle at 2px 2px, rgba(0,0,0,0.02) 1px, transparent 0);background-size:24px 24px}
-.login-card{width:420px;background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:24px;padding:48px;box-shadow:0 20px 80px rgba(0,0,0,0.06), 0 0 1px rgba(0,0,0,0.1)}
-.inp-wrap{position:relative;margin-bottom:18px}
-.inp-wrap .inp{padding:12px 14px;padding-left:40px;background:#fcfcfb;border:1px solid rgba(0,0,0,0.08);border-radius:12px;font-size:14px;transition:all .2s ease}
-.inp-wrap .inp:focus{background:#fff;border-color:var(--acc);box-shadow:0 0 0 4px rgba(51,77,255,0.08)}
-.inp-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--mu2);pointer-events:none}
-.eye-btn{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--mu2);cursor:pointer;display:flex;padding:4px;transition:color .2s}
-.eye-btn:hover{color:var(--acc)}
-.err-box{background:#FFF5F5;border:1px solid rgba(224,36,36,0.1);color:#C53030;border-radius:12px;padding:12px 16px;font-size:13px;font-weight:500;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.login-bg{position:fixed;inset:0;background:#fafafa;display:flex;align-items:center;justify-content:center;z-index:500;background-image:radial-gradient(circle at 2px 2px, rgba(0,0,0,0.03) 1px, transparent 0);background-size:32px 32px}
+.login-card{width:460px;background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:32px;padding:56px;box-shadow:0 30px 100px rgba(0,0,0,.08)}
 
-@media (max-width: 1024px) {
-  .stat-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 768px) {
-  .aside { position: fixed; left: 0; top: 0; bottom: 0; z-index: 400; transform: translateX(-100%); transition: transform .3s ease; }
-  .aside.open { transform: translateX(0); }
-  .stat-grid { grid-template-columns: 1fr; }
-  .tbl-ctrl { flex-direction: column; align-items: stretch; }
-  .srch { max-width: none; }
-  .modal { max-width: none; height: 100%; border-radius: 0; }
-  .modal-body { max-height: none; flex: 1; }
-  .tb-menu { display: flex !important; }
-  .shell-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 350; display: block !important; }
-}
-.tb-menu { display: none; background: none; border: none; color: var(--ink); cursor: pointer; padding: 5px; margin-right: 12px; }
-
-.fi{animation:fi .18s ease both}
-@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.fi{animation:fi .4s cubic-bezier(0.16, 1, 0.3, 1) both}
+@keyframes fi{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+.rev-bars{display:flex;align-items:flex-end;gap:12px;height:160px;margin-top:20px}
+.rev-bar{width:100%;border-radius:8px 8px 4px 4px;transition:all .6s cubic-bezier(0.34, 1.56, 0.64, 1);cursor:pointer}
+.rev-bar:hover{filter:brightness(1.1);transform:scaleX(1.05)}
+.rev-bar.hi{background:var(--acc);box-shadow:0 10px 25px rgba(51,77,255,0.25)}
+
+.inp-wrap{position:relative;margin-bottom:16px}
+.inp-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--mu2);pointer-events:none;z-index:2}
+.inp-wrap .inp{padding-left:44px}
+.eye-btn{position:absolute;right:16px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--mu2);display:flex;padding:4px;z-index:2;transition:all .2s}
+.eye-btn:hover{color:var(--ink)}
+.err-box{background:#FEF2F2;border:1px solid #FEE2E2;border-radius:12px;padding:12px 16px;color:var(--red);font-size:13px;display:flex;align-items:center;gap:10px;margin-bottom:20px;font-weight:700}
 `;
 
 /* ─── utils ─── */
@@ -192,14 +162,18 @@ const getMonthlyRevenue = (orders) => {
   const last8 = [];
   for (let i = 7; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    last8.push({ m: months[d.getMonth()], v: 0, hi: false });
+    last8.push({ m: months[d.getMonth()], v: 0, p: 0, hi: false });
   }
   
-  orders.filter(o => o.status === 'completed' || o.status === 'success').forEach(o => {
+  orders.forEach(o => {
     const d = new Date(o.createdAt);
     const m = months[d.getMonth()];
     const item = last8.find(x => x.m === m);
-    if (item) item.v += Number(o.amount);
+    if (item) {
+      const amt = Number(o.amount) || 0;
+      if (o.status === 'completed' || o.status === 'success') item.v += amt;
+      else if (o.status === 'pending' || o.status === 'processing') item.p += amt;
+    }
   });
   
   if (last8.length > 0) last8[last8.length - 1].hi = true;
@@ -548,7 +522,7 @@ function OrderDetailModal({ order, onClose }) {
                       fontSize: f.b ? '24px' : '14px', 
                       fontWeight: f.b ? 900 : 600, 
                       color: f.b ? 'var(--acc)' : 'var(--ink)', 
-                      fontFamily: f.mono ? 'var(--fm)' : 'inherit'
+                      fontFamily: f.mono ? 'var(--fb)' : 'inherit'
                     }}>{f.v || '—'}</div>
                   </div>
                 ))}
@@ -587,24 +561,28 @@ function Overview({ users, totalReg, orders, onMenuToggle }) {
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <div className="topbar">
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <button className="tb-menu" onClick={onMenuToggle}><Menu size={18} /></button>
-          <div className="tb-title">Overview</div>
+          <button className="tb-menu" onClick={onMenuToggle}><Menu size={20} /></button>
+          <div className="tb-title">Dashboard Overview</div>
         </div>
-        <div style={{ fontSize: '12px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>{new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+        <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--mu)', fontFamily: 'var(--fb)', background: 'var(--bg)', padding: '6px 14px', borderRadius: 10 }}>
+          {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+        </div>
       </div>
-      <div className="scroll"><div style={{ padding: '24px', maxWidth: 1400, width: '100%', margin: '0 auto' }}>
+      <div className="scroll"><div style={{ padding: '32px', maxWidth: 1400, width: '100%', margin: '0 auto' }}>
 
         <div className="stat-grid">
           {[
-            { l: 'Total Revenue', v: '₹' + totalRev.toLocaleString(), d: '+27%', I: DollarSign },
-            { l: 'Total Profiles', v: users.length, d: '+4', I: Users },
-            { l: 'Total Registered', v: totalReg, d: '+12%', I: UserPlus },
-            { l: 'Paid Users', v: paid, d: '+2', I: Crown },
+            { l: 'Total Revenue', v: '₹' + totalRev.toLocaleString(), d: '+27%', I: DollarSign, c: 'var(--green)' },
+            { l: 'Total Profiles', v: users.length, d: '+4', I: Users, c: 'var(--acc)' },
+            { l: 'Total Registered', v: totalReg, d: '+12%', I: UserPlus, c: 'var(--blue)' },
+            { l: 'Paid Users', v: paid, d: '+2', I: Crown, c: 'var(--amber)' },
           ].map(s => (
             <div key={s.l} className="stat-card fi">
               <div className="stat-top">
-                <s.I size={14} color="var(--mu2)" strokeWidth={1.7} />
-                <span className="delta-up"><ArrowUpRight size={10} />{s.d}</span>
+                <div className="stat-icon" style={{ color: s.c, background: `${s.c}10` }}>
+                  <s.I size={18} strokeWidth={2.5} />
+                </div>
+                <span className="delta-up"><TrendingUp size={12} />{s.d}</span>
               </div>
               <div className="stat-num">{s.v}</div>
               <div className="stat-lbl">{s.l}</div>
@@ -612,57 +590,103 @@ function Overview({ users, totalReg, orders, onMenuToggle }) {
           ))}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 12, marginBottom: 14 }}>
-          <div style={{ background: 'var(--s)', border: '1px solid var(--b)', borderRadius: 12, padding: '18px 20px' }}>
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--mu)', fontFamily: 'var(--fm)', marginBottom: 5 }}>Monthly Revenue</div>
-              <div style={{ fontFamily: 'var(--fh)', fontSize: '28px', fontWeight: 700, color: 'var(--ink)', letterSpacing: '-1px', lineHeight: 1 }}>₹{revData[revData.length - 1].v.toLocaleString()}</div>
-              <div style={{ fontSize: '12px', color: 'var(--green)', fontWeight: 600, marginTop: 4, display: 'flex', alignItems: 'center', gap: 3 }}><ArrowUpRight size={12} />+27% from last month</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 20, marginBottom: 20, alignItems: 'start' }}>
+          <div style={{ background: '#fff', border: '1px solid var(--b)', borderRadius: 24, padding: '28px', boxShadow: '0 1px 4px rgba(0,0,0,.02)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32 }}>
+              <div>
+                <div style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--mu)', fontFamily: 'var(--fb)', marginBottom: 8 }}>Revenue Analytics</div>
+                <div style={{ fontFamily: 'var(--fh)', fontSize: '32px', fontWeight: 900, color: 'var(--ink)', letterSpacing: '-1.5px', lineHeight: 1 }}>₹{revData[revData.length - 1].v.toLocaleString()}</div>
+                <div style={{ fontSize: '13px', color: 'var(--green)', fontWeight: 700, marginTop: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--green)20', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ArrowUpRight size={12} /></div>
+                  +27% from last month
+                </div>
+              </div>
+              <div style={{ padding: '8px 16px', background: 'var(--bg)', borderRadius: 12, fontSize: '12px', fontWeight: 700, color: 'var(--mu2)' }}>Last 8 Months</div>
             </div>
+            
             <div className="rev-bars">
-              {revData.map((d, i) => (
-                <div key={i} className={`rev-bar ${d.hi ? 'hi' : ''}`}
-                  style={{ height: `${Math.round(d.v / maxRev * 100)}%` }}
-                  title={`${d.m}: ₹${d.v.toLocaleString()}`} />
-              ))}
-            </div>
-            <div style={{ display: 'flex', marginTop: 5 }}>
-              {revData.map((d, i) => (
-                <div key={i} style={{ flex: 1, textAlign: 'center', fontSize: '9.5px', fontFamily: 'var(--fm)', color: d.hi ? 'var(--acc)' : 'var(--mu2)', fontWeight: d.hi ? 700 : 400 }}>{d.m}</div>
-              ))}
+              {revData.map((d, i) => {
+                const total = d.v + d.p;
+                const vPct = total > 0 ? (d.v / maxRev * 100) : 0;
+                const pPct = total > 0 ? (d.p / maxRev * 100) : 0;
+                return (
+                  <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12, height: '100%', justifyContent: 'flex-end' }}>
+                    <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                      {/* Pending Part */}
+                      <div className="rev-bar" 
+                        style={{ 
+                          height: `${Math.max(pPct, d.p > 0 ? 5 : 0)}%`, 
+                          background: 'var(--amber)', 
+                          opacity: 0.4,
+                          borderRadius: d.v > 0 ? '0' : '8px 8px 4px 4px',
+                          marginBottom: -2
+                        }} 
+                        title={`Pending: ₹${d.p}`} />
+                      {/* Success Part */}
+                      <div className={`rev-bar ${d.hi ? 'hi' : ''}`}
+                        style={{ 
+                          height: `${Math.max(vPct, d.v > 0 ? 5 : 0)}%`,
+                          background: d.hi ? 'var(--acc)' : (d.v > 0 ? 'var(--mu2)' : 'var(--mu2)15')
+                        }}
+                        title={`Success: ₹${d.v}`} />
+                      
+                      {/* Fallback line if both are 0 */}
+                      {total === 0 && <div style={{ height: 2, background: 'var(--mu2)10', width: '100%', borderRadius: 2 }} />}
+                    </div>
+                    <div style={{ textAlign: 'center', fontSize: '10px', fontFamily: 'var(--fb)', color: d.hi ? 'var(--acc)' : 'var(--mu2)', fontWeight: 800, textTransform: 'uppercase', marginTop: 8 }}>{d.m}</div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
-          <div style={{ background: 'var(--s)', border: '1px solid var(--b)', borderRadius: 12, overflow: 'hidden' }}>
-            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--b)', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>Live Activity</div>
-            <div style={{ padding: '4px 16px', overflowY: 'auto', maxHeight: 200 }}>
+          <div style={{ background: '#fff', border: '1px solid var(--b)', borderRadius: 24, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,.02)', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ padding: '24px', borderBottom: '1px solid var(--b)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--mu)', fontFamily: 'var(--fb)' }}>Live Activity</div>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--green)', boxShadow: '0 0 10px var(--green)' }} />
+            </div>
+            <div style={{ padding: '8px 24px', overflowY: 'auto', flex: 1 }}>
               {activities.length === 0 ? (
-                 <div style={{ padding: '40px 10px', textAlign: 'center', color: 'var(--mu)', fontSize: '12px' }}>No recent activity</div>
+                 <div style={{ padding: '60px 10px', textAlign: 'center', color: 'var(--mu2)', fontSize: '13px', fontWeight: 600 }}>No recent activity</div>
               ) : activities.map((a, i) => (
-                <div key={i} className="af-row">
-                  <div style={{ width: 7, height: 7, borderRadius: '50%', background: a.color, flexShrink: 0, marginTop: 5 }} />
-                  <div style={{ fontSize: '12px', color: 'var(--ink2)', lineHeight: 1.55, flex: 1 }}>{a.text}</div>
-                  <div style={{ fontSize: '10.5px', color: 'var(--mu2)', fontFamily: 'var(--fm)', whiteSpace: 'nowrap', flexShrink: 0 }}>{a.time}</div>
+                <div key={i} className="af-row" style={{ padding: '16px 0', gap: 14 }}>
+                  <div style={{ width: 10, height: 10, borderRadius: '4px', background: a.color, flexShrink: 0, marginTop: 4, boxShadow: `0 0 8px ${a.color}40` }} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '13.5px', color: 'var(--ink2)', lineHeight: 1.5, fontWeight: 600 }}>{a.text}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--mu2)', fontFamily: 'var(--fb)', marginTop: 4, fontWeight: 700 }}>{a.time}</div>
+                  </div>
                 </div>
               ))}
+            </div>
+            <div style={{ padding: '16px 24px', background: 'var(--bg)', borderTop: '1px solid var(--b)', textAlign: 'center' }}>
+              <button className="btn-g" style={{ width: '100%', justifyContent: 'center', fontSize: '12px' }}>View Full Logs</button>
             </div>
           </div>
         </div>
 
-        <div style={{ background: 'var(--s)', border: '1px solid var(--b)', borderRadius: 12, padding: '18px 20px' }}>
-          <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--mu)', fontFamily: 'var(--fm)', marginBottom: 14 }}>Plan Breakdown</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
+        <div style={{ background: '#fff', border: '1px solid var(--b)', borderRadius: 24, padding: '28px', boxShadow: '0 1px 4px rgba(0,0,0,.02)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+            <div style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>Plan Distribution</div>
+            <div className="tabs">
+              <div className="tab on">Active Users</div>
+              <div className="tab">Revenue</div>
+            </div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
             {PLANS_DEF.map(pl => {
               const count = users.filter(u => u.plan === pl.id).length;
               const rev = users.filter(u => u.plan === pl.id).reduce((s, u) => s + u.rev, 0);
               return (
-                <div key={pl.id} style={{ padding: '14px 16px', background: 'var(--bg)', border: '1px solid var(--b)', borderRadius: 10 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <div key={pl.id} style={{ padding: '24px', background: 'var(--bg)', border: '1px solid var(--b)', borderRadius: 20, transition: 'all .2s' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
                     <PlanPill plan={pl.id} />
-                    <span style={{ fontFamily: 'var(--fm)', fontSize: '11px', fontWeight: 700, color: rev > 0 ? 'var(--green)' : 'var(--mu)' }}>₹{rev.toLocaleString()}</span>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: '10px', fontWeight: 800, color: 'var(--mu)', textTransform: 'uppercase', marginBottom: 2 }}>Revenue</div>
+                      <div style={{ fontFamily: 'var(--fm)', fontSize: '14px', fontWeight: 800, color: rev > 0 ? 'var(--green)' : 'var(--mu2)' }}>₹{rev.toLocaleString()}</div>
+                    </div>
                   </div>
-                  <div style={{ fontFamily: 'var(--fh)', fontSize: '30px', fontWeight: 700, color: 'var(--ink)', letterSpacing: '-1px', lineHeight: 1 }}>{count}</div>
-                  <div style={{ fontSize: '11px', color: 'var(--mu)', marginTop: 4 }}>users</div>
+                  <div style={{ fontFamily: 'var(--fh)', fontSize: '42px', fontWeight: 900, color: 'var(--ink)', letterSpacing: '-2px', lineHeight: 1 }}>{count}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--mu)', marginTop: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Total Subscribers</div>
                 </div>
               );
             })}
@@ -678,7 +702,7 @@ function Overview({ users, totalReg, orders, onMenuToggle }) {
 function UsersView({ users, onManage, onMenuToggle }) {
   const [search, setSearch] = useState('');
   const [flt, setFlt] = useState('all');
-  const FLTS = [{ id: 'all', l: 'All' }, { id: 'pro', l: 'Pro' }, { id: 'business', l: 'Business' }, { id: 'free', l: 'Free' }, { id: 'banned', l: 'Banned' }];
+  const FLTS = [{ id: 'all', l: 'All Users' }, { id: 'pro', l: 'Pro' }, { id: 'business', l: 'Business' }, { id: 'free', l: 'Free' }, { id: 'banned', l: 'Banned' }];
 
   const filtered = users.filter(u => {
     const ms = u.name.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase());
@@ -690,55 +714,68 @@ function UsersView({ users, onManage, onMenuToggle }) {
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <div className="topbar">
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <button className="tb-menu" onClick={onMenuToggle}><Menu size={18} /></button>
-          <div className="tb-title">Users <span style={{ fontFamily: 'var(--fm)', fontSize: '13px', color: 'var(--mu)', fontWeight: 400 }}>({users.length})</span></div>
+          <button className="tb-menu" onClick={onMenuToggle}><Menu size={20} /></button>
+          <div className="tb-title">User Management <span style={{ fontFamily: 'var(--fm)', fontSize: '13px', color: 'var(--mu2)', fontWeight: 700 }}>({users.length})</span></div>
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn-g" onClick={() => exportToCSV(users, 'users')}><Download size={11} /> Export</button>
-          <button className="btn-p sm acc"><UserPlus size={11} /> Invite</button>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button className="btn-g" onClick={() => exportToCSV(users, 'users')}><Download size={14} /> Export CSV</button>
+          <button className="btn-p sm acc"><UserPlus size={14} /> Invite User</button>
         </div>
       </div>
-      <div className="scroll"><div style={{ padding: '24px', maxWidth: 1080, margin: '0 auto' }}>
-        <div className="tbl-wrap">
-          <div className="tbl-ctrl">
-            <div className="srch"><Search size={13} color="var(--mu2)" /><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name or email..." /></div>
-            <div className="tabs" style={{ flexShrink: 0 }}>
+      <div className="scroll"><div style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }}>
+        <div className="tbl-wrap" style={{ borderRadius: 28 }}>
+          <div className="tbl-ctrl" style={{ padding: '24px', gap: 20 }}>
+            <div className="srch" style={{ maxWidth: 360 }}><Search size={16} color="var(--mu)" /><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search users by name, email..." /></div>
+            <div className="tabs" style={{ marginLeft: 'auto' }}>
               {FLTS.map(f => <div key={f.id} className={`tab ${flt === f.id ? 'on' : ''}`} onClick={() => setFlt(f.id)}>{f.l}</div>)}
             </div>
           </div>
 
-          <div className="col-hd" style={{ alignItems: 'center', gap: 0 }}>
-            {[['User', '2'], ['Plan', '1'], ['Status', '1'], ['DM Usage', '1'], ['Revenue', '1'], ['Joined', '1'], ['', '0 0 100px']].map(([h, f]) => (
-              <div key={h} style={{ flex: f, fontSize: '9.5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>{h}</div>
-            ))}
+          <div className="col-hd" style={{ padding: '16px 32px', background: '#fafafa' }}>
+            <div key="user" style={{ flex: 2, fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>User</div>
+            <div key="plan" style={{ flex: 1, fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>Plan</div>
+            <div key="status" style={{ flex: 1, fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>Status</div>
+            <div key="usage" style={{ flex: 1.2, fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>DM Usage</div>
+            <div key="rev" style={{ flex: 1, fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>Revenue</div>
+            <div key="action" style={{ width: 100 }}></div>
           </div>
 
           {filtered.length === 0
-            ? <div style={{ padding: '40px', textAlign: 'center', color: 'var(--mu)', fontSize: '13px' }}>No users match your search</div>
+            ? <div style={{ padding: '100px 20px', textAlign: 'center' }}>
+                <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                  <Users size={24} color="var(--mu2)" />
+                </div>
+                <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--ink2)' }}>No users found</div>
+                <p style={{ fontSize: '13px', color: 'var(--mu)', marginTop: 4 }}>Try adjusting your search or filters</p>
+              </div>
             : filtered.map(u => {
               const tot = u.dmsLimit + u.creditBonus;
               const pct = Math.min(Math.round(u.dmsUsed / tot * 100), 100);
               return (
-                <div key={u.id} className="urow">
-                  <div style={{ flex: 2, display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, cursor: 'pointer' }} onClick={() => onManage(u)}>
-                    <div className="av" style={{ background: avCol(u.name) }}>{u.name[0]}</div>
+                <div key={u.id} className="urow" style={{ padding: '20px 32px' }}>
+                  <div style={{ flex: 2, display: 'flex', alignItems: 'center', gap: 14, minWidth: 0, cursor: 'pointer' }} onClick={() => onManage(u)}>
+                    <div className="av" style={{ background: avCol(u.name), width: 40, height: 40, borderRadius: 14 }}>{u.name?.[0] || 'U'}</div>
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.name}</div>
-                      <div style={{ fontSize: '11px', color: 'var(--mu)', fontFamily: 'var(--fm)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.email}</div>
+                      <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.name}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--mu)', fontFamily: 'var(--fm)', fontWeight: 600 }}>{u.email}</div>
                     </div>
                   </div>
                   <div style={{ flex: 1 }}><PlanPill plan={u.plan} /></div>
                   <div style={{ flex: 1 }}><StatusPill status={u.status} /></div>
-                  <div style={{ flex: 1 }}>
-                    <div className="ubar">
-                      <div style={{ fontSize: '11px', fontFamily: 'var(--fm)', fontWeight: 600, color: pct > 90 ? 'var(--red)' : 'var(--ink3)' }}>{u.dmsUsed.toLocaleString()}/{tot.toLocaleString()}</div>
-                      <div className="ubar-track"><div className="ubar-fill" style={{ width: `${pct}%`, background: pct > 90 ? 'var(--red)' : 'var(--ink)' }} /></div>
+                  <div style={{ flex: 1.2, paddingRight: 24 }}>
+                    <div className="ubar" style={{ width: '100%' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                        <div style={{ fontSize: '10px', fontFamily: 'var(--fm)', fontWeight: 800, color: 'var(--mu)' }}>{pct}% Used</div>
+                        <div style={{ fontSize: '10px', fontFamily: 'var(--fm)', fontWeight: 800, color: pct > 90 ? 'var(--red)' : 'var(--ink)' }}>{u.dmsUsed.toLocaleString()}</div>
+                      </div>
+                      <div className="ubar-track" style={{ height: 6, background: '#f1f1ef' }}>
+                        <div className="ubar-fill" style={{ width: `${pct}%`, background: pct > 90 ? 'var(--red)' : 'linear-gradient(90deg, var(--acc), var(--acc2))', boxShadow: pct > 10 ? '0 0 10px rgba(51,77,255,0.2)' : 'none' }} />
+                      </div>
                     </div>
                   </div>
-                  <div style={{ flex: 1, fontFamily: 'var(--fm)', fontSize: '13px', fontWeight: 600, color: u.rev > 0 ? 'var(--green)' : 'var(--mu)' }}>{u.rev > 0 ? '₹' + u.rev : '—'}</div>
-                  <div style={{ flex: 1, fontSize: '12px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>{u.joined}</div>
-                  <div style={{ flex: '0 0 100px', display: 'flex', justifyContent: 'flex-end' }}>
-                    <button className="btn-g" style={{ padding: '5px 10px', fontSize: '11px' }} onClick={() => onManage(u)}><Edit2 size={10} /> Manage</button>
+                  <div style={{ flex: 1, fontFamily: 'var(--fm)', fontSize: '14px', fontWeight: 800, color: u.rev > 0 ? 'var(--green)' : 'var(--mu2)' }}>{u.rev > 0 ? '₹' + u.rev.toLocaleString() : '—'}</div>
+                  <div style={{ width: 100, display: 'flex', justifyContent: 'flex-end' }}>
+                    <button className="btn-g" style={{ padding: '8px 14px', borderRadius: 10 }} onClick={() => onManage(u)}><Settings size={14} /> Manage</button>
                   </div>
                 </div>
               );
@@ -766,73 +803,77 @@ function OrdersView({ orders, orderError, loadingOrders, fetchOrders, onMenuTogg
 
       <div className="topbar">
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <button className="tb-menu" onClick={onMenuToggle}><Menu size={18} /></button>
-          <div className="tb-title">Orders <span style={{ fontFamily: 'var(--fm)', fontSize: '13px', color: 'var(--mu)', fontWeight: 400 }}>({orders.length})</span></div>
+          <button className="tb-menu" onClick={onMenuToggle}><Menu size={20} /></button>
+          <div className="tb-title">Orders Management <span style={{ fontFamily: 'var(--fm)', fontSize: '13px', color: 'var(--mu2)', fontWeight: 700 }}>({orders.length})</span></div>
         </div>
-        <button className="btn-g" onClick={() => exportToCSV(orders, 'orders')}><Download size={11} /> Export CSV</button>
+        <button className="btn-g" onClick={() => exportToCSV(orders, 'orders')}><Download size={14} /> Export CSV</button>
       </div>
-      <div className="scroll"><div style={{ padding: '24px', maxWidth: 1200, margin: '0 auto' }}>
+      <div className="scroll"><div style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }}>
         
-        <div className="tbl-wrap">
-          <div className="tbl-ctrl">
-            <div className="srch"><Search size={13} color="var(--mu2)" /><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search Order ID or Email..." /></div>
-            <div style={{ display: 'flex', gap: '8px', marginLeft: 'auto' }}>
-              <button onClick={() => fetchOrders()} className="btn-g">
-                <RefreshCw size={12} className={loadingOrders ? 'spin' : ''} /> Refresh
+        <div className="tbl-wrap" style={{ borderRadius: 28 }}>
+          <div className="tbl-ctrl" style={{ padding: '24px' }}>
+            <div className="srch" style={{ maxWidth: 400 }}><Search size={16} color="var(--mu)" /><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by Order ID or Customer Email..." /></div>
+            <div style={{ display: 'flex', gap: '12px', marginLeft: 'auto' }}>
+              <button onClick={() => fetchOrders()} className="btn-g" style={{ borderRadius: 12 }}>
+                <RefreshCw size={14} className={loadingOrders ? 'spin' : ''} /> {loadingOrders ? 'Syncing...' : 'Sync Orders'}
               </button>
             </div>
           </div>
 
-          <style>{`
-            .spin { animation: spin 1s linear infinite; }
-            @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-          `}</style>
-
-          {/* Error Message */}
           {orderError && (
-            <div style={{ padding: '20px', margin: '0 16px 16px', background: '#FEF2F2', border: '1px solid #FEE2E2', borderRadius: '12px', color: '#B91C1C', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <AlertTriangle size={16} />
-              <div>
-                <p style={{ fontWeight: 700 }}>Database Sync Error</p>
-                <p style={{ fontSize: '11px', opacity: 0.8 }}>{orderError}</p>
+            <div style={{ margin: '0 24px 24px', padding: '16px 20px', background: '#FEF2F2', border: '1px solid #FEE2E2', borderRadius: '16px', color: '#B91C1C', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '12px' }} className="fi">
+              <AlertTriangle size={18} strokeWidth={2.5} />
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 800, marginBottom: 2 }}>Payment Gateway Sync Error</div>
+                <div style={{ fontSize: '12px', opacity: 0.8, fontWeight: 500 }}>{orderError}</div>
               </div>
             </div>
           )}
 
-          <div className="col-hd" style={{ alignItems: 'center' }}>
-            {[['Date', '1'], ['Order ID', '1.5'], ['Customer', '2'], ['Amount', '1'], ['Status', '1'], ['', '0 0 50px']].map(([h, f]) => (
-              <div key={h} style={{ flex: f, fontSize: '9.5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>{h}</div>
-            ))}
+          <div className="col-hd" style={{ padding: '16px 32px', background: '#fafafa' }}>
+            <div key="date" style={{ flex: 1, fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>Date</div>
+            <div key="id" style={{ flex: 1.5, fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>Order ID</div>
+            <div key="cust" style={{ flex: 2, fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>Customer</div>
+            <div key="amt" style={{ flex: 1, fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>Amount</div>
+            <div key="stat" style={{ flex: 1, fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>Status</div>
+            <div key="act" style={{ width: 50 }}></div>
           </div>
 
           {filtered.length === 0 
-            ? <div style={{ padding: '60px', textAlign: 'center', color: 'var(--mu)', fontSize: '13px' }}>No orders found</div>
+            ? <div style={{ padding: '100px 20px', textAlign: 'center' }}>
+                <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                  <ShoppingBag size={24} color="var(--mu2)" />
+                </div>
+                <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--ink2)' }}>No orders found</div>
+                <p style={{ fontSize: '13px', color: 'var(--mu)', marginTop: 4 }}>Check back later or sync with Razorpay</p>
+              </div>
             : filtered.map(o => (
-              <div key={o.id} className="urow">
-                <div style={{ flex: 1, fontSize: '12px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>
+              <div key={o.id} className="urow" style={{ padding: '20px 32px' }}>
+                <div style={{ flex: 1, fontSize: '13px', color: 'var(--mu2)', fontFamily: 'var(--fm)', fontWeight: 700 }}>
                   {new Date(o.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
                 </div>
-                <div style={{ flex: 1.5, fontSize: '12px', fontWeight: 600, color: 'var(--ink2)', fontFamily: 'var(--fm)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: 8 }}>{o.orderId}</div>
-                <div style={{ flex: 2 }}>
-                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)' }}>{o.billedName || o.userName || 'Unknown'}</div>
-                  <div style={{ fontSize: '11px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>{o.userEmail}</div>
+                <div style={{ flex: 1.5, fontSize: '12px', fontWeight: 800, color: 'var(--ink2)', fontFamily: 'var(--fm)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: 12 }}>{o.orderId}</div>
+                <div style={{ flex: 2, display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div className="av" style={{ background: 'var(--bg)', color: 'var(--mu)', width: 32, height: 32, borderRadius: 10, fontSize: '11px', border: '1px solid var(--b)' }}>{o.billedName?.[0] || 'U'}</div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.billedName || o.userName || 'Customer'}</div>
+                    <div style={{ fontSize: '11.5px', color: 'var(--mu)', fontFamily: 'var(--fm)', fontWeight: 600 }}>{o.userEmail}</div>
+                  </div>
                 </div>
-                <div style={{ flex: 1, fontFamily: 'var(--fm)', fontSize: '13px', fontWeight: 700 }}>₹{o.amount}</div>
+                <div style={{ flex: 1, fontFamily: 'var(--fm)', fontSize: '14px', fontWeight: 900, color: 'var(--ink)' }}>₹{o.amount.toLocaleString()}</div>
                 <div style={{ flex: 1 }}>
                   <span className={`sp ${o.status === 'completed' || o.status === 'success' ? 'sp-a' : o.status === 'failed' ? 'sp-b' : o.status === 'cancelled' ? 'sp-c' : 'sp-p'}`}>
-                    <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'currentColor', display: 'inline-block' }} />
                     {o.status.charAt(0).toUpperCase() + o.status.slice(1)}
                   </span>
                 </div>
-                <div style={{ flex: '0 0 50px', display: 'flex', justifyContent: 'flex-end' }}>
+                <div style={{ width: 50, display: 'flex', justifyContent: 'flex-end' }}>
                   <button
                     title="View order details"
                     onClick={() => setSelOrder(o)}
-                    style={{ background: 'none', border: '1px solid var(--b)', borderRadius: 7, padding: '5px 7px', cursor: 'pointer', color: 'var(--mu)', display: 'flex', alignItems: 'center', transition: 'all .12s' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(51,77,255,.06)'; e.currentTarget.style.borderColor = 'var(--acc)'; e.currentTarget.style.color = 'var(--acc)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.borderColor = 'var(--b)'; e.currentTarget.style.color = 'var(--mu)'; }}
+                    className="btn-g"
+                    style={{ padding: '8px', borderRadius: 10 }}
                   >
-                    <Eye size={13} />
+                    <Eye size={14} />
                   </button>
                 </div>
               </div>
@@ -854,47 +895,64 @@ function PricingView({ pricing, onSave, onMenuToggle }) {
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <div className="topbar">
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <button className="tb-menu" onClick={onMenuToggle}><Menu size={18} /></button>
-          <div className="tb-title">Platform Pricing</div>
+          <button className="tb-menu" onClick={onMenuToggle}><Menu size={20} /></button>
+          <div className="tb-title">Subscription Pricing</div>
         </div>
         <button 
           className="btn-p sm acc" 
+          style={{ borderRadius: 12, padding: '10px 20px' }}
           onClick={async () => { setLoad(true); await onSave(p); setLoad(false); }}
           disabled={load}
         >
-          {load ? <RefreshCw size={12} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={12} />}
-          Save Pricing
+          {load ? <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={14} />}
+          Update Pricing
         </button>
       </div>
-      <div className="scroll"><div style={{ padding: '24px', maxWidth: 640, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div className="scroll"><div style={{ padding: '40px 32px', maxWidth: 800, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 32 }}>
         
-        <div style={{ background: 'var(--s)', border: '1px solid var(--b)', borderRadius: 12, padding: '24px' }}>
-          <div className="ilbl" style={{ marginBottom: 12 }}><DollarSign size={10} /> Subscription Rates (₹)</div>
+        <div className="fi" style={{ background: '#fff', border: '1px solid var(--b)', borderRadius: 24, padding: '32px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+          <div className="ilbl" style={{ marginBottom: 16, color: 'var(--acc)' }}><DollarSign size={14} /> Currency: Indian Rupee (₹)</div>
+          <h3 style={{ fontFamily: 'var(--fh)', fontSize: '20px', fontWeight: 900, marginBottom: 8, letterSpacing: '-0.5px' }}>Platform Billing Rates</h3>
+          <p style={{ color: 'var(--mu)', fontSize: '14px', marginBottom: 32, fontWeight: 500 }}>Adjust the subscription costs that users will see in their dashboard upgrade modals.</p>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 24 }}>
             <div>
-              <div className="ilbl">Monthly Price</div>
-              <input className="inp" type="number" value={p.monthly} onChange={e => setP({ ...p, monthly: parseInt(e.target.value) })} />
+              <div className="ilbl">Monthly Subscription</div>
+              <div className="inp-wrap" style={{ marginBottom: 0 }}>
+                <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', fontWeight: 900, color: 'var(--mu2)', fontSize: '14px' }}>₹</span>
+                <input className="inp" style={{ paddingLeft: 32, fontSize: '15px', fontWeight: 800 }} type="number" value={p.monthly} onChange={e => setP({ ...p, monthly: parseInt(e.target.value) })} />
+              </div>
             </div>
             <div>
-              <div className="ilbl">Yearly Price (per month)</div>
-              <input className="inp" type="number" value={p.yearly} onChange={e => setP({ ...p, yearly: parseInt(e.target.value) })} />
+              <div className="ilbl">Yearly Sub (Effective Monthly)</div>
+              <div className="inp-wrap" style={{ marginBottom: 0 }}>
+                <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', fontWeight: 900, color: 'var(--mu2)', fontSize: '14px' }}>₹</span>
+                <input className="inp" style={{ paddingLeft: 32, fontSize: '15px', fontWeight: 800 }} type="number" value={p.yearly} onChange={e => setP({ ...p, yearly: parseInt(e.target.value) })} />
+              </div>
             </div>
           </div>
           
-          <div>
-            <div className="ilbl">Total Yearly Payment</div>
-            <input className="inp" type="number" value={p.totalYearly} onChange={e => setP({ ...p, totalYearly: parseInt(e.target.value) })} />
-            <p style={{ fontSize: '11px', color: 'var(--mu)', marginTop: 6, fontFamily: 'var(--fm)' }}>
-              Current Savings Label: ₹{(p.monthly * 12 - p.totalYearly).toLocaleString()}
-            </p>
+          <div style={{ padding: '24px', background: 'var(--bg)', borderRadius: 16, border: '1px solid var(--b)' }}>
+            <div className="ilbl">Total Annual Upfront Payment</div>
+            <div className="inp-wrap" style={{ marginBottom: 12 }}>
+              <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', fontWeight: 900, color: 'var(--mu2)', fontSize: '14px' }}>₹</span>
+              <input className="inp" style={{ paddingLeft: 32, fontSize: '18px', fontWeight: 900, color: 'var(--acc)' }} type="number" value={p.totalYearly} onChange={e => setP({ ...p, totalYearly: parseInt(e.target.value) })} />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px', background: 'rgba(16,185,129,0.06)', borderRadius: 10, border: '1px solid rgba(16,185,129,0.1)' }}>
+              <Zap size={14} color="var(--green)" fill="var(--green)" />
+              <span style={{ fontSize: '12px', color: 'var(--green)', fontWeight: 800, fontFamily: 'var(--fm)', textTransform: 'uppercase' }}>
+                User Savings: ₹{(p.monthly * 12 - p.totalYearly).toLocaleString()} / year
+              </span>
+            </div>
           </div>
         </div>
 
-        <div style={{ padding: '16px', background: 'rgba(29,78,216,.05)', border: '1px solid rgba(29,78,216,.15)', borderRadius: 11, display: 'flex', gap: 10 }}>
-          <TrendingUp size={13} color="var(--blue)" strokeWidth={2} style={{ flexShrink: 0, marginTop: 1 }} />
-          <p style={{ fontSize: '12px', color: 'var(--blue)', lineHeight: 1.6, fontWeight: 500 }}>
-            Updates here will be reflected immediately in the user dashboard upgrade modal.
+        <div style={{ padding: '20px 24px', background: 'rgba(59,130,246,0.04)', border: '1px solid rgba(59,130,246,0.1)', borderRadius: 16, display: 'flex', gap: 14 }} className="fi">
+          <div style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(59,130,246,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <TrendingUp size={16} color="var(--blue)" strokeWidth={2.5} />
+          </div>
+          <p style={{ fontSize: '13px', color: 'var(--blue)', lineHeight: 1.6, fontWeight: 600 }}>
+            Pricing changes are applied globally and take effect for all new subscription attempts. Existing active subscriptions are not affected.
           </p>
         </div>
 
@@ -914,14 +972,12 @@ function AdminLogin({ onLogin }) {
   const submit = async e => {
     e.preventDefault(); setLoad(true); setErr('');
     setTimeout(() => {
-      // Strictly enforced single-admin credentials
       const targetEmail = 'parthosamadder00@gmail.com';
       const targetPw = '0000';
-
       if (email.toLowerCase() === targetEmail && pw === targetPw) {
         onLogin();
       } else {
-        setErr("Invalid credentials. Access denied for this identity.");
+        setErr("Invalid credentials. Access denied.");
       }
       setLoad(false);
     }, 400);
@@ -939,49 +995,24 @@ function AdminLogin({ onLogin }) {
             <Zap size={24} color="#fff" fill="#fff" />
           </div>
           <h1 style={{ fontFamily: 'var(--fh)', fontWeight: 800, fontSize: '26px', color: 'var(--ink)', letterSpacing: '-0.8px', marginBottom: 8 }}>Admin Access</h1>
-          <p style={{ fontSize: '14px', color: 'var(--mu)', lineHeight: 1.5 }}>This area is strictly reserved for <strong>Partho Samadder</strong>. Unauthorized access is prohibited.</p>
+          <p style={{ fontSize: '14px', color: 'var(--mu)', lineHeight: 1.5 }}>This area is strictly reserved for <strong>Partho Samadder</strong>.</p>
         </div>
 
         <form onSubmit={submit}>
           <div className="inp-wrap">
             <Mail className="inp-icon" size={16} />
-            <input 
-              className="inp" 
-              type="email" 
-              value={email} 
-              onChange={e => setEmail(e.target.value)} 
-              placeholder="Admin Email" 
-              autoFocus 
-            />
+            <input className="inp" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Admin Email" autoFocus />
           </div>
-          
           <div className="inp-wrap" style={{ marginBottom: 24 }}>
             <Lock className="inp-icon" size={16} />
-            <input 
-              className="inp" 
-              type={show ? 'text' : 'password'} 
-              value={pw} 
-              onChange={e => setPw(e.target.value)} 
-              placeholder="Access Key" 
-              style={{ letterSpacing: pw && !show ? '4px' : 'normal' }}
-            />
+            <input className="inp" type={show ? 'text' : 'password'} value={pw} onChange={e => setPw(e.target.value)} placeholder="Access Key" style={{ letterSpacing: pw && !show ? '4px' : 'normal' }} />
             <button type="button" className="eye-btn" onClick={() => setShow(p => !p)}>
               {show ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
-
           {err && <div className="err-box"><AlertTriangle size={14} style={{flexShrink:0}} /> {err}</div>}
-          
-          <button type="submit" className="btn-p" style={{ 
-            width: '100%', padding: '14px', justifyContent: 'center', 
-            borderRadius: 12, fontSize: '15px', background: 'var(--acc)',
-            boxShadow: '0 8px 20px rgba(51,77,255,0.15)'
-          }} disabled={load || !email || !pw}>
-            {load ? (
-              <><RefreshCw size={16} style={{ animation: 'spin 1s linear infinite', marginRight: 8 }} /> Authenticating...</>
-            ) : (
-              'Enter Dashboard'
-            )}
+          <button type="submit" className="btn-p" style={{ width: '100%', padding: '14px', justifyContent: 'center', borderRadius: 12, fontSize: '15px', background: 'var(--acc)', boxShadow: '0 8px 20px rgba(51,77,255,0.15)' }} disabled={load || !email || !pw}>
+            {load ? <RefreshCw size={16} style={{ animation: 'spin 1s linear infinite' }} /> : 'Enter Dashboard'}
           </button>
         </form>
       </div>
@@ -991,34 +1022,18 @@ function AdminLogin({ onLogin }) {
 
 /* ─────────── ADMIN SETTINGS ─────────── */
 function AdminSettings({ announcement, onSave, onMenuToggle }) {
-  const [config, setConfig] = useState({
-    maintenance: false,
-    signups: true,
-    notifications: true,
-  });
+  const [config, setConfig] = useState({ maintenance: false, signups: true, notifications: true });
   const [ann, setAnn] = useState(announcement || { enabled: false, text: '', type: 'update' });
   const [isSaving, setIsSaving] = useState(false);
-
-  useEffect(() => {
-    if (announcement) {
-      setAnn(announcement);
-    }
-  }, [announcement]);
   const [showSaved, setShowSaved] = useState(false);
   const [error, setError] = useState(null);
 
+  useEffect(() => { if (announcement) setAnn(announcement); }, [announcement]);
+
   const onLocalSave = async () => {
-    setIsSaving(true);
-    setError(null);
-    try {
-      await onSave(ann, config);
-      setShowSaved(true);
-      setTimeout(() => setShowSaved(false), 3000);
-    } catch (e) {
-      console.error("Save failed:", e);
-      setError("Failed to save settings. Please try again.");
-      setTimeout(() => setError(null), 5000);
-    }
+    setIsSaving(true); setError(null);
+    try { await onSave(ann, config); setShowSaved(true); setTimeout(() => setShowSaved(false), 3000); }
+    catch (e) { setError("Failed to save settings."); }
     setIsSaving(false);
   };
 
@@ -1026,167 +1041,154 @@ function AdminSettings({ announcement, onSave, onMenuToggle }) {
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <div className="topbar">
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <button className="tb-menu" onClick={onMenuToggle}><Menu size={18} /></button>
-          <div className="tb-title">System Settings</div>
+          <button className="tb-menu" onClick={onMenuToggle}><Menu size={20} /></button>
+          <div className="tb-title">Global Configuration</div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {error && <div style={{ color: 'var(--red)', fontSize: '12px', fontWeight: 600 }} className="fi">⚠ {error}</div>}
-          {showSaved && <div style={{ color: 'var(--green)', fontSize: '12px', fontWeight: 600 }} className="fi">✓ Settings Saved</div>}
-          <button className="btn-p sm acc" onClick={onLocalSave} disabled={isSaving}>
-            {isSaving ? <RefreshCw size={12} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={12} />}
-            {isSaving ? ' Saving...' : ' Save Settings'}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          {error && <div style={{ color: 'var(--red)', fontSize: '13px', fontWeight: 800 }}>⚠ {error}</div>}
+          {showSaved && <div style={{ color: 'var(--green)', fontSize: '13px', fontWeight: 800 }}>✓ Changes Applied</div>}
+          <button className="btn-p sm acc" style={{ borderRadius: 12, padding: '10px 20px' }} onClick={onLocalSave} disabled={isSaving}>
+            {isSaving ? <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={14} />}
+            {isSaving ? ' Applying...' : ' Save All Changes'}
           </button>
         </div>
       </div>
-
-
       <div className="scroll">
-        <div style={{ padding: '24px', maxWidth: 800, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
-          
-          <div style={{ background: 'var(--s)', border: '1px solid var(--b)', borderRadius: 12, padding: '24px' }} className="fi">
-            <h3 style={{ fontFamily: 'var(--fh)', fontSize: '18px', marginBottom: 6 }}>Announcement Bar</h3>
-            <p style={{ color: 'var(--mu)', fontSize: '13px', marginBottom: 20 }}>Display a message to all users at the top of their dashboard.</p>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--ink)' }}>Enable Bar</div>
-                <div 
-                  onClick={() => setAnn({ ...ann, enabled: !ann.enabled })}
-                  style={{ 
-                    width: 44, height: 22, borderRadius: 22, background: ann.enabled ? 'var(--ink)' : 'var(--b2)', 
-                    position: 'relative', cursor: 'pointer', transition: 'background .2s ease'
-                  }}
-                >
-                  <div style={{ 
-                    width: 18, height: 18, borderRadius: '50%', background: '#fff', 
-                    position: 'absolute', top: 2, left: ann.enabled ? 24 : 2, transition: 'left .2s cubic-bezier(0.4, 0, 0.2, 1)' 
-                  }} />
-                </div>
-              </div>
-              
+        <div style={{ padding: '40px 32px', maxWidth: 900, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <div style={{ background: '#fff', border: '1px solid var(--b)', borderRadius: 24, padding: '32px' }} className="fi">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+               <div>
+                  <h3 style={{ fontFamily: 'var(--fh)', fontSize: '20px', fontWeight: 900, marginBottom: 6 }}>Announcement System</h3>
+                  <p style={{ color: 'var(--mu)', fontSize: '14px' }}>Broadcast messages to users instantly.</p>
+               </div>
+               <div onClick={() => setAnn({ ...ann, enabled: !ann.enabled })} style={{ width: 50, height: 26, borderRadius: 22, background: ann.enabled ? 'var(--acc)' : 'var(--b2)', position: 'relative', cursor: 'pointer', transition: 'all .3s' }}>
+                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#fff', position: 'absolute', top: 3, left: ann.enabled ? 27 : 3, transition: 'all .3s' }} />
+               </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               <div>
-                <div className="ilbl">Announcement Text</div>
-                <textarea 
-                  className="inp" 
-                  style={{ minHeight: 100 }}
-                  value={ann.text} 
-                  onChange={e => setAnn({ ...ann, text: e.target.value })}
-                  placeholder="e.g. Comment reply automations are stable again..."
-                />
+                <div className="ilbl">Broadcast Message</div>
+                <textarea className="inp" style={{ minHeight: 120 }} value={ann.text} onChange={e => setAnn({ ...ann, text: e.target.value })} placeholder="e.g. New features added..." />
               </div>
-
-              <div style={{ display: 'flex', gap: 10 }}>
-                 {['update', 'warning', 'info'].map(t => (
-                   <button key={t} className={`tab ${ann.type === t ? 'on' : ''}`} onClick={() => setAnn({...ann, type: t})}>
-                     {t.toUpperCase()}
-                   </button>
-                 ))}
+              <div>
+                <div className="ilbl">Alert Visual Style</div>
+                <div className="tabs" style={{ padding: 6 }}>
+                   {['update', 'warning', 'info'].map(t => (
+                     <button key={t} className={`tab ${ann.type === t ? 'on' : ''}`} style={{ flex: 1, textTransform: 'capitalize', fontWeight: 800 }} onClick={() => setAnn({...ann, type: t})}>{t}</button>
+                   ))}
+                </div>
               </div>
             </div>
           </div>
-
-          <div style={{ background: 'var(--s)', border: '1px solid var(--b)', borderRadius: 12, padding: '24px' }} className="fi">
-            <h3 style={{ fontFamily: 'var(--fh)', fontSize: '18px', marginBottom: 6 }}>General Configuration</h3>
-            <p style={{ color: 'var(--mu)', fontSize: '13px', marginBottom: 20 }}>Manage global platform behavior and visibility.</p>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ background: '#fff', border: '1px solid var(--b)', borderRadius: 24, padding: '32px' }} className="fi">
+            <h3 style={{ fontFamily: 'var(--fh)', fontSize: '20px', fontWeight: 900, marginBottom: 24 }}>System Controls</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {[
-                { id: 'maintenance', l: 'Maintenance Mode', d: 'Temporarily disable the application for all users.', val: config.maintenance },
-                { id: 'signups', l: 'Open Signups', d: 'Allow new users to register for accounts.', val: config.signups },
-                { id: 'notifications', l: 'System Notifications', d: 'Send automated emails for system alerts.', val: config.notifications },
+                { id: 'maintenance', l: 'Production Maintenance', d: 'Redirect users to maintenance page.', val: config.maintenance, icon: Power },
+                { id: 'signups', l: 'Public Registrations', d: 'Allow new accounts.', val: config.signups, icon: UserPlus },
+                { id: 'notifications', l: 'Email Automation', d: 'Send transactional emails.', val: config.notifications, icon: Bell },
               ].map(item => (
-                <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px', background: 'var(--bg)', border: '1px solid var(--b)', borderRadius: 10 }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--ink)' }}>{item.l}</div>
-                    <div style={{ fontSize: '12px', color: 'var(--mu)', marginTop: 2 }}>{item.d}</div>
+                <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', background: 'var(--bg)', border: '1px solid var(--b)', borderRadius: 16 }}>
+                  <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 12, background: '#fff', border: '1px solid var(--b)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><item.icon size={18} /></div>
+                    <div>
+                      <div style={{ fontSize: '15px', fontWeight: 800 }}>{item.l}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--mu)' }}>{item.d}</div>
+                    </div>
                   </div>
-                  <div 
-                    onClick={() => setConfig({ ...config, [item.id]: !item.val })}
-                    style={{ 
-                      width: 44, height: 22, borderRadius: 22, background: item.val ? 'var(--ink)' : 'var(--b2)', 
-                      position: 'relative', cursor: 'pointer', transition: 'background .2s ease'
-                    }}
-                  >
-                    <div style={{ 
-                      width: 18, height: 18, borderRadius: '50%', background: '#fff', 
-                      position: 'absolute', top: 2, left: item.val ? 24 : 2, transition: 'left .2s cubic-bezier(0.4, 0, 0.2, 1)' 
-                    }} />
+                  <div onClick={() => setConfig({ ...config, [item.id]: !item.val })} style={{ width: 44, height: 24, borderRadius: 22, background: item.val ? 'var(--acc)' : 'var(--b2)', position: 'relative', cursor: 'pointer', transition: 'all .3s' }}>
+                    <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#fff', position: 'absolute', top: 3, left: item.val ? 23 : 3, transition: 'all .3s' }} />
                   </div>
                 </div>
               ))}
             </div>
           </div>
-
-          <div style={{ padding: '16px', background: '#FEF2F2', border: '1px solid rgba(185,28,28,.15)', borderRadius: 12, display: 'flex', gap: 12 }} className="fi">
-            <AlertTriangle size={18} color="var(--red)" style={{ flexShrink: 0 }} />
-            <div>
-              <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--red)' }}>Danger Zone</div>
-              <p style={{ fontSize: '12px', color: 'var(--red)', opacity: 0.8, marginTop: 4, lineHeight: 1.5 }}>
-                Changing these settings can impact production users immediately. Please verify all changes before saving.
-              </p>
-            </div>
-          </div>
-
         </div>
       </div>
     </div>
   );
 }
 
-/* ─────────── DELETE CONFIRM MODAL ─────────── */
+/* ─────────── DELETE MODAL ─────────── */
 function DeleteConfirmModal({ user, onClose, onConfirm }) {
   const [pw, setPw] = useState('');
   const [err, setErr] = useState(false);
-
-  const handleConfirm = () => {
-    if (pw === '0000') {
-      onConfirm();
-    } else {
-      setErr(true);
-      setTimeout(() => setErr(false), 2000);
-    }
-  };
-
+  const handleConfirm = () => { pw === '0000' ? onConfirm() : (setErr(true), setTimeout(() => setErr(false), 2000)); };
   return (
     <div className="modal-bg" onClick={onClose} style={{ backdropFilter: 'blur(4px)', background: 'rgba(0,0,0,0.3)' }}>
       <div className="modal fi" onClick={e => e.stopPropagation()} style={{ maxWidth: 380, borderRadius: 24, padding: 8 }}>
         <div style={{ padding: '32px 24px 24px', textAlign: 'center' }}>
           <div style={{ width: 54, height: 54, borderRadius: 18, background: '#FFF1F2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#E11D48' }}>
-            <Trash2 size={24} strokeWidth={2.5} />
+            <Trash2 size={24} />
           </div>
-          <h3 style={{ fontFamily: 'var(--fh)', fontSize: '20px', fontWeight: 800, color: 'var(--ink)', marginBottom: 8, letterSpacing: '-0.5px' }}>Delete User?</h3>
-          <p style={{ fontSize: '13.5px', color: 'var(--mu)', lineHeight: 1.6, marginBottom: 28 }}>
-            Permanently wipe <strong>{user.name || user.email}</strong> and all associated data. This action is irreversible.
-          </p>
-          
+          <h3 style={{ fontFamily: 'var(--fh)', fontSize: '20px', fontWeight: 800, marginBottom: 8 }}>Delete User?</h3>
+          <p style={{ fontSize: '13.5px', color: 'var(--mu)', marginBottom: 28 }}>Permanently wipe <strong>{user.name || user.email}</strong>. This is irreversible.</p>
           <div style={{ textAlign: 'left' }}>
-            <div className="ilbl" style={{ fontSize: '10px', color: 'var(--mu)', marginBottom: 8 }}>Verify Admin Access Key</div>
-            <input 
-              className="inp" 
-              type="password" 
-              value={pw} 
-              onChange={e => {setPw(e.target.value); setErr(false);}} 
-              placeholder="••••" 
-              style={{ 
-                textAlign: 'center', fontSize: '20px', letterSpacing: '8px', height: 54, borderRadius: 14,
-                borderColor: err ? 'var(--red)' : 'var(--b2)',
-                background: err ? '#FFF5F5' : 'var(--bg)',
-                boxShadow: err ? '0 0 0 4px rgba(239,68,68,0.1)' : 'none'
-              }}
-              autoFocus
-              onKeyDown={e => e.key === 'Enter' && handleConfirm()}
-            />
-            {err && <div style={{ fontSize: '11px', color: 'var(--red)', marginTop: 8, fontWeight: 700, textAlign: 'center' }} className="fi">Invalid access key. Try again.</div>}
+            <div className="ilbl">Verify Admin Access Key</div>
+            <input className="inp" type="password" value={pw} onChange={e => setPw(e.target.value)} placeholder="••••" style={{ textAlign: 'center', fontSize: '20px', letterSpacing: '8px', height: 54, borderRadius: 14, borderColor: err ? 'var(--red)' : 'var(--b2)' }} autoFocus />
           </div>
         </div>
-        
         <div style={{ display: 'flex', gap: 10, padding: '0 16px 16px' }}>
-          <button className="btn-g" style={{ flex: 1, padding: '14px', borderRadius: 14, fontWeight: 700, fontSize: '13.5px' }} onClick={onClose}>Cancel</button>
-          <button className="btn-p" style={{ flex: 1, padding: '14px', borderRadius: 14, fontWeight: 700, fontSize: '13.5px', background: '#E11D48', border: 'none', color: '#fff', boxShadow: '0 4px 12px rgba(225,29,72,0.2)' }} onClick={handleConfirm}>
-            Confirm Delete
-          </button>
+          <button className="btn-g" style={{ flex: 1, padding: '14px' }} onClick={onClose}>Cancel</button>
+          <button className="btn-p" style={{ flex: 1, padding: '14px', background: '#E11D48' }} onClick={handleConfirm}>Confirm Delete</button>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ─────────── REGISTRATIONS LIST ─────────── */
+function RegistrationsList({ users, onDelete, onMenuToggle }) {
+  const [search, setSearch] = useState('');
+  const filtered = users.filter(u => u.email.toLowerCase().includes(search.toLowerCase()) || (u.name && u.name.toLowerCase().includes(search.toLowerCase())));
+  return (
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div className="topbar">
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <button className="tb-menu" onClick={onMenuToggle}><Menu size={20} /></button>
+          <div className="tb-title">Registrations <span style={{ fontFamily: 'var(--fm)', fontSize: '13px', color: 'var(--mu2)', fontWeight: 700 }}>({users.length})</span></div>
+        </div>
+      </div>
+      <div className="scroll"><div style={{ padding: '32px', maxWidth: 1100, margin: '0 auto' }}>
+        <div className="tbl-wrap" style={{ borderRadius: 28 }}>
+          <div className="tbl-ctrl" style={{ padding: '24px' }}>
+            <div className="srch" style={{ maxWidth: 400 }}><Search size={16} color="var(--mu)" /><input placeholder="Search registrations..." value={search} onChange={e => setSearch(e.target.value)} /></div>
+          </div>
+          <div className="col-hd" style={{ padding: '16px 32px', background: '#fafafa' }}>
+            <div style={{ width: 50, fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', fontFamily: 'var(--fm)', color: 'var(--mu)' }}>#</div>
+            <div style={{ flex: 2.5, fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', fontFamily: 'var(--fm)', color: 'var(--mu)' }}>User</div>
+            <div style={{ flex: 1.5, fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', fontFamily: 'var(--fm)', color: 'var(--mu)' }}>Joined</div>
+            <div style={{ width: 120, fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', fontFamily: 'var(--fm)', color: 'var(--mu)' }}>Status</div>
+            <div style={{ width: 50 }}></div>
+          </div>
+          {filtered.length === 0 ? (
+            <div style={{ padding: '80px', textAlign: 'center', color: 'var(--mu)' }}>No matching registrations</div>
+          ) : (
+            filtered.map((u, i) => (
+              <div key={u.id} className="urow" style={{ padding: '18px 32px' }}>
+                <div style={{ width: 50, fontSize: '13px', color: 'var(--mu2)', fontFamily: 'var(--fm)', fontWeight: 700 }}>{String(i + 1).padStart(2, '0')}</div>
+                <div style={{ flex: 2.5, display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <div className="av" style={{ background: avCol(u.name || u.email), width: 42, height: 42, borderRadius: 14 }}>{u.name?.[0] || 'U'}</div>
+                  <div>
+                    <div style={{ fontSize: '14.5px', fontWeight: 800, color: 'var(--ink)' }}>{u.name || 'New User'}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>{u.email}</div>
+                  </div>
+                </div>
+                <div style={{ flex: 1.5 }}>
+                  <div style={{ fontSize: '13.5px', fontWeight: 700 }}>{u.joined || 'Recent'}</div>
+                  <div style={{ fontSize: '10px', color: 'var(--mu2)', fontWeight: 800, textTransform: 'uppercase', marginTop: 3 }}>Direct Signup</div>
+                </div>
+                <div style={{ width: 120 }}><div className="sp sp-a">Verified</div></div>
+                <div style={{ width: 50, display: 'flex', justifyContent: 'flex-end' }}>
+                  <button className="btn-red" style={{ padding: '8px', background: 'transparent', border: '1px solid var(--b)', borderRadius: 10 }} onClick={() => onDelete(u)} title="Remove Registration">
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div></div>
     </div>
   );
 }
@@ -1194,37 +1196,23 @@ function DeleteConfirmModal({ user, onClose, onConfirm }) {
 /* ─────────── ROOT ─────────── */
 export default function AdminApp() {
   const [authed, setAuthed] = useState(() => {
-    // Check if we have an active admin session in this browser window
     if (typeof window !== 'undefined') {
       const isAuthed = sessionStorage.getItem('admin_authed') === 'true';
       const lastActive = sessionStorage.getItem('admin_last_active');
-      
-      if (isAuthed && lastActive) {
-        // If more than 1 minute (60,000ms) has passed since last activity, require re-auth
-        const diff = Date.now() - parseInt(lastActive);
-        if (diff > 60000) {
-          sessionStorage.removeItem('admin_authed');
-          return false;
-        }
-      }
-      return isAuthed;
+      if (isAuthed && lastActive && (Date.now() - parseInt(lastActive) < 600000)) return true;
+      sessionStorage.removeItem('admin_authed');
     }
     return false;
   });
 
-  // Keep session alive while on page
   useEffect(() => {
     if (authed) {
       sessionStorage.setItem('admin_last_active', Date.now().toString());
-      const interval = setInterval(() => {
-        sessionStorage.setItem('admin_last_active', Date.now().toString());
-      }, 10000); // Update every 10s
-      return () => {
-        clearInterval(interval);
-        sessionStorage.setItem('admin_last_active', Date.now().toString());
-      };
+      const interval = setInterval(() => sessionStorage.setItem('admin_last_active', Date.now().toString()), 10000);
+      return () => clearInterval(interval);
     }
   }, [authed]);
+
   const [view, setView] = useState('overview');
   const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -1235,218 +1223,100 @@ export default function AdminApp() {
   const [totalReg, setTotalReg] = useState(0);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
-
-
   const [pricing, setPricing] = useState({ monthly: 499, yearly: 399, totalYearly: 4788 });
   const [announcement, setAnnouncement] = useState({ enabled: false, text: '', type: 'update' });
 
-
-  const { data: session, status } = useSession();
-
-  useEffect(() => {
-    // Admin access is now completely independent of Google login status.
-    // We only rely on the 'authed' state which is set via the password form.
-    if (authed) {
-      fetchUsers();
-      fetchPricing();
-      fetchOrders();
-    }
-  }, [authed]);
+  useEffect(() => { if (authed) { fetchUsers(); fetchPricing(); fetchOrders(); } }, [authed]);
 
   const fetchPricing = async () => {
     try {
-      const res = await fetch('/api/settings?global=true', {
-        headers: { 'x-admin-auth': '0000' }
-      });
-      if (!res.ok) return;
-      const text = await res.text();
-      if (!text) return;
-      const data = JSON.parse(text);
-      if (data.settings?.pricing) setPricing(data.settings.pricing);
-      if (data.settings?.announcement) setAnnouncement(data.settings.announcement);
-
-    } catch (e) {
-      console.error("Failed to fetch pricing:", e);
-    }
+      const res = await fetch('/api/settings?global=true', { headers: { 'x-admin-auth': '0000' } });
+      if (res.ok) { 
+        const data = await res.json(); 
+        if (data.settings?.pricing) setPricing(data.settings.pricing); 
+        if (data.settings?.announcement) setAnnouncement(data.settings.announcement); 
+      }
+    } catch (e) {}
   };
 
   const fetchUsers = async () => {
     setLoadingUsers(true);
     try {
-      const res = await fetch('/api/profiles', {
-        headers: { 'x-admin-auth': '0000' }
-      });
-      if (!res.ok) return;
-      const text = await res.text();
-      if (!text) return;
-      const { data, totalRegistered, error } = JSON.parse(text);
-      if (!error && data) setUsers(data);
-      if (totalRegistered !== undefined) setTotalReg(totalRegistered);
-
-    } catch (e) {
-      console.error("Failed to fetch users:", e);
-    }
+      const res = await fetch('/api/profiles', { headers: { 'x-admin-auth': '0000' } });
+      if (res.ok) { 
+        const { data, totalRegistered } = await res.json(); 
+        if (data) setUsers(data); 
+        if (totalRegistered !== undefined) setTotalReg(totalRegistered); 
+      }
+    } catch (e) {}
     setLoadingUsers(false);
   };
 
   const fetchOrders = async () => {
-    setLoadingOrders(true);
-    setOrderError(null);
+    setLoadingOrders(true); setOrderError(null);
     try {
-      const res = await fetch('/api/admin/orders', {
-        headers: { 'x-admin-auth': '0000' }
-      });
-      if (!res.ok) return;
-      const text = await res.text();
-      if (!text) return;
-      const { data, error } = JSON.parse(text);
-      if (error) {
-        setOrderError("API Error: " + error);
-      } else if (data) {
-        setOrders(data);
+      const res = await fetch('/api/admin/orders', { headers: { 'x-admin-auth': '0000' } });
+      if (res.ok) { 
+        const { data, error } = await res.json(); 
+        if (error) setOrderError(error); 
+        else if (data) setOrders(data); 
       }
-    } catch (e) {
-      console.error("Failed to fetch orders:", e);
-      setOrderError("Fetch Exception: " + e.message);
-    }
+    } catch (e) { setOrderError(e.message); }
     setLoadingOrders(false);
   };
 
   const NAV = [
-    { id: 'overview', icon: <Home size={16} strokeWidth={2} />, label: 'Overview' },
-    { id: 'users', icon: <Users size={16} strokeWidth={2} />, label: 'Users', count: users.length },
-    { id: 'registrations', icon: <UserPlus size={16} strokeWidth={2} />, label: 'Registrations', count: totalReg },
-    { id: 'orders', icon: <ShoppingBag size={16} strokeWidth={2} />, label: 'Orders', count: orders.length },
-
-    { id: 'pricing', icon: <Tag size={16} strokeWidth={2} />, label: 'Pricing' },
-    { id: 'settings', icon: <Settings size={16} strokeWidth={2} />, label: 'Settings' },
+    { id: 'overview', icon: <Home size={18} />, label: 'Overview' },
+    { id: 'users', icon: <Users size={18} />, label: 'Users', count: users.length },
+    { id: 'registrations', icon: <UserPlus size={18} />, label: 'Registrations', count: totalReg },
+    { id: 'orders', icon: <ShoppingBag size={18} />, label: 'Orders', count: orders.length },
+    { id: 'pricing', icon: <Tag size={18} />, label: 'Pricing' },
+    { id: 'settings', icon: <Settings size={18} />, label: 'Settings' },
   ];
 
   const handleSaveGlobal = async (p, a, c) => {
     try {
-      if (p) setPricing(p);
-      if (a) setAnnouncement(a);
-      
       const res = await fetch('/api/settings?global=true');
-      let currentSettings = {};
-      if (res.ok) {
-        const text = await res.text();
-        if (text) {
-          const data = JSON.parse(text);
-          currentSettings = data.settings || {};
-        }
-      }
-
-      const updatedSettings = {
-        ...currentSettings,
-        pricing: p || pricing,
-        announcement: a || announcement,
-        config: c || currentSettings.config || { maintenance: false, signups: true, notifications: true }
-      };
-
-      const saveRes = await fetch('/api/settings', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-admin-auth': '0000'
-        },
-        body: JSON.stringify({ settings: updatedSettings, global: true })
-      });
-      
-      if (!saveRes.ok) throw new Error("Server rejected the update");
-    } catch (e) {
-      console.error("Global save error:", e);
-      throw e;
-    }
+      let cur = res.ok ? (await res.json()).settings || {} : {};
+      const updated = { ...cur, pricing: p || pricing, announcement: a || announcement, config: c || cur.config || { maintenance: false, signups: true, notifications: true } };
+      await fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-auth': '0000' }, body: JSON.stringify({ settings: updated, global: true }) });
+      if (p) setPricing(p); if (a) setAnnouncement(a);
+    } catch (e) {}
   };
-
-
-
 
   const handleSave = async u => {
-    const oldUsers = [...users];
-    setUsers(p => p.map(x => x.id === u.id ? u : x));
-    setSelUser(null);
-    
+    const old = [...users]; setUsers(p => p.map(x => x.id === u.id ? u : x)); setSelUser(null);
     try {
-      const res = await fetch('/api/profiles', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-admin-auth': '0000'
-        },
-        body: JSON.stringify({
-          id: u.id,
-          userId: u.userId,
-          plan: u.plan,
-          status: u.status,
-          creditBonus: u.creditBonus
-        })
-      });
-      if (!res.ok) throw new Error("Failed to save");
-    } catch (e) {
-      console.error("Save failed:", e);
-      alert("Failed to save user data. Reverting changes.");
-      setUsers(oldUsers);
-    }
+      const res = await fetch('/api/profiles', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-auth': '0000' }, body: JSON.stringify(u) });
+      if (!res.ok) throw new Error();
+    } catch (e) { setUsers(old); alert("Save failed"); }
   };
 
-  const handleDeleteUser = async (u) => {
+  const handleDeleteUser = async u => {
     try {
-      const res = await fetch(`/api/profiles?userId=${u.userId || u.id.replace('p_', '')}`, {
-        method: 'DELETE',
-        headers: { 'x-admin-auth': '0000' }
-      });
-      if (!res.ok) throw new Error("Delete failed");
-      
-      setUsers(p => p.filter(x => x.id !== u.id));
-      setSelUser(null);
-      setDeleteTarget(null);
-    } catch (e) {
-      console.error("Delete error:", e);
-      alert("Failed to delete user: " + e.message);
-    }
+      const res = await fetch(`/api/profiles?userId=${u.userId || u.id.replace('p_', '')}`, { method: 'DELETE', headers: { 'x-admin-auth': '0000' } });
+      if (res.ok) { setUsers(p => p.filter(x => x.id !== u.id)); setSelUser(null); setDeleteTarget(null); }
+    } catch (e) { alert("Delete failed"); }
   };
 
-  const handleAdminLogin = () => {
-    setAuthed(true);
-    sessionStorage.setItem('admin_authed', 'true');
-    sessionStorage.setItem('admin_last_active', Date.now().toString());
-  };
-
-  const handleAdminLogout = () => {
-    sessionStorage.removeItem('admin_authed');
-    sessionStorage.removeItem('admin_last_active');
-    setAuthed(false);
-    // Optional: Also sign out of NextAuth to be safe
-    signOut({ callbackUrl: '/admin' });
-  };
-
-  if (!authed) return (
-    <div className="shell"><style>{CSS}</style><AdminLogin onLogin={handleAdminLogin} /></div>
-  );
+  if (!authed) return <div className="shell"><style>{CSS}</style><AdminLogin onLogin={() => { setAuthed(true); sessionStorage.setItem('admin_authed', 'true'); }} /></div>;
 
   return (
     <div className="shell">
       <style>{CSS}</style>
-
       {mobileMenu && <div className="shell-overlay" onClick={() => setMobileMenu(false)} />}
       {selUser && <UserModal user={selUser} onClose={() => setSelUser(null)} onSave={handleSave} onDelete={setDeleteTarget} />}
       {deleteTarget && <DeleteConfirmModal user={deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={() => handleDeleteUser(deleteTarget)} />}
-
       <aside className={`aside ${mobileMenu ? 'open' : ''}`}>
         <div className="sb-brand">
-          <div className="sb-mark"><Zap size={16} color="#fff" strokeWidth={2.5} /></div>
-          <div>
-            <div className="sb-name">DM Studio</div>
-            <div className="sb-badge">ADMIN</div>
-          </div>
+          <div className="sb-mark"><Zap size={20} color="#fff" fill="#fff" /></div>
+          <div><div className="sb-name">DM Studio</div><div className="sb-badge">ADMIN</div></div>
         </div>
         <div className="sb-admin">
-          <div className="sb-av-admin"><Shield size={14} color="#fff" /></div>
+          <div className="sb-av-admin"><Shield size={16} color="#fff" /></div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Partho Samadder</div>
-            <div style={{ fontSize: '11px', color: 'var(--mu)', marginTop: 2 }}>Parthosamadder00@gmail.com</div>
+            <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--ink)' }}>Partho Samadder</div>
+            <div style={{ fontSize: '11px', color: 'var(--mu)' }}>Platform Administrator</div>
           </div>
         </div>
         <div className="sb-section">Menu</div>
@@ -1457,10 +1327,9 @@ export default function AdminApp() {
           </div>
         ))}
         <div className="sb-foot">
-          <button className="sb-logout" onClick={handleAdminLogout}><LogOut size={14} /> Sign out</button>
+          <button className="sb-logout" onClick={() => { sessionStorage.removeItem('admin_authed'); setAuthed(false); }}><LogOut size={16} /> Sign out</button>
         </div>
       </aside>
-
       <div className="main">
         {view === 'overview' && <Overview users={users} totalReg={totalReg} orders={orders} onMenuToggle={() => setMobileMenu(true)} />}
         {view === 'users' && <UsersView users={users} onManage={setSelUser} onMenuToggle={() => setMobileMenu(true)} />}
@@ -1469,57 +1338,6 @@ export default function AdminApp() {
         {view === 'pricing' && <PricingView pricing={pricing} onSave={(p) => handleSaveGlobal(p, null, null)} onMenuToggle={() => setMobileMenu(true)} />}
         {view === 'settings' && <AdminSettings announcement={announcement} onSave={(a, c) => handleSaveGlobal(null, a, c)} onMenuToggle={() => setMobileMenu(true)} />}
       </div>
-
-
-    </div>
-  );
-}
-
-function RegistrationsList({ users, onDelete, onMenuToggle }) {
-  const [search, setSearch] = useState('');
-  const filtered = users.filter(u => u.email.toLowerCase().includes(search.toLowerCase()) || (u.name && u.name.toLowerCase().includes(search.toLowerCase())));
-  
-  return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      <div className="topbar">
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <button className="tb-menu" onClick={onMenuToggle}><Menu size={18} /></button>
-          <div className="tb-title">All Registrations <span style={{ fontFamily: 'var(--fm)', fontSize: '13px', color: 'var(--mu)', fontWeight: 400 }}>({users.length})</span></div>
-        </div>
-      </div>
-      <div className="scroll"><div style={{ padding: '24px', maxWidth: 1000, margin: '0 auto' }}>
-        <div className="tbl-wrap">
-          <div className="tbl-ctrl">
-            <div className="srch"><Search size={14} /><input placeholder="Search users..." value={search} onChange={e => setSearch(e.target.value)} /></div>
-          </div>
-          <div className="col-hd">
-            <div className="col-h" style={{ width: 40 }}>#</div>
-            <div className="col-h" style={{ flex: 2 }}>User</div>
-            <div className="col-h" style={{ flex: 1 }}>Joined</div>
-            <div className="col-h" style={{ width: 100 }}>Status</div>
-            <div className="col-h" style={{ width: 40 }}></div>
-          </div>
-          {filtered.map((u, i) => (
-            <div key={u.id} className="urow">
-              <div style={{ width: 40, fontSize: '12px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>{i + 1}</div>
-              <div style={{ flex: 2, display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div className="av" style={{ background: 'var(--ink3)' }}>{u.name?.[0] || 'U'}</div>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--ink)' }}>{u.name || 'Anonymous'}</div>
-                  <div style={{ fontSize: '11.5px', color: 'var(--mu)' }}>{u.email}</div>
-                </div>
-              </div>
-              <div style={{ flex: 1, fontSize: '12.5px', color: 'var(--ink3)' }}>{u.joined || 'Recent'}</div>
-              <div style={{ width: 100 }}><div className="sp sp-a">Active</div></div>
-              <div style={{ width: 40, display: 'flex', justifyContent: 'flex-end' }}>
-                <button className="btn-red" style={{ padding: '5px', borderRadius: '6px' }} onClick={() => onDelete(u)} title="Delete User">
-                  <Trash2 size={12} />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div></div>
     </div>
   );
 }
