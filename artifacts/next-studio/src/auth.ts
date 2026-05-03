@@ -69,6 +69,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (session.user && token?.sub) {
         session.user.id = token.sub;
+        
+        // Safety Check: Verify user still exists in database
+        // This prevents "Ghost Sessions" where a deleted user stays logged in due to active JWT
+        try {
+          const userExists = await db.query.users.findFirst({
+            where: eq(users.id, token.sub),
+            columns: { id: true }
+          });
+          
+          if (!userExists) {
+            return null as any; // Force sign out if user no longer exists
+          }
+        } catch (e) {
+          console.error("Session verification error:", e);
+        }
       }
       return session;
     },

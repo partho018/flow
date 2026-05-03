@@ -6,7 +6,7 @@ import {
   Eye, EyeOff, Lock, RefreshCw, UserPlus, Gift,
   Home, Plus, ChevronRight, X, CheckCircle, Ban, ArrowUpRight,
   ArrowDownRight, BarChart2, TrendingUp, Filter, Mail, UserSquare, Phone,
-  Download, Search, Edit2, CreditCard, Save, ShoppingBag, Tag, Menu
+  Download, Search, Edit2, CreditCard, Save, ShoppingBag, Tag, Menu, Trash2
 } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 
@@ -286,7 +286,7 @@ const exportToCSV = (data, type) => {
 };
 
 /* ─────────── USER MODAL ─────────── */
-function UserModal({ user, onClose, onSave }) {
+function UserModal({ user, onClose, onSave, onDelete }) {
   const [u, setU] = useState({ ...user });
   const [tab, setTab] = useState('overview');
   const [cr, setCr] = useState('');
@@ -314,7 +314,10 @@ function UserModal({ user, onClose, onSave }) {
               <div key={t} className={`tab ${tab === t.toLowerCase() ? 'on' : ''}`} onClick={() => setTab(t.toLowerCase())}>{t}</div>
             ))}
           </div>
-          <div style={{ marginLeft: 'auto' }}>
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
+            <button className="btn-red" onClick={() => onDelete(u)} title="Permanently delete user account and data">
+              <Trash2 size={11} /> Delete User
+            </button>
             {u.status !== 'banned'
               ? <button className="btn-red" onClick={() => setU(p => ({ ...p, status: 'banned' }))}><Ban size={11} /> Ban User</button>
               : <button className="btn-grn" onClick={() => setU(p => ({ ...p, status: 'active' }))}><CheckCircle size={11} /> Unban</button>
@@ -911,16 +914,17 @@ function AdminLogin({ onLogin }) {
   const submit = async e => {
     e.preventDefault(); setLoad(true); setErr('');
     setTimeout(() => {
+      // Strictly enforced single-admin credentials
       const targetEmail = 'parthosamadder00@gmail.com';
       const targetPw = '0000';
 
       if (email.toLowerCase() === targetEmail && pw === targetPw) {
         onLogin();
       } else {
-        setErr("Invalid credentials. Access denied.");
+        setErr("Invalid credentials. Access denied for this identity.");
       }
       setLoad(false);
-    }, 200);
+    }, 400);
   };
 
   return (
@@ -934,8 +938,8 @@ function AdminLogin({ onLogin }) {
           }}>
             <Zap size={24} color="#fff" fill="#fff" />
           </div>
-          <h1 style={{ fontFamily: 'var(--fh)', fontWeight: 800, fontSize: '26px', color: 'var(--ink)', letterSpacing: '-0.8px', marginBottom: 8 }}>Welcome Back</h1>
-          <p style={{ fontSize: '14px', color: 'var(--mu)', lineHeight: 1.5 }}>Authorized personnel only. Please sign in to access the DM Studio management console.</p>
+          <h1 style={{ fontFamily: 'var(--fh)', fontWeight: 800, fontSize: '26px', color: 'var(--ink)', letterSpacing: '-0.8px', marginBottom: 8 }}>Admin Access</h1>
+          <p style={{ fontSize: '14px', color: 'var(--mu)', lineHeight: 1.5 }}>This area is strictly reserved for <strong>Partho Samadder</strong>. Unauthorized access is prohibited.</p>
         </div>
 
         <form onSubmit={submit}>
@@ -1129,15 +1133,98 @@ function AdminSettings({ announcement, onSave, onMenuToggle }) {
   );
 }
 
+/* ─────────── DELETE CONFIRM MODAL ─────────── */
+function DeleteConfirmModal({ user, onClose, onConfirm }) {
+  const [pw, setPw] = useState('');
+  const [err, setErr] = useState(false);
+
+  const handleConfirm = () => {
+    if (pw === '0000') {
+      onConfirm();
+    } else {
+      setErr(true);
+      setTimeout(() => setErr(false), 2000);
+    }
+  };
+
+  return (
+    <div className="modal-bg" onClick={onClose} style={{ backdropFilter: 'blur(4px)', background: 'rgba(0,0,0,0.3)' }}>
+      <div className="modal fi" onClick={e => e.stopPropagation()} style={{ maxWidth: 380, borderRadius: 24, padding: 8 }}>
+        <div style={{ padding: '32px 24px 24px', textAlign: 'center' }}>
+          <div style={{ width: 54, height: 54, borderRadius: 18, background: '#FFF1F2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#E11D48' }}>
+            <Trash2 size={24} strokeWidth={2.5} />
+          </div>
+          <h3 style={{ fontFamily: 'var(--fh)', fontSize: '20px', fontWeight: 800, color: 'var(--ink)', marginBottom: 8, letterSpacing: '-0.5px' }}>Delete User?</h3>
+          <p style={{ fontSize: '13.5px', color: 'var(--mu)', lineHeight: 1.6, marginBottom: 28 }}>
+            Permanently wipe <strong>{user.name || user.email}</strong> and all associated data. This action is irreversible.
+          </p>
+          
+          <div style={{ textAlign: 'left' }}>
+            <div className="ilbl" style={{ fontSize: '10px', color: 'var(--mu)', marginBottom: 8 }}>Verify Admin Access Key</div>
+            <input 
+              className="inp" 
+              type="password" 
+              value={pw} 
+              onChange={e => {setPw(e.target.value); setErr(false);}} 
+              placeholder="••••" 
+              style={{ 
+                textAlign: 'center', fontSize: '20px', letterSpacing: '8px', height: 54, borderRadius: 14,
+                borderColor: err ? 'var(--red)' : 'var(--b2)',
+                background: err ? '#FFF5F5' : 'var(--bg)',
+                boxShadow: err ? '0 0 0 4px rgba(239,68,68,0.1)' : 'none'
+              }}
+              autoFocus
+              onKeyDown={e => e.key === 'Enter' && handleConfirm()}
+            />
+            {err && <div style={{ fontSize: '11px', color: 'var(--red)', marginTop: 8, fontWeight: 700, textAlign: 'center' }} className="fi">Invalid access key. Try again.</div>}
+          </div>
+        </div>
+        
+        <div style={{ display: 'flex', gap: 10, padding: '0 16px 16px' }}>
+          <button className="btn-g" style={{ flex: 1, padding: '14px', borderRadius: 14, fontWeight: 700, fontSize: '13.5px' }} onClick={onClose}>Cancel</button>
+          <button className="btn-p" style={{ flex: 1, padding: '14px', borderRadius: 14, fontWeight: 700, fontSize: '13.5px', background: '#E11D48', border: 'none', color: '#fff', boxShadow: '0 4px 12px rgba(225,29,72,0.2)' }} onClick={handleConfirm}>
+            Confirm Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─────────── ROOT ─────────── */
 export default function AdminApp() {
   const [authed, setAuthed] = useState(() => {
     // Check if we have an active admin session in this browser window
     if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('admin_authed') === 'true';
+      const isAuthed = sessionStorage.getItem('admin_authed') === 'true';
+      const lastActive = sessionStorage.getItem('admin_last_active');
+      
+      if (isAuthed && lastActive) {
+        // If more than 1 minute (60,000ms) has passed since last activity, require re-auth
+        const diff = Date.now() - parseInt(lastActive);
+        if (diff > 60000) {
+          sessionStorage.removeItem('admin_authed');
+          return false;
+        }
+      }
+      return isAuthed;
     }
     return false;
   });
+
+  // Keep session alive while on page
+  useEffect(() => {
+    if (authed) {
+      sessionStorage.setItem('admin_last_active', Date.now().toString());
+      const interval = setInterval(() => {
+        sessionStorage.setItem('admin_last_active', Date.now().toString());
+      }, 10000); // Update every 10s
+      return () => {
+        clearInterval(interval);
+        sessionStorage.setItem('admin_last_active', Date.now().toString());
+      };
+    }
+  }, [authed]);
   const [view, setView] = useState('overview');
   const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -1147,6 +1234,7 @@ export default function AdminApp() {
   const [orderError, setOrderError] = useState(null);
   const [totalReg, setTotalReg] = useState(0);
   const [mobileMenu, setMobileMenu] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
 
   const [pricing, setPricing] = useState({ monthly: 499, yearly: 399, totalYearly: 4788 });
@@ -1303,11 +1391,31 @@ export default function AdminApp() {
     }
   };
 
+  const handleDeleteUser = async (u) => {
+    try {
+      const res = await fetch(`/api/profiles?userId=${u.userId || u.id.replace('p_', '')}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-auth': '0000' }
+      });
+      if (!res.ok) throw new Error("Delete failed");
+      
+      setUsers(p => p.filter(x => x.id !== u.id));
+      setSelUser(null);
+      setDeleteTarget(null);
+    } catch (e) {
+      console.error("Delete error:", e);
+      alert("Failed to delete user: " + e.message);
+    }
+  };
+
+  const handleAdminLogin = () => {
+    setAuthed(true);
+    sessionStorage.setItem('admin_authed', 'true');
+    sessionStorage.setItem('admin_last_active', Date.now().toString());
+  };
+
   if (!authed) return (
-    <div className="shell"><style>{CSS}</style><AdminLogin onLogin={() => {
-      setAuthed(true);
-      sessionStorage.setItem('admin_authed', 'true');
-    }} /></div>
+    <div className="shell"><style>{CSS}</style><AdminLogin onLogin={handleAdminLogin} /></div>
   );
 
   return (
@@ -1315,7 +1423,8 @@ export default function AdminApp() {
       <style>{CSS}</style>
 
       {mobileMenu && <div className="shell-overlay" onClick={() => setMobileMenu(false)} />}
-      {selUser && <UserModal user={selUser} onClose={() => setSelUser(null)} onSave={handleSave} />}
+      {selUser && <UserModal user={selUser} onClose={() => setSelUser(null)} onSave={handleSave} onDelete={setDeleteTarget} />}
+      {deleteTarget && <DeleteConfirmModal user={deleteTarget} onClose={() => setDeleteTarget(null)} onConfirm={() => handleDeleteUser(deleteTarget)} />}
 
       <aside className={`aside ${mobileMenu ? 'open' : ''}`}>
         <div className="sb-brand">
@@ -1328,8 +1437,8 @@ export default function AdminApp() {
         <div className="sb-admin">
           <div className="sb-av-admin"><Shield size={14} color="#fff" /></div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Super Admin</div>
-            <div style={{ fontSize: '11px', color: 'var(--mu)', marginTop: 2 }}>{session?.user?.email || 'Administrator'}</div>
+            <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Partho Samadder</div>
+            <div style={{ fontSize: '11px', color: 'var(--mu)', marginTop: 2 }}>Parthosamadder00@gmail.com</div>
           </div>
         </div>
         <div className="sb-section">Menu</div>
@@ -1347,7 +1456,7 @@ export default function AdminApp() {
       <div className="main">
         {view === 'overview' && <Overview users={users} totalReg={totalReg} orders={orders} onMenuToggle={() => setMobileMenu(true)} />}
         {view === 'users' && <UsersView users={users} onManage={setSelUser} onMenuToggle={() => setMobileMenu(true)} />}
-        {view === 'registrations' && <RegistrationsList users={users} onMenuToggle={() => setMobileMenu(true)} />}
+        {view === 'registrations' && <RegistrationsList users={users} onDelete={setDeleteTarget} onMenuToggle={() => setMobileMenu(true)} />}
         {view === 'orders' && <OrdersView orders={orders} orderError={orderError} loadingOrders={loadingOrders} fetchOrders={fetchOrders} onMenuToggle={() => setMobileMenu(true)} />}
         {view === 'pricing' && <PricingView pricing={pricing} onSave={(p) => handleSaveGlobal(p, null, null)} onMenuToggle={() => setMobileMenu(true)} />}
         {view === 'settings' && <AdminSettings announcement={announcement} onSave={(a, c) => handleSaveGlobal(null, a, c)} onMenuToggle={() => setMobileMenu(true)} />}
@@ -1358,7 +1467,7 @@ export default function AdminApp() {
   );
 }
 
-function RegistrationsList({ users, onMenuToggle }) {
+function RegistrationsList({ users, onDelete, onMenuToggle }) {
   const [search, setSearch] = useState('');
   const filtered = users.filter(u => u.email.toLowerCase().includes(search.toLowerCase()) || (u.name && u.name.toLowerCase().includes(search.toLowerCase())));
   
@@ -1380,6 +1489,7 @@ function RegistrationsList({ users, onMenuToggle }) {
             <div className="col-h" style={{ flex: 2 }}>User</div>
             <div className="col-h" style={{ flex: 1 }}>Joined</div>
             <div className="col-h" style={{ width: 100 }}>Status</div>
+            <div className="col-h" style={{ width: 40 }}></div>
           </div>
           {filtered.map((u, i) => (
             <div key={u.id} className="urow">
@@ -1393,6 +1503,11 @@ function RegistrationsList({ users, onMenuToggle }) {
               </div>
               <div style={{ flex: 1, fontSize: '12.5px', color: 'var(--ink3)' }}>{u.joined || 'Recent'}</div>
               <div style={{ width: 100 }}><div className="sp sp-a">Active</div></div>
+              <div style={{ width: 40, display: 'flex', justifyContent: 'flex-end' }}>
+                <button className="btn-red" style={{ padding: '5px', borderRadius: '6px' }} onClick={() => onDelete(u)} title="Delete User">
+                  <Trash2 size={12} />
+                </button>
+              </div>
             </div>
           ))}
         </div>

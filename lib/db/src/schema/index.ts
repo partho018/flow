@@ -35,7 +35,7 @@ export const profiles = pgTable("profiles", {
 
 export const followers = pgTable("followers", {
   id: text("id").primaryKey(),
-  profileId: text("profile_id").references(() => profiles.id).notNull(),
+  profileId: text("profile_id").references(() => profiles.id, { onDelete: "cascade" }).notNull(),
   username: text("username"),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
 });

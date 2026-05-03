@@ -172,32 +172,41 @@ export default function App() {
 
       // Fetch IG Stats
       fetch('/api/stats')
-        .then(res => res.json())
+        .then(res => {
+          if (res.status === 404 || res.status === 401) {
+            signOut(); // User deleted or unauthorized, kick them out
+            throw new Error("Unauthorized");
+          }
+          return res.json();
+        })
         .then(data => {
-          if (!data.error) {
-            if (data.status) setUserStatus(data.status);
-            if (data.plan) setPlan(data.plan);
-            if (data.hasPassword !== undefined) setHasPassword(data.hasPassword);
+          if (!data || data.error) {
+            if (data?.error === 'User not found') signOut();
+            return;
+          }
+          
+          if (data.status) setUserStatus(data.status);
+          if (data.plan) setPlan(data.plan);
+          if (data.hasPassword !== undefined) setHasPassword(data.hasPassword);
+          
+          if (data.igUsername) {
+            setStats(data);
+            setIgConnected(true);
+            if (data.igImage) setIgImage(data.igImage);
+            if (data.igUsername) setIgUsername(data.igUsername);
             
-            if (data.igUsername) {
-              setStats(data);
-              setIgConnected(true);
-              if (data.igImage) setIgImage(data.igImage);
-              if (data.igUsername) setIgUsername(data.igUsername);
-              
-              // Sync localStorage as a backup for this device
-              localStorage.setItem('ig_connected', 'true');
-              localStorage.setItem('ig_username', data.igUsername);
-              if (data.igImage) localStorage.setItem('ig_image', data.igImage);
-            } else {
-              // Explicitly clear state if no profile found in DB for this Gmail user
-              setIgConnected(false);
-              setIgUsername(null);
-              setIgImage(null);
-              localStorage.removeItem('ig_connected');
-              localStorage.removeItem('ig_username');
-              localStorage.removeItem('ig_image');
-            }
+            // Sync localStorage as a backup for this device
+            localStorage.setItem('ig_connected', 'true');
+            localStorage.setItem('ig_username', data.igUsername);
+            if (data.igImage) localStorage.setItem('ig_image', data.igImage);
+          } else {
+            // Explicitly clear state if no profile found in DB for this Gmail user
+            setIgConnected(false);
+            setIgUsername(null);
+            setIgImage(null);
+            localStorage.removeItem('ig_connected');
+            localStorage.removeItem('ig_username');
+            localStorage.removeItem('ig_image');
           }
         })
         .catch(err => console.error("Failed to load stats:", err));
