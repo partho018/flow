@@ -200,7 +200,7 @@ export default function App() {
     }
     
     // Fetch Announcement (Global - shows even for unauthenticated users if desired)
-    fetch('/api/announcement')
+    fetch('/api/announcement', { cache: 'no-store' })
       .then(res => res.json())
       .then(data => {
         if (data && data.enabled) {

@@ -6,15 +6,22 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   try {
-    const record = await db.query.settings.findFirst({
-      where: eq(settings.userId, "SYSTEM_GLOBAL")
-    });
+    const [record] = await db
+      .select()
+      .from(settings)
+      .where(eq(settings.userId, "SYSTEM_GLOBAL"))
+      .limit(1);
 
-    if (!record || !record.data?.announcement) {
+    if (!record || !record.data || !record.data.announcement) {
       return NextResponse.json({ enabled: false });
     }
 
-    return NextResponse.json(record.data.announcement);
+    // Return the announcement object, ensuring it has the expected fields
+    return NextResponse.json({
+      enabled: record.data.announcement.enabled ?? false,
+      text: record.data.announcement.text ?? "",
+      type: record.data.announcement.type ?? "update"
+    });
   } catch (error) {
     console.error("Announcement fetch error:", error);
     return NextResponse.json({ error: "Failed to fetch announcement" }, { status: 500 });
