@@ -12,10 +12,14 @@ export type SettingsStore = {
 };
 
 export async function getSettings(userId: string): Promise<SettingsStore> {
+  const query = userId === "SYSTEM_GLOBAL" 
+    ? eq(settingsTable.id, "user_SYSTEM_GLOBAL")
+    : eq(settingsTable.userId, userId);
+
   const [record] = await db
     .select()
     .from(settingsTable)
-    .where(eq(settingsTable.userId, userId));
+    .where(query);
   
   return (record?.data as SettingsStore) || {};
 }

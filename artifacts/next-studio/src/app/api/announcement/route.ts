@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     const [record] = await db
       .select()
       .from(settings)
-      .where(eq(settings.userId, "SYSTEM_GLOBAL"))
+      .where(eq(settings.id, "user_SYSTEM_GLOBAL"))
       .limit(1);
 
     if (!record || !record.data || !record.data.announcement) {
