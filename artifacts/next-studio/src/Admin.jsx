@@ -232,6 +232,55 @@ const StatusPill = ({ status }) => (
   </span>
 );
 
+const exportToCSV = (data, type) => {
+  if (!data || !data.length) {
+    alert("No data to export");
+    return;
+  }
+  
+  let headers = [];
+  let rows = [];
+
+  if (type === 'orders') {
+    headers = ['Date', 'Order ID', 'Customer', 'Email', 'Amount', 'Currency', 'Status', 'Payment ID'];
+    rows = data.map(o => [
+      new Date(o.createdAt).toLocaleDateString('en-IN'),
+      o.orderId,
+      o.billedName || o.userName || 'Unknown',
+      o.userEmail,
+      o.amount,
+      o.currency || 'INR',
+      o.status,
+      o.paymentId || 'N/A'
+    ]);
+  } else if (type === 'users') {
+    headers = ['Name', 'Email', 'Plan', 'Status', 'DMs Used', 'DM Limit', 'Revenue', 'Joined'];
+    rows = data.map(u => [
+      u.name,
+      u.email,
+      u.plan,
+      u.status,
+      u.dmsUsed,
+      u.dmsLimit + u.creditBonus,
+      u.rev,
+      u.joined
+    ]);
+  }
+
+  const content = [headers, ...rows].map(row => 
+    row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+  ).join('\n');
+
+  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', `${type}_export_${new Date().toLocaleDateString('en-IN').replace(/\//g, '-')}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
 /* ─────────── USER MODAL ─────────── */
 function UserModal({ user, onClose, onSave }) {
   const [u, setU] = useState({ ...user });
@@ -638,7 +687,7 @@ function UsersView({ users, onManage, onMenuToggle }) {
           <div className="tb-title">Users <span style={{ fontFamily: 'var(--fm)', fontSize: '13px', color: 'var(--mu)', fontWeight: 400 }}>({users.length})</span></div>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn-g"><Download size={11} /> Export</button>
+          <button className="btn-g" onClick={() => exportToCSV(users, 'users')}><Download size={11} /> Export</button>
           <button className="btn-p sm acc"><UserPlus size={11} /> Invite</button>
         </div>
       </div>
@@ -713,7 +762,7 @@ function OrdersView({ orders, orderError, loadingOrders, fetchOrders, onMenuTogg
           <button className="tb-menu" onClick={onMenuToggle}><Menu size={18} /></button>
           <div className="tb-title">Orders <span style={{ fontFamily: 'var(--fm)', fontSize: '13px', color: 'var(--mu)', fontWeight: 400 }}>({orders.length})</span></div>
         </div>
-        <button className="btn-g"><Download size={11} /> Export CSV</button>
+        <button className="btn-g" onClick={() => exportToCSV(orders, 'orders')}><Download size={11} /> Export CSV</button>
       </div>
       <div className="scroll"><div style={{ padding: '24px', maxWidth: 1200, margin: '0 auto' }}>
         
@@ -916,6 +965,12 @@ function AdminSettings({ announcement, onSave, onMenuToggle }) {
   });
   const [ann, setAnn] = useState(announcement || { enabled: false, text: '', type: 'update' });
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (announcement) {
+      setAnn(announcement);
+    }
+  }, [announcement]);
   const [showSaved, setShowSaved] = useState(false);
   const [error, setError] = useState(null);
 
@@ -1078,7 +1133,7 @@ export default function AdminApp() {
 
   const fetchPricing = async () => {
     try {
-      const res = await fetch('/api/settings');
+      const res = await fetch('/api/settings?global=true');
       if (!res.ok) return;
       const text = await res.text();
       if (!text) return;
@@ -1144,7 +1199,7 @@ export default function AdminApp() {
       if (p) setPricing(p);
       if (a) setAnnouncement(a);
       
-      const res = await fetch('/api/settings');
+      const res = await fetch('/api/settings?global=true');
       let currentSettings = {};
       if (res.ok) {
         const text = await res.text();
@@ -1164,7 +1219,7 @@ export default function AdminApp() {
       const saveRes = await fetch('/api/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ settings: updatedSettings })
+        body: JSON.stringify({ settings: updatedSettings, global: true })
       });
       
       if (!saveRes.ok) throw new Error("Server rejected the update");
