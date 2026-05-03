@@ -42,21 +42,8 @@ export async function POST(req: Request) {
       console.log(`Successfully saved pending order: ${order.id}`);
     } catch (dbErr) {
       console.error('Failed to save pending order to DB:', dbErr);
-      // Try insert without billing fields if they don't exist in schema yet
-      try {
-        await db.insert(orders).values({
-          id: crypto.randomUUID(),
-          userId: session?.user?.id,
-          orderId: order.id,
-          amount: amount,
-          status: 'pending',
-          userEmail: session?.user?.email,
-          userName: billingDetails?.fullName || session?.user?.name,
-        });
-        console.log(`Saved pending order without billing fields: ${order.id}`);
-      } catch (dbErr2) {
-        console.error('Failed to save order (fallback):', dbErr2);
-      }
+      // We don't throw here to avoid blocking the payment modal, 
+      // but the order will be missing from the dashboard if this fails.
     }
 
     return NextResponse.json(order);

@@ -112,7 +112,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fb);-webkit-font-sm
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px}
 .modal{background:var(--s);border:1px solid var(--b);border-radius:14px;width:100%;max-width:500px;box-shadow:0 20px 60px rgba(0,0,0,.15);overflow:hidden}
 .modal-head{padding:16px 20px;border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between}
-.modal-body{padding:20px;max-height:65vh;overflow-y:auto}
+.modal-body{padding:20px 20px 35px;max-height:75vh;overflow-y:auto}
 .modal-foot{padding:13px 20px;border-top:1px solid var(--b);display:flex;justify-content:flex-end;gap:8px}
 
 /* inp */
@@ -384,75 +384,134 @@ function UserModal({ user, onClose, onSave }) {
 function OrderDetailModal({ order, onClose }) {
   if (!order) return null;
 
-  const statusClass = order.status === 'completed' || order.status === 'success'
-    ? 'sp-a' : order.status === 'failed' ? 'sp-b' : order.status === 'cancelled' ? 'sp-c' : 'sp-p';
+  const getStatusConfig = (status) => {
+    const s = status?.toLowerCase();
+    if (s === 'completed' || s === 'success') return { 
+      bg: '#ECFDF5', 
+      color: '#059669', 
+      label: 'Completed' 
+    };
+    if (s === 'failed') return { 
+      bg: '#FEF2F2', 
+      color: '#DC2626', 
+      label: 'Failed' 
+    };
+    if (s === 'cancelled') return { 
+      bg: '#FFF1F2', 
+      color: '#E11D48', 
+      label: 'Cancelled' 
+    };
+    return { 
+      bg: '#FFFBEB', 
+      color: '#D97706', 
+      label: 'Pending' 
+    };
+  };
 
-  const payRows = [
-    { l: 'Order ID', v: order.orderId, mono: true },
-    { l: 'Payment ID', v: order.paymentId || '—', mono: true },
-    { l: 'Amount', v: `₹${order.amount}`, mono: true },
-    { l: 'Currency', v: order.currency || 'INR', mono: true },
-    { l: 'Date', v: new Date(order.createdAt).toLocaleString('en-IN'), mono: false },
-    { l: 'Status', v: null, status: order.status },
-  ];
+  const status = getStatusConfig(order.status);
 
   return (
-    <div className="modal-bg" onClick={onClose}>
-      <div className="modal fi" style={{ maxWidth: 520 }} onClick={e => e.stopPropagation()}>
-
-        {/* head */}
-        <div className="modal-head">
-          <div style={{ fontFamily: 'var(--fh)', fontWeight: 700, fontSize: '15px', letterSpacing: '-.2px' }}>Order Details</div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--mu)', display: 'flex', padding: 4 }}><X size={16} /></button>
+    <div className="modal-bg" onClick={onClose} style={{ backdropFilter: 'blur(12px)', background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px 20px' }}>
+      <div className="modal fi" style={{ maxWidth: 640, maxHeight: '85vh', borderRadius: 32, border: '1px solid var(--b)', boxShadow: '0 40px 120px rgba(0,0,0,0.3)', display: 'flex', flexDirection: 'column', background: 'var(--bg)' }} onClick={e => e.stopPropagation()}>
+        
+        {/* Header - Fixed */}
+        <div style={{ padding: '28px 36px', borderBottom: '1px solid var(--b)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div>
+              <h3 style={{ fontSize: '20px', fontWeight: 900, margin: 0, letterSpacing: '-0.5px', color: 'var(--ink)' }}>Order Details</h3>
+              <p style={{ fontSize: '10px', fontWeight: 700, color: 'var(--mu)', textTransform: 'uppercase', letterSpacing: '1px', margin: '4px 0 0', opacity: 0.8 }}>{order.orderId}</p>
+            </div>
+            <span style={{ 
+              fontSize: '11px', 
+              padding: '6px 14px', 
+              borderRadius: 100, 
+              fontWeight: 800, 
+              background: status.bg,
+              color: status.color,
+              display: 'inline-flex',
+              alignItems: 'center',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor', display: 'inline-block', marginRight: 8 }} />
+              {status.label}
+            </span>
+          </div>
+          <button onClick={onClose} style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--bg2)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--ink)' }}>
+            <X size={20} strokeWidth={3} />
+          </button>
         </div>
 
-        <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-
-          {/* Billed To */}
-          <div style={{ background: 'var(--bg)', border: '1px solid var(--b)', borderRadius: 10, overflow: 'hidden' }}>
-            <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--b)', display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(51,77,255,.04)' }}>
-              <UserSquare size={12} color="var(--acc)" />
-              <span style={{ fontSize: '9.5px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.3px', color: 'var(--acc)', fontFamily: 'var(--fm)' }}>Billed To</span>
-            </div>
-            <div style={{ padding: '14px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-              {[
-                { l: 'Full Name', v: order.billedName || order.userName || '—' },
-                { l: 'Email', v: order.userEmail || '—' },
-                { l: 'Phone', v: order.billedPhone || '—' },
-                { l: 'Country', v: order.billedCountry || '—' },
-                { l: 'State / Province', v: order.billedState || '—' },
-              ].map(f => (
-                <div key={f.l} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  <span style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>{f.l}</span>
-                  <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--ink)', fontFamily: 'var(--fm)' }}>{f.v}</span>
+        {/* Scrollable Body */}
+        <div style={{ padding: '36px', overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 40 }} className="custom-scrollbar">
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 40 }}>
+            {/* Customer Section */}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+                <div style={{ width: 32, height: 32, borderRadius: 10, background: 'var(--acc10)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <UserSquare size={18} color="var(--acc)" />
                 </div>
-              ))}
+                <h4 style={{ fontSize: '14px', fontWeight: 900, margin: 0, textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--ink)' }}>Customer Info</h4>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                {[
+                  { l: 'Full Name', v: order.billedName || order.userName },
+                  { l: 'Email Address', v: order.userEmail },
+                  { l: 'Phone Number', v: order.billedPhone },
+                  { l: 'Country / Region', v: order.billedCountry || order.billed_country },
+                  { l: 'State / Province', v: order.billedState || order.billed_state },
+                ].map(f => (
+                  <div key={f.l}>
+                    <div style={{ fontSize: '9.5px', fontWeight: 800, color: 'var(--mu)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 6 }}>{f.l}</div>
+                    <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--ink)', lineHeight: '1.5' }}>{f.v || '—'}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Payment Section */}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+                <div style={{ width: 32, height: 32, borderRadius: 10, background: 'var(--acc10)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <CreditCard size={18} color="var(--acc)" />
+                </div>
+                <h4 style={{ fontSize: '14px', fontWeight: 900, margin: 0, textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--ink)' }}>Payment Info</h4>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                {[
+                  { l: 'Total Amount', v: `₹${order.amount}`, b: true },
+                  { l: 'Currency', v: (order.currency || 'INR').toUpperCase() },
+                  { l: 'Razorpay ID', v: order.orderId, mono: true },
+                  { l: 'Payment Ref', v: order.paymentId, mono: true },
+                  { l: 'Order Date', v: new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) },
+                ].map(f => (
+                  <div key={f.l}>
+                    <div style={{ fontSize: '9.5px', fontWeight: 800, color: 'var(--mu)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 6 }}>{f.l}</div>
+                    <div style={{ 
+                      fontSize: f.b ? '24px' : '14px', 
+                      fontWeight: f.b ? 900 : 600, 
+                      color: f.b ? 'var(--acc)' : 'var(--ink)', 
+                      fontFamily: f.mono ? 'var(--fm)' : 'inherit'
+                    }}>{f.v || '—'}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-
-          {/* Payment Info */}
-          <div style={{ background: 'var(--bg)', border: '1px solid var(--b)', borderRadius: 10, overflow: 'hidden' }}>
-            <div style={{ padding: '10px 14px', borderBottom: '1px solid var(--b)', display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(51,77,255,.04)' }}>
-              <CreditCard size={12} color="var(--acc)" />
-              <span style={{ fontSize: '9.5px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.3px', color: 'var(--acc)', fontFamily: 'var(--fm)' }}>Payment Info</span>
-            </div>
-            <div style={{ padding: '14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {payRows.map(f => (
-                <div key={f.l} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '11px', color: 'var(--mu)', fontFamily: 'var(--fm)', fontWeight: 600 }}>{f.l}</span>
-                  {f.status
-                    ? <span className={`sp ${statusClass}`}><span style={{ width: 5, height: 5, borderRadius: '50%', background: 'currentColor', display: 'inline-block' }} />{f.status.charAt(0).toUpperCase() + f.status.slice(1)}</span>
-                    : <span style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--ink)', fontFamily: f.mono ? 'var(--fm)' : 'var(--fb)' }}>{f.v}</span>
-                  }
-                </div>
-              ))}
-            </div>
-          </div>
-
+          
+          <div style={{ height: 10, flexShrink: 0 }} />
         </div>
 
-        <div className="modal-foot">
-          <button className="btn-g" onClick={onClose}>Close</button>
+        {/* Footer - Fixed */}
+        <div style={{ padding: '20px 36px', borderTop: '1px solid var(--b)', display: 'flex', justifyContent: 'flex-end', background: 'var(--bg2)', borderBottomLeftRadius: 32, borderBottomRightRadius: 32, flexShrink: 0 }}>
+          <button 
+            className="btn-p" 
+            onClick={onClose}
+            style={{ padding: '12px 40px', borderRadius: 14, fontWeight: 900, fontSize: '14px', boxShadow: '0 8px 24px var(--p20)' }}
+          >
+            Close Details
+          </button>
         </div>
       </div>
     </div>

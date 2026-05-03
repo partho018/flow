@@ -15,6 +15,10 @@ async function setup() {
         "status" text DEFAULT 'pending' NOT NULL,
         "user_email" text,
         "user_name" text,
+        "billed_name" text,
+        "billed_phone" text,
+        "billed_country" text,
+        "billed_state" text,
         "created_at" timestamp DEFAULT now() NOT NULL
       );
     `);
