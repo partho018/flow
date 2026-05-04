@@ -30,9 +30,9 @@ export function AdminView({ pricing, onSavePricing }) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-             <div className="p-6 rounded-2xl bg-card border border-border shadow-sm flex flex-col justify-between">
+             <div className="p-6 rounded-[8px] bg-card border border-border shadow-sm flex flex-col justify-between">
                 <div>
-                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center mb-4">
+                  <div className="w-10 h-10 rounded-[8px] bg-blue-500/10 text-blue-500 flex items-center justify-center mb-4">
                     <DollarSign size={20} />
                   </div>
                   <h4 className="text-sm font-bold mb-1">Active Revenue</h4>
@@ -40,9 +40,9 @@ export function AdminView({ pricing, onSavePricing }) {
                 </div>
                 <p className="text-2xl font-black mt-4">₹1,24,500</p>
              </div>
-             <div className="p-6 rounded-2xl bg-card border border-border shadow-sm flex flex-col justify-between">
+             <div className="p-6 rounded-[8px] bg-card border border-border shadow-sm flex flex-col justify-between">
                 <div>
-                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center mb-4">
+                  <div className="w-10 h-10 rounded-[8px] bg-purple-500/10 text-purple-500 flex items-center justify-center mb-4">
                     <Zap size={20} />
                   </div>
                   <h4 className="text-sm font-bold mb-1">Total Flows</h4>
@@ -50,9 +50,9 @@ export function AdminView({ pricing, onSavePricing }) {
                 </div>
                 <p className="text-2xl font-black mt-4">12,842</p>
              </div>
-             <div className="p-6 rounded-2xl bg-card border border-border shadow-sm flex flex-col justify-between">
+             <div className="p-6 rounded-[8px] bg-card border border-border shadow-sm flex flex-col justify-between">
                 <div>
-                  <div className="w-10 h-10 rounded-xl bg-green-500/10 text-green-600 flex items-center justify-center mb-4">
+                  <div className="w-10 h-10 rounded-[8px] bg-green-500/10 text-green-600 flex items-center justify-center mb-4">
                     <TrendingUp size={20} />
                   </div>
                   <h4 className="text-sm font-bold mb-1">Conversion Rate</h4>
@@ -64,11 +64,51 @@ export function AdminView({ pricing, onSavePricing }) {
 
           <section className="space-y-4">
             <div className="flex items-center gap-2">
+              <Zap size={18} className="text-primary" />
+              <h4 className="text-sm font-bold">Coupon Management</h4>
+            </div>
+            
+            <div className="p-8 rounded-[8px] bg-card border border-border shadow-xl shadow-black/5 space-y-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Active Coupon Code</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. SAVE20"
+                    value={localPricing.couponCode || ''} 
+                    onChange={e => setLocalPricing({ ...localPricing, couponCode: e.target.value.toUpperCase() })}
+                    className="w-full px-5 py-3 bg-muted/30 border border-border rounded-[8px] text-sm font-bold focus:ring-4 focus:ring-primary/10 transition-all outline-none" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Discount Percentage (%)</label>
+                  <input 
+                    type="number" 
+                    placeholder="e.g. 20"
+                    value={localPricing.discountPercent || ''} 
+                    onChange={e => setLocalPricing({ ...localPricing, discountPercent: parseInt(e.target.value) })}
+                    className="w-full px-5 py-3 bg-muted/30 border border-border rounded-[8px] text-sm font-bold focus:ring-4 focus:ring-primary/10 transition-all outline-none" 
+                  />
+                </div>
+              </div>
+
+              <div className="p-4 rounded-[8px] bg-blue-500/5 border border-blue-500/20 flex items-start gap-4">
+                 <Zap size={20} className="text-blue-600 mt-0.5" />
+                 <div>
+                    <p className="text-xs font-bold text-blue-900">Coupon Logic</p>
+                    <p className="text-[10px] text-blue-700 leading-relaxed font-medium">Users can apply this code during checkout to receive a discount. Leave empty to disable coupons.</p>
+                 </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="space-y-4">
+            <div className="flex items-center gap-2">
               <DollarSign size={18} className="text-primary" />
               <h4 className="text-sm font-bold">Subscription Pricing</h4>
             </div>
             
-            <div className="p-8 rounded-[32px] bg-card border border-border shadow-xl shadow-black/5 space-y-8">
+            <div className="p-8 rounded-[8px] bg-card border border-border shadow-xl shadow-black/5 space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Monthly Price (₹)</label>
@@ -76,7 +116,7 @@ export function AdminView({ pricing, onSavePricing }) {
                     type="number" 
                     value={localPricing.monthly} 
                     onChange={e => setLocalPricing({ ...localPricing, monthly: parseInt(e.target.value) })}
-                    className="w-full px-5 py-3 bg-muted/30 border border-border rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/10 transition-all outline-none" 
+                    className="w-full px-5 py-3 bg-muted/30 border border-border rounded-[8px] text-sm font-bold focus:ring-4 focus:ring-primary/10 transition-all outline-none" 
                   />
                 </div>
                 <div className="space-y-2">
@@ -85,7 +125,7 @@ export function AdminView({ pricing, onSavePricing }) {
                     type="number" 
                     value={localPricing.yearly} 
                     onChange={e => setLocalPricing({ ...localPricing, yearly: parseInt(e.target.value) })}
-                    className="w-full px-5 py-3 bg-muted/30 border border-border rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/10 transition-all outline-none" 
+                    className="w-full px-5 py-3 bg-muted/30 border border-border rounded-[8px] text-sm font-bold focus:ring-4 focus:ring-primary/10 transition-all outline-none" 
                   />
                 </div>
                 <div className="space-y-2">
@@ -94,12 +134,12 @@ export function AdminView({ pricing, onSavePricing }) {
                     type="number" 
                     value={localPricing.totalYearly} 
                     onChange={e => setLocalPricing({ ...localPricing, totalYearly: parseInt(e.target.value) })}
-                    className="w-full px-5 py-3 bg-muted/30 border border-border rounded-2xl text-sm font-bold focus:ring-4 focus:ring-primary/10 transition-all outline-none" 
+                    className="w-full px-5 py-3 bg-muted/30 border border-border rounded-[8px] text-sm font-bold focus:ring-4 focus:ring-primary/10 transition-all outline-none" 
                   />
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/20 flex items-start gap-4">
+              <div className="p-4 rounded-[8px] bg-amber-500/5 border border-amber-500/20 flex items-start gap-4">
                  <AlertCircle size={20} className="text-amber-600 mt-0.5" />
                  <div>
                     <p className="text-xs font-bold text-amber-900">Important Note</p>
@@ -111,9 +151,9 @@ export function AdminView({ pricing, onSavePricing }) {
                 <button 
                   onClick={handleSave}
                   disabled={saving}
-                  className="flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground rounded-2xl font-black text-sm shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
+                  className="flex items-center gap-2 px-8 py-3 bg-primary text-primary-foreground rounded-[8px] font-black text-sm shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
                 >
-                  <Save size={16} /> {saving ? "Saving Changes..." : "Apply Prices Globally"}
+                  <Save size={16} /> {saving ? "Saving Changes..." : "Apply Changes Globally"}
                 </button>
               </div>
             </div>

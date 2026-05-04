@@ -30,7 +30,10 @@ export default function App() {
   const [editing, setEditing] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [billingCycle, setBillingCycle] = useState('monthly');
-  const [pricing, setPricing] = useState({ monthly: 499, yearly: 399, totalYearly: 4788 });
+  const [pricing, setPricing] = useState({ monthly: 499, yearly: 399, totalYearly: 4788, coupons: [{ code: 'SAVE50', type: 'percentage', value: 50 }] });
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponInput, setCouponInput] = useState('');
+  const [couponError, setCouponError] = useState('');
   const [showConnectIG, setShowConnectIG] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showBillingModal, setShowBillingModal] = useState(false);
@@ -162,13 +165,19 @@ export default function App() {
   useEffect(() => {
     if (status === 'authenticated') {
       
+      fetch('/api/settings?global=true')
+        .then(res => res.json())
+        .then(data => {
+          if (data.settings?.pricing) setPricing(data.settings.pricing);
+        })
+        .catch(err => console.error("Failed to load global pricing:", err));
+
       fetch('/api/settings')
         .then(res => res.json())
         .then(data => {
           if (data.settings?.automations) setAutomations(data.settings.automations);
-          if (data.settings?.pricing) setPricing(data.settings.pricing);
         })
-        .catch(err => console.error("Failed to load settings:", err));
+        .catch(err => console.error("Failed to load user settings:", err));
 
       // Fetch IG Stats
       fetch('/api/stats')
@@ -250,7 +259,18 @@ export default function App() {
   };
 
   // Validate billing details before proceeding to payment
-  const handleUpgradeNowClick = () => {
+  const handleUpgradeNowClick = async () => {
+    // Re-fetch latest pricing and coupons before showing billing modal
+    try {
+      const res = await fetch('/api/settings?global=true');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.settings?.pricing) setPricing(data.settings.pricing);
+      }
+    } catch (e) {
+      console.error("Failed to refresh global pricing:", e);
+    }
+
     // Reset billing form and show the billing modal with default values
     setBillingDetails({ 
       fullName: session?.user?.name || '', 
@@ -269,6 +289,21 @@ export default function App() {
     setShowUpgradeModal(true);
   };
 
+  const handleApplyCoupon = () => {
+    setCouponError('');
+    if (!couponInput) return;
+    
+    const code = couponInput.toUpperCase();
+    const found = pricing.coupons?.find(c => c.code === code);
+    
+    if (found) {
+      setAppliedCoupon(found);
+      setCouponInput('');
+    } else {
+      setCouponError('Invalid coupon code');
+    }
+  };
+
   const handleProceedToPayment = async () => {
     // Validate
     const errs = {};
@@ -282,7 +317,15 @@ export default function App() {
   };
 
   const handleRazorpayPayment = async () => {
-    const amount = billingCycle === 'monthly' ? pricing.monthly : pricing.totalYearly;
+    let baseAmount = billingCycle === 'monthly' ? pricing.monthly : pricing.totalYearly;
+    if (appliedCoupon) {
+      if (appliedCoupon.type === 'percentage') {
+        baseAmount = Math.round(baseAmount * (1 - appliedCoupon.value / 100));
+      } else {
+        baseAmount = Math.max(0, baseAmount - appliedCoupon.value);
+      }
+    }
+    const amount = baseAmount;
     setIsProcessing(true);
     const res = await loadRazorpayScript();
 
@@ -540,7 +583,7 @@ export default function App() {
 
                     <button 
                       onClick={() => setShowAnn(false)}
-                      className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 p-1.5 hover:bg-white/10 rounded-lg transition-colors shrink-0"
+                      className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 p-1.5 hover:bg-white/10 rounded-[8px] transition-colors shrink-0"
                     >
                       <X size={16} />
                     </button>
@@ -604,14 +647,14 @@ export default function App() {
               ) : (
                 <div className="flex-1 flex items-center justify-center p-8 bg-muted/20">
                   <div className="max-w-md text-center space-y-6">
-                    <div className="w-20 h-20 bg-card border border-border rounded-[28px] flex items-center justify-center mx-auto mb-6 shadow-xl shadow-black/5 animate-bounce">
+                    <div className="w-20 h-20 bg-card border border-border rounded-[8px] flex items-center justify-center mx-auto mb-6 shadow-xl shadow-black/5 animate-bounce">
                       <Activity size={40} className="text-primary" />
                     </div>
                     <h3 className="text-3xl font-black tracking-tighter">{view.charAt(0).toUpperCase() + view.slice(1)} Coming Soon</h3>
                     <p className="text-muted-foreground font-medium leading-relaxed">
                       We're currently building the {view} section. Check back soon for the updated experience!
                     </p>
-                    <button onClick={() => setView('home')} className="px-8 py-3 bg-primary text-primary-foreground rounded-2xl font-black text-sm shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                    <button onClick={() => setView('home')} className="px-8 py-3 bg-primary text-primary-foreground rounded-[8px] font-black text-sm shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
                       Back to Dashboard
                     </button>
                   </div>
@@ -636,19 +679,19 @@ export default function App() {
                   <motion.div 
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                    className="relative bg-card border border-border rounded-2xl w-full max-w-4xl max-h-[95vh] md:max-h-[90vh] overflow-y-auto md:overflow-hidden shadow-2xl flex flex-col z-10"
+                    className="relative bg-card border border-border rounded-[15px] w-full max-w-4xl max-h-[95vh] md:max-h-[90vh] overflow-y-auto md:overflow-hidden shadow-2xl flex flex-col z-10"
                     onClick={(e) => e.stopPropagation()}
                   >
                       <button 
                         onClick={() => setShowUpgradeModal(false)}
-                        className="absolute top-6 right-6 z-50 p-2.5 rounded-xl bg-muted border border-border text-foreground hover:bg-primary hover:text-white hover:border-primary transition-all shadow-lg"
+                        className="absolute top-4 right-4 z-50 p-2.5 rounded-full bg-muted border border-border text-foreground hover:bg-primary hover:text-white hover:border-primary transition-all shadow-lg"
                       >
                         <X size={18} />
                       </button>
 
                       <div className="flex-1 flex flex-col md:flex-row md:overflow-hidden">
                          <div className="flex-1 p-8 md:p-12 bg-gradient-to-br from-card to-primary/10 flex flex-col justify-center">
-                            <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-8 shadow-xl shadow-primary/20 rotate-3">
+                            <div className="w-16 h-16 bg-primary rounded-[8px] flex items-center justify-center mb-8 shadow-xl shadow-primary/20 rotate-3">
                               <Crown size={32} className="text-white" />
                             </div>
                             <h2 className="text-4xl font-black tracking-tight mb-4 leading-[1.1] text-foreground">
@@ -678,7 +721,7 @@ export default function App() {
                             <div className="space-y-4">
                               <button 
                                 onClick={() => setBillingCycle('monthly')}
-                                className={`w-full p-6 rounded-3xl border-2 transition-all relative overflow-hidden group ${billingCycle === 'monthly' ? 'border-primary bg-primary/5 shadow-xl shadow-primary/10' : 'border-border hover:border-primary/50'}`}
+                                className={`w-full p-6 rounded-[8px] border-2 transition-all relative overflow-hidden group ${billingCycle === 'monthly' ? 'border-primary bg-primary/5 shadow-xl shadow-primary/10' : 'border-border hover:border-primary/50'}`}
                               >
                                   <div className="flex items-center justify-between mb-1">
                                     <div className="flex items-center gap-3">
@@ -697,9 +740,9 @@ export default function App() {
 
                               <button 
                                 onClick={() => setBillingCycle('yearly')}
-                                className={`w-full p-6 rounded-3xl border-2 transition-all relative overflow-hidden group ${billingCycle === 'yearly' ? 'border-green-500 bg-green-500/5 shadow-xl shadow-green-500/10' : 'border-border hover:border-green-500/50'}`}
+                                className={`w-full p-6 rounded-[8px] border-2 transition-all relative overflow-hidden group ${billingCycle === 'yearly' ? 'border-green-500 bg-green-500/5 shadow-xl shadow-green-500/10' : 'border-border hover:border-green-500/50'}`}
                               >
-                                  <div className="absolute top-0 right-0 px-3 py-1 bg-green-500 text-white text-[9px] font-black uppercase rounded-bl-xl tracking-tighter">Save 20%</div>
+                                  <div className="absolute top-0 right-0 px-3 py-1 bg-green-500 text-white text-[9px] font-black uppercase rounded-[8px] tracking-tighter">Save 20%</div>
                                   <div className="flex items-center justify-between mb-1">
                                     <div className="flex items-center gap-3">
                                       <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${billingCycle === 'yearly' ? 'border-green-500' : 'border-muted'}`}>
@@ -719,7 +762,7 @@ export default function App() {
                             <button 
                               disabled={isProcessing}
                               onClick={handleUpgradeNowClick}
-                              className="w-full mt-8 py-4 bg-primary text-primary-foreground rounded-2xl font-black text-sm shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
+                              className="w-full mt-8 py-4 bg-primary text-primary-foreground rounded-[8px] font-black text-sm shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
                             >
                               {isProcessing ? "Processing..." : "Upgrade Now"}
                             </button>
@@ -730,14 +773,7 @@ export default function App() {
                          </div>
                       </div>
 
-                      <div className="p-4 bg-muted/10 border-t border-border flex justify-center">
-                        <button 
-                          onClick={() => setShowUpgradeModal(false)} 
-                          className="text-[10px] font-bold text-muted-foreground hover:text-foreground transition-colors py-2 px-4"
-                        >
-                          Maybe later
-                        </button>
-                      </div>
+
                   </motion.div>
                 </div>
               )}
@@ -746,12 +782,12 @@ export default function App() {
               {showBillingModal && (
                 <div className="fixed inset-0 z-[1000] flex flex-col items-center overflow-y-auto p-4 md:p-6">
                   <div className="fixed inset-0 bg-background/80 backdrop-blur-sm animate-in fade-in duration-300" onClick={() => setShowBillingModal(false)} />
-                  <div className="relative w-full max-w-4xl bg-background border border-border rounded-[24px] md:rounded-[32px] shadow-2xl flex flex-col md:flex-row md:max-h-[90vh] my-auto animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+                  <div className="relative w-full max-w-4xl bg-background border border-border rounded-[15px] shadow-2xl flex flex-col md:flex-row md:max-h-[90vh] my-auto animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
                     
                     {/* Left Side: Form */}
-                    <div className="flex-1 p-6 md:p-12 md:overflow-y-auto custom-scrollbar">
-                      <div className="flex items-center gap-3 mb-6 md:mb-8">
-                        <button onClick={handleBillingBack} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors text-muted-foreground hover:text-foreground group">
+                    <div className="flex-1 p-6 md:p-10 md:overflow-y-auto custom-scrollbar">
+                      <div className="flex items-center gap-3 mb-4 md:mb-6">
+                        <button onClick={handleBillingBack} className="p-2 -ml-2 rounded-[8px] hover:bg-muted transition-colors text-muted-foreground hover:text-foreground group">
                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="group-hover:-translate-x-0.5 transition-transform"><polyline points="15 18 9 12 15 6"/></svg>
                         </button>
                         <div>
@@ -760,11 +796,11 @@ export default function App() {
                         </div>
                       </div>
 
-                      <div className="space-y-5 md:space-y-6">
+                      <div className="space-y-3 md:space-y-4">
                         {/* Full Name */}
                         <div>
                           <label className="block text-[10px] md:text-[11px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1">Full Name</label>
-                          <div className={`flex items-center rounded-2xl border transition-all duration-200 ${
+                          <div className={`flex items-center rounded-[8px] border transition-all duration-200 ${
                             billingErrors.fullName ? 'border-destructive bg-destructive/5' : 'border-border bg-muted/20 focus-within:bg-background focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10'
                           }`}>
                             <input
@@ -793,7 +829,7 @@ export default function App() {
 
                         <div className="pt-5 md:pt-6 mt-5 md:mt-6 border-t border-border/50">
                           <div className="flex items-center gap-3 mb-5 md:mb-6">
-                            <div className="p-2 md:p-2.5 bg-primary/10 rounded-xl">
+                            <div className="p-2 md:p-2.5 bg-primary/10 rounded-[8px]">
                               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-primary">
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
                               </svg>
@@ -806,7 +842,7 @@ export default function App() {
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <label className="block text-[10px] md:text-[11px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1">Country</label>
+                              <label className="block text-[10px] md:text-[11px] font-black uppercase tracking-widest text-muted-foreground mb-1 ml-1">Country</label>
                               <CountrySelector
                                 value={billingDetails.billingCountry}
                                 onChange={c => { setBillingDetails(p => ({...p, billingCountry: c.name})); setBillingErrors(p => ({...p, country: ''})); }}
@@ -816,8 +852,8 @@ export default function App() {
                             </div>
 
                             <div>
-                              <label className="block text-[10px] md:text-[11px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1">State / Province</label>
-                              <div className="flex items-center rounded-2xl border border-border bg-muted/20 focus-within:bg-background focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all duration-200">
+                              <label className="block text-[10px] md:text-[11px] font-black uppercase tracking-widest text-muted-foreground mb-1 ml-1">State / Province</label>
+                              <div className="flex items-center rounded-[8px] border border-border bg-muted/20 focus-within:bg-background focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all duration-200">
                                 <input
                                   type="text"
                                   placeholder="e.g. New York"
@@ -833,69 +869,121 @@ export default function App() {
                     </div>
 
                     {/* Right Side: Summary Card */}
-                    <div className="w-full md:w-[360px] bg-muted/30 p-6 pb-12 md:p-12 border-t md:border-t-0 md:border-l border-border flex flex-col justify-between relative md:overflow-hidden">
+                    <div className="w-full md:w-[360px] bg-muted/30 p-6 md:p-10 border-t md:border-t-0 md:border-l border-border flex flex-col justify-between relative md:overflow-y-auto custom-scrollbar">
                       <div className="absolute top-[-10%] right-[-10%] w-[150px] md:w-[200px] h-[150px] md:h-[200px] bg-primary/10 blur-[60px] md:blur-[80px] rounded-full" />
                       
                       <div className="relative z-10">
-                        <div className="mb-8 flex justify-between items-center">
+                        <div className="mb-4 md:mb-6 flex justify-between items-center">
                           <h3 className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">Order Summary</h3>
-                          <button onClick={() => setShowBillingModal(false)} className="p-2 -mr-2 rounded-xl hover:bg-muted transition-colors text-muted-foreground">
+                          <button onClick={() => setShowBillingModal(false)} className="p-2 -mr-2 rounded-full hover:bg-muted transition-colors text-muted-foreground">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
                           </button>
                         </div>
                         
-                        <div className="bg-background border border-border rounded-[24px] p-6 shadow-xl shadow-primary/5 mb-8">
-                          <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/30">
-                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 12l10 5 10-5M2 17l10 5 10-5"/></svg>
+                        <div className="bg-background border border-border rounded-[8px] p-3 md:p-4 shadow-xl shadow-primary/5 mb-4 md:mb-5">
+                          <div className="flex items-center gap-2.5 mb-3">
+                            <div className="w-8 h-8 bg-primary rounded-[8px] flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 12l10 5 10-5M2 17l10 5 10-5"/></svg>
                             </div>
                             <div>
-                              <h4 className="text-sm font-black text-foreground uppercase">{billingCycle === 'monthly' ? 'Monthly' : 'Annual'} Plan</h4>
-                              <p className="text-[10px] font-bold text-muted-foreground">Premium Access</p>
+                              <h4 className="text-xs font-black text-foreground uppercase tracking-tight">{billingCycle === 'monthly' ? 'Monthly' : 'Annual'} Plan</h4>
+                              <p className="text-[9px] font-bold text-muted-foreground">Premium Access</p>
                             </div>
                           </div>
-                          <div className="pt-4 border-t border-border/50 flex justify-between items-end">
+                          <div className="pt-3 border-t border-border/50 flex justify-between items-end">
                             <div>
-                              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Total Payable</span>
-                              <p className="text-2xl font-black text-foreground tracking-tight">₹{billingCycle === 'monthly' ? pricing.monthly : pricing.totalYearly}</p>
+                              <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Total Payable</span>
+                              <p className="text-xl font-black text-foreground tracking-tight leading-none mt-1">₹{billingCycle === 'monthly' ? pricing.monthly : pricing.totalYearly}</p>
                             </div>
                             {billingCycle === 'yearly' && (
-                              <div className="px-2 py-1 bg-green-500/10 text-green-500 rounded-md text-[9px] font-black uppercase">Save 20%</div>
+                              <div className="px-1.5 py-0.5 bg-green-500/10 text-green-500 rounded-[8px] text-[8px] font-black uppercase">Save 20%</div>
                             )}
                           </div>
                         </div>
+                        
+                        {/* Coupon Section */}
+                        <div className="mb-4 md:mb-6 space-y-2">
+                           <label className="block text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Have a coupon?</label>
+                           <div className="flex gap-2">
+                             <div className="flex-1 flex items-center rounded-[8px] border border-border bg-background focus-within:border-primary transition-all px-3">
+                               <input 
+                                 type="text" 
+                                 placeholder="Enter code"
+                                 value={couponInput}
+                                 onChange={e => setCouponInput(e.target.value.toUpperCase())}
+                                 className="w-full bg-transparent border-none outline-none text-xs font-black uppercase py-2.5 placeholder:text-muted-foreground/30"
+                               />
+                             </div>
+                             <button 
+                               onClick={handleApplyCoupon}
+                               className="px-4 py-2 bg-foreground text-background rounded-[8px] text-[10px] font-black uppercase hover:opacity-90 transition-all"
+                             >
+                               Apply
+                             </button>
+                           </div>
+                           {couponError && <p className="text-[10px] font-bold text-destructive ml-1">{couponError}</p>}
+                           {appliedCoupon && (
+                             <div className="flex items-center justify-between px-3 py-2 bg-green-500/10 border border-green-500/20 rounded-[8px]">
+                               <div className="flex items-center gap-2">
+                                 <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                                 <span className="text-[10px] font-black text-green-600 uppercase tracking-widest">Coupon Applied: {appliedCoupon.code}</span>
+                               </div>
+                               <button 
+                                 onClick={() => setAppliedCoupon(null)}
+                                 className="text-[10px] font-black text-green-600 hover:underline"
+                               >
+                                 Remove
+                               </button>
+                             </div>
+                           )}
+                        </div>
 
                         <div className="space-y-4 px-2">
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs font-bold text-muted-foreground">Subscription Fee</span>
-                            <span className="text-xs font-black text-foreground">₹{billingCycle === 'monthly' ? pricing.monthly : pricing.totalYearly}</span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs font-bold text-muted-foreground">GST / Taxes</span>
-                            <span className="text-[10px] font-black text-green-500 uppercase tracking-widest">Included</span>
-                          </div>
-                        </div>
-                      </div>
 
-                      <div className="relative z-10 pt-6 md:pt-8">
-                        <button
-                          onClick={handleProceedToPayment}
-                          disabled={isProcessing}
-                          className="w-full bg-primary hover:bg-primary/90 text-white py-4.5 rounded-2xl font-black text-sm shadow-xl shadow-primary/30 transition-all active:scale-[0.98] disabled:opacity-50 group flex items-center justify-center gap-2"
-                        >
-                          {isProcessing ? (
-                            <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-                          ) : (
-                            <>
-                              <span>Proceed to Pay</span>
-                              <svg className="group-hover:translate-x-1 transition-transform" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                            </>
+                          {appliedCoupon && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-xs font-bold text-green-600">Discount ({appliedCoupon.type === 'percentage' ? appliedCoupon.value + '%' : '₹' + appliedCoupon.value})</span>
+                              <span className="text-xs font-black text-green-600">
+                                -₹{appliedCoupon.type === 'percentage' 
+                                  ? Math.round((billingCycle === 'monthly' ? pricing.monthly : pricing.totalYearly) * (appliedCoupon.value / 100))
+                                  : appliedCoupon.value}
+                              </span>
+                            </div>
                           )}
-                        </button>
-                        <div className="mt-4 flex flex-col items-center gap-2">
-                          <div className="flex items-center gap-1.5 opacity-40">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                            <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest text-center">Secured by Razorpay</p>
+
+                          <div className="pt-4 border-t border-border/50 flex justify-between items-center mb-6">
+                            <span className="text-sm font-black text-foreground uppercase tracking-tight">Total</span>
+                            <span className="text-lg font-black text-primary tracking-tight">
+                              ₹{(() => {
+                                const base = billingCycle === 'monthly' ? pricing.monthly : pricing.totalYearly;
+                                if (!appliedCoupon) return base;
+                                if (appliedCoupon.type === 'percentage') return Math.round(base * (1 - appliedCoupon.value / 100));
+                                return Math.max(0, base - appliedCoupon.value);
+                              })()}
+                            </span>
+                          </div>
+
+                          <div className="relative z-10 pt-2">
+                            <button
+                              onClick={handleProceedToPayment}
+                              disabled={isProcessing}
+                              className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-[8px] font-black text-sm shadow-xl shadow-primary/30 transition-all active:scale-[0.98] disabled:opacity-50 group flex items-center justify-center gap-2"
+                            >
+                              {isProcessing ? (
+                                <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                              ) : (
+                                <>
+                                  <span>Proceed to Pay</span>
+                                  <svg className="group-hover:translate-x-1 transition-transform" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                </>
+                              )}
+                            </button>
+                            <div className="mt-4 flex flex-col items-center gap-2 pb-4">
+                              <div className="flex items-center gap-1.5 opacity-40">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest text-center">Secured by Razorpay</p>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>

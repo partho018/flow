@@ -131,6 +131,19 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading tracking-tight;
   }
+  button, 
+  a, 
+  select, 
+  summary, 
+  [role="button"], 
+  input[type="submit"], 
+  input[type="reset"], 
+  input[type="button"], 
+  input[type="radio"], 
+  input[type="checkbox"], 
+  label[for] {
+    cursor: pointer;
+  }
 }
 
 /* Premium Utilities */

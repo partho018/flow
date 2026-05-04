@@ -137,7 +137,7 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
           
           {/* Sidebar Tabs */}
           <aside className="w-full lg:w-60 space-y-6">
-            <div className="space-y-1 p-2 rounded-2xl bg-card border border-border shadow-sm">
+            <div className="space-y-1 p-2 rounded-[8px] bg-card border border-border shadow-sm">
               <div className="px-3 py-2 text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 mb-1">
                 Account Settings
               </div>
@@ -145,13 +145,13 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-300 group relative ${
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-[8px] transition-all duration-300 group relative ${
                     activeTab === tab.id 
                       ? "text-primary bg-primary/[0.03]" 
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   }`}
                 >
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors ${
+                  <div className={`flex items-center justify-center w-8 h-8 rounded-[8px] transition-colors ${
                     activeTab === tab.id ? "bg-primary/10" : "bg-muted/50 border border-border group-hover:border-primary/30"
                   }`}>
                     <tab.icon size={16} strokeWidth={activeTab === tab.id ? 2.5 : 2} />
@@ -186,26 +186,26 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                       <h3 className="text-lg font-bold tracking-tight mb-0.5">General Information</h3>
                       <p className="text-muted-foreground text-xs font-medium">Update your profile and contact details.</p>
                     </div>
-                    <div className="p-6 rounded-xl bg-card border border-border space-y-5">
+                    <div className="p-6 rounded-[8px] bg-card border border-border space-y-5">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
                           <label className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground ml-1">First Name</label>
-                          <input defaultValue={firstName} className="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-lg text-xs focus:ring-2 focus:ring-primary/20 transition-all outline-none" />
+                          <input defaultValue={firstName} className="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-[8px] text-xs focus:ring-2 focus:ring-primary/20 transition-all outline-none" />
                         </div>
                         <div className="space-y-1.5">
                           <label className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Last Name</label>
-                          <input defaultValue={lastName} className="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-lg text-xs focus:ring-2 focus:ring-primary/20 transition-all outline-none" />
+                          <input defaultValue={lastName} className="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-[8px] text-xs focus:ring-2 focus:ring-primary/20 transition-all outline-none" />
                         </div>
                       </div>
                       <div className="space-y-1.5">
                         <label className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Email Address</label>
                         <div className="relative">
                           <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" size={16} />
-                          <input defaultValue={userEmail} className="w-full pl-11 pr-4 py-2.5 bg-muted/30 border border-border rounded-lg text-xs focus:ring-2 focus:ring-primary/20 transition-all outline-none" />
+                          <input defaultValue={userEmail} className="w-full pl-11 pr-4 py-2.5 bg-muted/30 border border-border rounded-[8px] text-xs focus:ring-2 focus:ring-primary/20 transition-all outline-none" />
                         </div>
                       </div>
                       <div className="flex justify-end">
-                        <button className="px-6 py-2 bg-primary text-primary-foreground rounded-lg font-bold text-xs hover:brightness-110 transition-all">
+                        <button className="px-6 py-2 bg-primary text-primary-foreground rounded-[8px] font-bold text-xs hover:brightness-110 transition-all">
                           Save Changes
                         </button>
                       </div>
@@ -219,10 +219,10 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                       <h3 className="text-lg font-bold tracking-tight mb-0.5">Instagram Connection</h3>
                       <p className="text-muted-foreground text-xs font-medium">Manage your linked Instagram account.</p>
                     </div>
-                    <div className="p-6 rounded-xl bg-card border border-border">
+                    <div className="p-6 rounded-[8px] bg-card border border-border">
                       {igConnected ? (
                         <div className="space-y-6">
-                          <div className="flex items-center justify-between p-4 rounded-xl bg-muted/20 border border-border/50">
+                          <div className="flex items-center justify-between p-4 rounded-[8px] bg-muted/20 border border-border/50">
                             <div className="flex items-center gap-4">
                               <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-purple-500 via-pink-500 to-orange-500 p-0.5">
                                 <div className="w-full h-full rounded-full bg-card flex items-center justify-center overflow-hidden">
@@ -240,7 +240,7 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                             <button 
                               onClick={onDisconnect}
                               disabled={isBanned}
-                              className={`px-4 py-2 bg-destructive/5 text-destructive rounded-lg font-bold text-[10px] hover:bg-destructive hover:text-destructive-foreground transition-all ${isBanned ? 'opacity-50 cursor-not-allowed' : ''}`}
+                              className={`px-4 py-2 bg-destructive/5 text-destructive rounded-[8px] font-bold text-[10px] hover:bg-destructive hover:text-destructive-foreground transition-all ${isBanned ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
                               Disconnect
                             </button>
@@ -248,7 +248,7 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                           
                           <div className="grid gap-2">
                             {['Read Profile Info', 'Send & Manage Messages', 'Manage Comments'].map(p => (
-                              <div key={p} className="flex items-center justify-between p-3 rounded-lg bg-muted/10 border border-border/40 text-[10px] font-bold uppercase tracking-wide">
+                              <div key={p} className="flex items-center justify-between p-3 rounded-[8px] bg-muted/10 border border-border/40 text-[10px] font-bold uppercase tracking-wide">
                                 <span>{p}</span>
                                 <CheckCircle size={12} className="text-primary" />
                               </div>
@@ -257,12 +257,12 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                         </div>
                       ) : (
                         <div className="text-center py-10">
-                          <div className="w-14 h-14 bg-muted/50 rounded-xl flex items-center justify-center mx-auto mb-4 text-muted-foreground">
+                          <div className="w-14 h-14 bg-muted/50 rounded-[8px] flex items-center justify-center mx-auto mb-4 text-muted-foreground">
                             <Instagram size={28} />
                           </div>
                           <h4 className="text-base font-bold mb-1">No account connected</h4>
                           <p className="text-muted-foreground text-xs font-medium mb-6">Connect your Instagram Business account.</p>
-                          <a href={isBanned ? '#' : '/api/auth/connect'} className={`inline-flex items-center justify-center gap-2 px-8 py-2.5 bg-primary text-primary-foreground rounded-lg font-bold text-xs transition-all ${isBanned ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}>
+                          <a href={isBanned ? '#' : '/api/auth/connect'} className={`inline-flex items-center justify-center gap-2 px-8 py-2.5 bg-primary text-primary-foreground rounded-[8px] font-bold text-xs transition-all ${isBanned ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}>
                             <Instagram size={16} /> Connect Account
                           </a>
                         </div>
@@ -278,7 +278,7 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                       <p className="text-muted-foreground text-xs font-medium">Manage your subscription.</p>
                     </div>
                     <div className="grid gap-4">
-                      <div className="p-6 rounded-xl bg-card border border-border flex items-center justify-between">
+                      <div className="p-6 rounded-[8px] bg-card border border-border flex items-center justify-between">
                         <div>
                           <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">Current Plan</p>
                           <h4 className="text-xl font-bold tracking-tight uppercase">{plan}</h4>
@@ -286,12 +286,12 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                         <button 
                           onClick={onUpgrade} 
                           disabled={isBanned}
-                          className={`px-6 py-2 bg-primary text-primary-foreground rounded-lg font-bold text-xs hover:brightness-110 transition-all ${isBanned ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          className={`px-6 py-2 bg-primary text-primary-foreground rounded-[8px] font-bold text-xs hover:brightness-110 transition-all ${isBanned ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                           Upgrade Plan
                         </button>
                       </div>
-                      <div className="p-6 rounded-xl bg-card border border-border">
+                      <div className="p-6 rounded-[8px] bg-card border border-border">
                          <div className="flex items-center justify-between mb-4">
                            <h4 className="text-sm font-bold">Payment Method</h4>
                            <button 
@@ -305,8 +305,8 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                              Update
                            </button>
                          </div>
-                         <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/20 border border-border/40">
-                            <div className="w-10 h-6 bg-card border border-border rounded flex items-center justify-center font-bold text-[8px] uppercase">{paymentMethod.type}</div>
+                         <div className="flex items-center gap-3 p-3 rounded-[8px] bg-muted/20 border border-border/40">
+                            <div className="w-10 h-6 bg-card border border-border rounded-[8px] flex items-center justify-center font-bold text-[8px] uppercase">{paymentMethod.type}</div>
                             <div>
                                <p className="text-xs font-bold">{paymentMethod.type === 'PayPal' ? paymentMethod.email : `•••• ${paymentMethod.last4}`}</p>
                                <p className="text-[9px] text-muted-foreground font-medium">{paymentMethod.type === 'PayPal' ? 'Connected' : `Expires ${paymentMethod.expiry}`}</p>
@@ -326,10 +326,10 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                     </div>
 
                     {/* Password Section */}
-                    <div className="p-6 rounded-xl bg-card border border-border space-y-5">
+                    <div className="p-6 rounded-[8px] bg-card border border-border space-y-5">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-[8px] bg-primary/10 text-primary flex items-center justify-center">
                             <Lock size={16} />
                           </div>
                           <h4 className="text-sm font-bold">Change Password</h4>
@@ -353,7 +353,7 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                             placeholder="••••••••" 
                             value={passwords.current}
                             onChange={e => setPasswords({...passwords, current: e.target.value})}
-                            className="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-lg text-xs outline-none focus:ring-2 focus:ring-primary/20 transition-all" 
+                            className="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-[8px] text-xs outline-none focus:ring-2 focus:ring-primary/20 transition-all" 
                           />
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -364,7 +364,7 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                               placeholder="••••••••" 
                               value={passwords.new}
                               onChange={e => setPasswords({...passwords, new: e.target.value})}
-                              className="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-lg text-xs outline-none focus:ring-2 focus:ring-primary/20 transition-all" 
+                              className="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-[8px] text-xs outline-none focus:ring-2 focus:ring-primary/20 transition-all" 
                             />
                           </div>
                           <div className="space-y-1.5">
@@ -374,14 +374,14 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                               placeholder="••••••••" 
                               value={passwords.confirm}
                               onChange={e => setPasswords({...passwords, confirm: e.target.value})}
-                              className="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-lg text-xs outline-none focus:ring-2 focus:ring-primary/20 transition-all" 
+                              className="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-[8px] text-xs outline-none focus:ring-2 focus:ring-primary/20 transition-all" 
                             />
                           </div>
                         </div>
                       </div>
 
                       {!hasPassword && (
-                        <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-center gap-3">
+                        <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-[8px] flex items-center gap-3">
                           <AlertTriangle size={14} className="text-amber-500" />
                           <p className="text-[10px] font-medium text-amber-700">
                             Your account is linked with <span className="font-bold">Google</span>. Password management is handled through your Google Account settings.
@@ -425,7 +425,7 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                               setPassLoad(false);
                             }
                           }}
-                          className="px-6 py-2 bg-primary text-primary-foreground rounded-lg font-bold text-xs hover:brightness-110 transition-all disabled:opacity-50"
+                          className="px-6 py-2 bg-primary text-primary-foreground rounded-[8px] font-bold text-xs hover:brightness-110 transition-all disabled:opacity-50"
                         >
                           {passLoad ? "Updating..." : "Update Password"}
                         </button>
@@ -433,9 +433,9 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                     </div>
 
                     {/* 2FA Section */}
-                    <div className="p-6 rounded-xl bg-card border border-border flex items-center justify-between">
+                    <div className="p-6 rounded-[8px] bg-card border border-border flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-green-500/10 text-green-600 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-[8px] bg-green-500/10 text-green-600 flex items-center justify-center">
                           <Shield size={20} />
                         </div>
                         <div>
@@ -445,11 +445,11 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                       </div>
                       <button 
                         onClick={() => setTwoFactor(!twoFactor)}
-                        className={`relative w-10 h-5 rounded-full transition-colors duration-200 focus:outline-none ${twoFactor ? 'bg-primary' : 'bg-muted'}`}
+                        className={`relative w-10 h-5 rounded-[8px] transition-colors duration-200 focus:outline-none ${twoFactor ? 'bg-primary' : 'bg-muted'}`}
                       >
                         <motion.div 
                           animate={{ x: twoFactor ? 20 : 2 }}
-                          className="absolute top-1 w-3 h-3 bg-white rounded-full shadow-sm"
+                          className="absolute top-1 w-3 h-3 bg-white rounded-[8px] shadow-sm"
                         />
                       </button>
                     </div>
@@ -457,7 +457,7 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                 )}
 
                 {activeTab === 'notifications' && (
-                   <div className="p-20 text-center rounded-xl bg-muted/20 border-2 border-dashed border-border">
+                   <div className="p-20 text-center rounded-[8px] bg-muted/20 border-2 border-dashed border-border">
                       <h4 className="text-base font-bold mb-1">Refining notifications...</h4>
                       <p className="text-xs text-muted-foreground">This section is being updated with advanced features.</p>
                    </div>
@@ -482,10 +482,10 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
               initial={{ opacity: 0, scale: 0.95, y: 20 }} 
               animate={{ opacity: 1, scale: 1, y: 0 }} 
               exit={{ opacity: 0, scale: 0.95, y: 20 }} 
-              className="relative bg-card border border-border rounded-3xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col z-10"
+              className="relative bg-card border border-border rounded-[8px] w-full max-w-md overflow-hidden shadow-2xl flex flex-col z-10"
             >
                <div className="p-6 border-b border-border flex items-center justify-between">
-                 <button type="button" onClick={() => setShowPaymentModal(false)} className="p-2 hover:bg-muted rounded-xl transition-all"><X size={18} /></button>
+                 <button type="button" onClick={() => setShowPaymentModal(false)} className="p-2 hover:bg-muted rounded-[8px] transition-all"><X size={18} /></button>
                </div>
                <div className="p-6 space-y-4">
                   <AnimatePresence mode="wait">
@@ -502,9 +502,9 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                         <button 
                           type="button"
                           onClick={() => setModalStep('card')}
-                          className="w-full flex items-center gap-4 p-4 rounded-2xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all group"
+                          className="w-full flex items-center gap-4 p-4 rounded-[8px] border border-border hover:border-primary/50 hover:bg-primary/5 transition-all group"
                         >
-                          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                          <div className="w-12 h-12 bg-primary/10 rounded-[8px] flex items-center justify-center text-primary">
                             <CreditCard size={24} />
                           </div>
                           <div className="text-left flex-1">
@@ -517,9 +517,9 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                         <button 
                           type="button"
                           onClick={() => setModalStep('paypal')}
-                          className="w-full flex items-center gap-4 p-4 rounded-2xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all group"
+                          className="w-full flex items-center gap-4 p-4 rounded-[8px] border border-border hover:border-primary/50 hover:bg-primary/5 transition-all group"
                         >
-                          <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-600">
+                          <div className="w-12 h-12 bg-blue-500/10 rounded-[8px] flex items-center justify-center text-blue-600">
                             <span className="font-black text-xl italic">P</span>
                           </div>
                           <div className="text-left flex-1">
@@ -546,7 +546,7 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                             placeholder="0000 0000 0000 0000" 
                             value={cardDetails.number}
                             onChange={e => setCardDetails({...cardDetails, number: e.target.value})}
-                            className="w-full px-4 py-3 bg-muted/30 border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                            className="w-full px-4 py-3 bg-muted/30 border border-border rounded-[8px] text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
                           />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
@@ -557,7 +557,7 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                               placeholder="MM/YY" 
                               value={cardDetails.expiry}
                               onChange={e => setCardDetails({...cardDetails, expiry: e.target.value})}
-                              className="w-full px-4 py-3 bg-muted/30 border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                              className="w-full px-4 py-3 bg-muted/30 border border-border rounded-[8px] text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
                             />
                           </div>
                           <div className="space-y-1.5">
@@ -567,7 +567,7 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                               placeholder="123" 
                               value={cardDetails.cvc}
                               onChange={e => setCardDetails({...cardDetails, cvc: e.target.value})}
-                              className="w-full px-4 py-3 bg-muted/30 border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                              className="w-full px-4 py-3 bg-muted/30 border border-border rounded-[8px] text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
                             />
                           </div>
                         </div>
@@ -575,7 +575,7 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                           type="button"
                           disabled={isProcessing}
                           onClick={() => handleRazorpayPayment()}
-                          className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-bold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/20 disabled:opacity-50"
+                          className="w-full py-3 bg-primary text-primary-foreground rounded-[8px] font-bold text-sm hover:brightness-110 transition-all shadow-lg shadow-primary/20 disabled:opacity-50"
                         >
                           {isProcessing ? "Processing..." : "Pay & Save Card"}
                         </button>
@@ -602,7 +602,7 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
                           type="button"
                           disabled={isProcessing}
                           onClick={() => handleRazorpayPayment()}
-                          className="w-full py-3 bg-[#0070ba] text-white rounded-xl font-bold text-sm hover:brightness-110 transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50"
+                          className="w-full py-3 bg-[#0070ba] text-white rounded-[8px] font-bold text-sm hover:brightness-110 transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50"
                         >
                           {isProcessing ? "Connecting..." : "Pay with PayPal / Razorpay"}
                         </button>
@@ -630,7 +630,7 @@ export function SettingsView({ plan, igConnected, igUsername, igImage, onUpgrade
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-8 right-8 z-[200] px-6 py-3 bg-ink text-white rounded-xl shadow-2xl flex items-center gap-3 border border-white/10"
+            className="fixed bottom-8 right-8 z-[200] px-6 py-3 bg-ink text-white rounded-[8px] shadow-2xl flex items-center gap-3 border border-white/10"
           >
             <div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center">
               <CheckCircle size={12} color="#fff" />

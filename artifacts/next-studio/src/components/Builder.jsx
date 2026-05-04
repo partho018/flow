@@ -167,10 +167,10 @@ export function Builder({ automation, onBack, onSave }) {
       {/* Header */}
       <header className="h-auto min-h-[64px] flex flex-col sm:flex-row items-center justify-between px-4 sm:px-8 py-3 sm:py-0 border-b border-border bg-card/80 backdrop-blur-xl sticky top-0 z-10 gap-4">
         <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
-          <button onClick={onBack} className="p-2 hover:bg-muted rounded-xl transition-all">
+          <button onClick={onBack} className="p-2 hover:bg-muted rounded-[8px] transition-all">
             <ArrowLeft size={18} className="text-muted-foreground" />
           </button>
-          <div className="flex-1 flex items-center gap-2 px-3 py-1 bg-muted/50 border border-border rounded-xl group max-w-[200px] sm:max-w-none">
+          <div className="flex-1 flex items-center gap-2 px-3 py-1 bg-muted/50 border border-border rounded-[8px] group max-w-[200px] sm:max-w-none">
             <input 
               value={name}
               onChange={e => setName(e.target.value)}
@@ -199,7 +199,7 @@ export function Builder({ automation, onBack, onSave }) {
             <button 
               onClick={handleSave}
               disabled={!isDone.trigger}
-              className="flex items-center gap-2.5 px-5 py-2.5 bg-primary text-primary-foreground rounded-xl text-xs font-bold shadow-lg shadow-primary/25 hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100"
+              className="flex items-center gap-2.5 px-5 py-2.5 bg-primary text-primary-foreground rounded-[8px] text-xs font-bold shadow-lg shadow-primary/25 hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100"
             >
               <Save size={16} className="shrink-0" /> 
               <span className="whitespace-nowrap">{isNew ? 'Publish' : 'Save'}</span>
@@ -227,7 +227,7 @@ export function Builder({ automation, onBack, onSave }) {
                   key={t.id}
                   disabled={t.comingSoon}
                   onClick={() => { setTT(t.id); setOpenSection('post'); }}
-                  className={`group p-3.5 sm:p-5 rounded-2xl border transition-all text-left flex items-center gap-3.5 sm:gap-5 ${triggerType === t.id ? "bg-primary/5 border-primary shadow-md" : "bg-card border-border hover:border-primary/20"} ${t.comingSoon ? "opacity-50 grayscale cursor-not-allowed" : "cursor-pointer"}`}
+                  className={`group p-3.5 sm:p-5 rounded-[8px] border transition-all text-left flex items-center gap-3.5 sm:gap-5 ${triggerType === t.id ? "bg-primary/5 border-primary shadow-md" : "bg-card border-border hover:border-primary/20"} ${t.comingSoon ? "opacity-50 grayscale cursor-not-allowed" : "cursor-pointer"}`}
                 >
                   <div className={`p-2 sm:p-2.5 rounded-xl ${triggerType === t.id ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"} ${t.id === 'comment' || t.id === 'live' || t.id === 'story' || t.id === 'mention' ? "text-pink-500" : ""}`}>
                     <t.icon size={20} className={t.id === 'comment' || t.id === 'live' || t.id === 'story' || t.id === 'mention' ? "fill-pink-500/10" : ""} />
@@ -258,21 +258,21 @@ export function Builder({ automation, onBack, onSave }) {
               <div className="flex gap-3">
                 <button 
                   onClick={() => { setSP({ id: 'all', label: 'All Posts' }); setOpenSection('kw'); }}
-                  className={`flex-1 p-2.5 rounded-xl border transition-all text-center space-y-1.5 ${selectedPost?.id === 'all' ? "bg-primary/5 border-primary shadow-md" : "bg-card border-border hover:border-primary/20"}`}
+                  className={`flex-1 p-2.5 rounded-[8px] border transition-all text-center space-y-1.5 ${selectedPost?.id === 'all' ? "bg-primary/5 border-primary shadow-md" : "bg-card border-border hover:border-primary/20"}`}
                 >
                   <Layers size={18} className={`mx-auto ${selectedPost?.id === 'all' ? "text-primary" : "text-muted-foreground"}`} />
                   <p className="text-[10px] font-bold">Monitor All Posts</p>
                 </button>
                 <button 
                   onClick={() => setShowPostModal(true)}
-                  className={`flex-1 p-2.5 rounded-xl border transition-all text-center space-y-1.5 ${selectedPost?.id !== 'all' && selectedPost ? "bg-primary/5 border-primary shadow-md" : "bg-card border-border hover:border-primary/20"}`}
+                  className={`flex-1 p-2.5 rounded-[8px] border transition-all text-center space-y-1.5 ${selectedPost?.id !== 'all' && selectedPost ? "bg-primary/5 border-primary shadow-md" : "bg-card border-border hover:border-primary/20"}`}
                 >
                   <MousePointer size={18} className={`mx-auto ${selectedPost?.id !== 'all' && selectedPost ? "text-primary" : "text-muted-foreground"}`} />
                   <p className="text-[10px] font-bold">Specific Post</p>
                 </button>
               </div>
               {selectedPost && selectedPost.id !== 'all' && (
-                <div className="mt-4 p-4 rounded-2xl bg-muted/50 border border-border flex items-center gap-4">
+                <div className="mt-4 p-4 rounded-[8px] bg-muted/50 border border-border flex items-center gap-4">
                   <div className="w-12 h-12 rounded-lg bg-border overflow-hidden">
                     {selectedPost.thumbnail && <img src={selectedPost.thumbnail} alt="" className="w-full h-full object-cover" />}
                   </div>
@@ -297,7 +297,7 @@ export function Builder({ automation, onBack, onSave }) {
               isDone={isDone.kw}
             >
               <div className="space-y-6">
-                 <div className="flex items-center justify-between p-4 bg-muted/30 border border-border/50 rounded-2xl">
+                 <div className="flex items-center justify-between p-4 bg-muted/30 border border-border/50 rounded-[8px]">
                     <div className="flex items-center gap-3 text-muted-foreground">
                        <Zap size={16} />
                        <p className="text-xs font-bold">Trigger on any comment</p>
@@ -318,11 +318,11 @@ export function Builder({ automation, onBack, onSave }) {
                          onChange={e => setKwI(e.target.value)}
                          onKeyDown={e => e.key === 'Enter' && (setKws([...keywords, kwInput]), setKwI(''))}
                          placeholder="Add keyword (e.g. 'price')"
-                         className="flex-1 px-4 py-3 bg-card border border-border rounded-xl text-sm focus:ring-4 focus:ring-primary/10 transition-all outline-none"
+                         className="flex-1 px-4 py-3 bg-card border border-border rounded-[8px] text-sm focus:ring-4 focus:ring-primary/10 transition-all outline-none"
                        />
                        <button 
                         onClick={() => { if(kwInput) { setKws([...keywords, kwInput]); setKwI(''); } }}
-                        className="px-6 py-3 bg-primary text-primary-foreground rounded-xl text-xs font-bold hover:scale-105 active:scale-95 transition-all"
+                        className="px-6 py-3 bg-primary text-primary-foreground rounded-[8px] text-xs font-bold hover:scale-105 active:scale-95 transition-all"
                        >
                          Add
                        </button>
@@ -365,7 +365,7 @@ export function Builder({ automation, onBack, onSave }) {
                        animate={{ opacity: 1, x: 0 }}
                        className="flex items-center gap-3 group"
                      >
-                       <div className="w-1.5 h-1.5 rounded-full bg-border group-hover:bg-primary transition-colors shrink-0" />
+                       <div className="w-1.5 h-1.5 rounded-[8px] bg-border group-hover:bg-primary transition-colors shrink-0" />
                        <div className="flex-1">
                          <input 
                            value={reply}
@@ -374,13 +374,13 @@ export function Builder({ automation, onBack, onSave }) {
                              newReps[idx] = e.target.value;
                              setReps(newReps);
                            }}
-                           className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-2xl text-xs font-medium focus:ring-4 focus:ring-primary/5 focus:border-primary/20 focus:bg-card transition-all outline-none"
+                           className="w-full px-4 py-3 bg-muted/20 border border-border/50 rounded-[8px] text-xs font-medium focus:ring-4 focus:ring-primary/5 focus:border-primary/20 focus:bg-card transition-all outline-none"
                            placeholder="Type a reply..."
                          />
                        </div>
                        <button 
                          onClick={() => setReps(replies.filter((_, i) => i !== idx))}
-                         className="p-2.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-xl transition-all"
+                         className="p-2.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-[8px] transition-all"
                        >
                          <Trash2 size={16} />
                        </button>
@@ -390,7 +390,7 @@ export function Builder({ automation, onBack, onSave }) {
                  
                  <button 
                    onClick={() => setReps([...replies, ''])}
-                   className="w-full py-4 border-2 border-dashed border-border/60 hover:border-primary/30 rounded-[24px] text-muted-foreground hover:text-primary transition-all flex items-center justify-center gap-2 group bg-muted/5 hover:bg-primary/5"
+                   className="w-full py-4 border-2 border-dashed border-border/60 hover:border-primary/30 rounded-[8px] text-muted-foreground hover:text-primary transition-all flex items-center justify-center gap-2 group bg-muted/5 hover:bg-primary/5"
                  >
                    <Plus size={18} className="group-hover:scale-125 transition-transform" />
                    <span className="text-xs font-bold uppercase tracking-tight">Add New Reply</span>
@@ -398,7 +398,7 @@ export function Builder({ automation, onBack, onSave }) {
 
                  <button 
                    onClick={() => setOpenSection(null)}
-                   className="w-full py-4 bg-primary text-primary-foreground rounded-[24px] text-sm font-bold shadow-lg shadow-primary/20 hover:brightness-110 active:scale-[0.98] transition-all"
+                   className="w-full py-4 bg-primary text-primary-foreground rounded-[8px] text-sm font-bold shadow-lg shadow-primary/20 hover:brightness-110 active:scale-[0.98] transition-all"
                  >
                    Confirm
                  </button>
@@ -415,7 +415,7 @@ export function Builder({ automation, onBack, onSave }) {
         {showPostModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowPostModal(false)} className="absolute inset-0 bg-black/80 backdrop-blur-md" />
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative bg-card border border-border w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl sm:rounded-[40px] shadow-2xl flex flex-col">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative bg-card border border-border w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-[8px] shadow-2xl flex flex-col">
                <div className="p-5 sm:p-8 border-b border-border flex items-center justify-between bg-card/50 backdrop-blur-md">
                  <div className="min-w-0">
                    <h3 className="text-xl sm:text-2xl font-black tracking-tighter truncate">Select Instagram Content</h3>
@@ -467,7 +467,7 @@ export function Builder({ automation, onBack, onSave }) {
                         <button 
                           key={p.id}
                           onClick={() => { setSP(p); setShowPostModal(false); setOpenSection('kw'); }}
-                          className={`group relative aspect-square rounded-[24px] overflow-hidden border-2 transition-all ${selectedPost?.id === p.id ? "border-primary" : "border-transparent hover:border-white/20"}`}
+                          className={`group relative aspect-square rounded-[8px] overflow-hidden border-2 transition-all ${selectedPost?.id === p.id ? "border-primary" : "border-transparent hover:border-white/20"}`}
                         >
                           <img src={p.thumbnail} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">

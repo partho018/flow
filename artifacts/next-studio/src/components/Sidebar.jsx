@@ -28,7 +28,7 @@ export function Sidebar({ activeView, onViewChange, isDarkMode, onToggleDarkMode
         {/* Brand */}
         <div className="p-5 flex items-center justify-between border-b border-border">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-md shadow-primary/10">
+            <div className="w-8 h-8 rounded-[8px] bg-primary flex items-center justify-center shadow-md shadow-primary/10">
               <Zap size={16} className="text-primary-foreground fill-primary-foreground" />
             </div>
             <div>
@@ -36,7 +36,7 @@ export function Sidebar({ activeView, onViewChange, isDarkMode, onToggleDarkMode
               <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">{plan} Plan</p>
             </div>
           </div>
-          <button onClick={onClose} className="md:hidden p-1 hover:bg-muted rounded-lg transition-colors">
+          <button onClick={onClose} className="md:hidden p-1 hover:bg-muted rounded-[8px] transition-colors">
             <X size={18} className="text-muted-foreground" />
           </button>
         </div>
@@ -45,7 +45,7 @@ export function Sidebar({ activeView, onViewChange, isDarkMode, onToggleDarkMode
         <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
           {/* Profile Card */}
           <div className="mb-6">
-            <div className="p-3.5 rounded-xl bg-muted/40 border border-border/40 group hover:border-primary/20 transition-colors">
+            <div className="p-3.5 rounded-[8px] bg-muted/40 border border-border/40 group hover:border-primary/20 transition-colors">
               <div className="flex items-center gap-3 mb-3">
                 <div className="relative">
                   <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 via-pink-500 to-orange-500 p-0.5">
@@ -88,7 +88,7 @@ export function Sidebar({ activeView, onViewChange, isDarkMode, onToggleDarkMode
             <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Menu</span>
             <button 
               onClick={() => { onViewChange('automations'); onNew(); onClose(); }}
-              className="p-1 hover:bg-primary/10 rounded-md text-primary transition-colors group"
+              className="p-1 hover:bg-primary/10 rounded-[8px] text-primary transition-colors group"
               title="Create New Flow"
             >
               <Plus size={14} strokeWidth={3} className="group-hover:rotate-90 transition-transform" />
@@ -99,7 +99,7 @@ export function Sidebar({ activeView, onViewChange, isDarkMode, onToggleDarkMode
               <button
                 key={item.id}
                 onClick={() => { onViewChange(item.id); onClose(); }}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 group relative ${
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-[8px] transition-all duration-300 group relative ${
                   activeView === item.id 
                     ? "text-primary bg-primary/[0.04]" 
                     : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
@@ -112,7 +112,7 @@ export function Sidebar({ activeView, onViewChange, isDarkMode, onToggleDarkMode
                 />
                 <span className="text-xs font-black tracking-tight flex-1 text-left">{item.label}</span>
                 {item.badge && (
-                  <span className={`text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md ${
+                  <span className={`text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-[8px] ${
                     activeView === item.id 
                       ? 'bg-primary/20 text-primary' 
                       : 'bg-muted text-muted-foreground/60'
@@ -134,28 +134,27 @@ export function Sidebar({ activeView, onViewChange, isDarkMode, onToggleDarkMode
         </nav>
 
         {/* Footer */}
-        <div className="p-3 border-t border-border bg-muted/10">
+        <div className="p-3 border-t border-border bg-muted/10 space-y-2">
           <button 
             onClick={() => { onUpgrade(); onClose(); }}
-            className="w-full mb-2 flex items-center justify-center gap-2 py-2 rounded-md bg-primary text-primary-foreground text-xs font-bold hover:brightness-110 transition-all"
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-[8px] bg-primary text-primary-foreground text-xs font-bold hover:brightness-110 transition-all shadow-lg shadow-primary/10"
           >
             <Crown size={14} /> Upgrade Plan
           </button>
           
-          <div className="flex gap-2">
-            <button 
-              onClick={onToggleDarkMode}
-              className="flex-1 flex items-center justify-center p-2 rounded-md bg-card border border-border text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
-            <button 
-              onClick={onLogout}
-              className="flex-1 flex items-center justify-center p-2 rounded-md bg-card border border-border text-muted-foreground hover:text-destructive transition-colors"
-            >
-              <LogOut size={16} />
-            </button>
-          </div>
+          <button 
+            onClick={onToggleDarkMode}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-[8px] bg-card border border-border text-muted-foreground hover:text-foreground transition-all text-[11px] font-bold"
+          >
+            {isDarkMode ? <><Sun size={14} /> Light Mode</> : <><Moon size={14} /> Dark Mode</>}
+          </button>
+
+          <button 
+            onClick={onLogout}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-[8px] bg-red-500/5 border border-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all text-[11px] font-bold"
+          >
+            <LogOut size={14} /> Logout
+          </button>
         </div>
       </aside>
     </>

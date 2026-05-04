@@ -9,7 +9,8 @@ export async function GET(req: NextRequest) {
   const isGlobal = req.nextUrl.searchParams.get("global") === "true";
 
   if (isGlobal) {
-    if (!isAdmin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // Pricing and global settings should be readable by any authenticated user
+    if (!session?.user?.id && !isAdmin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     return NextResponse.json({ settings: await getSettings("SYSTEM_GLOBAL") });
   }
 

@@ -25,7 +25,7 @@ export function AutoList({ automations, onNew, onEdit, onDelete, onUpgrade, onMe
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search flows..." 
-              className="pl-9 pr-4 py-1.5 bg-muted/50 border border-border rounded-lg text-xs focus:ring-2 focus:ring-primary/20 transition-all outline-none w-48 md:w-64 font-medium"
+              className="pl-9 pr-4 py-1.5 bg-muted/50 border border-border rounded-[8px] text-xs focus:ring-2 focus:ring-primary/20 transition-all outline-none w-48 md:w-64 font-medium"
             />
           </div>
         </div>
@@ -35,7 +35,7 @@ export function AutoList({ automations, onNew, onEdit, onDelete, onUpgrade, onMe
         <div className="max-w-6xl mx-auto space-y-8">
           
           {/* Unlock Pro Banner */}
-          <section className="bg-primary rounded-lg p-6 text-white shadow-xl shadow-primary/20 relative overflow-hidden group">
+          <section className="bg-primary rounded-[8px] p-6 text-white shadow-xl shadow-primary/20 relative overflow-hidden group">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
               <div className="space-y-1 text-center md:text-left">
                 <h2 className="text-xl font-black tracking-tight flex items-center justify-center md:justify-start gap-2">
@@ -45,7 +45,7 @@ export function AutoList({ automations, onNew, onEdit, onDelete, onUpgrade, onMe
               </div>
               <button 
                 onClick={onUpgrade}
-                className="px-6 py-2.5 bg-white text-primary rounded-xl font-black text-sm shadow-lg hover:scale-105 active:scale-95 transition-all"
+                className="px-6 py-2.5 bg-white text-primary rounded-[7px] font-black text-sm shadow-lg hover:scale-105 active:scale-95 transition-all"
               >
                 Upgrade to Pro
               </button>
@@ -62,7 +62,7 @@ export function AutoList({ automations, onNew, onEdit, onDelete, onUpgrade, onMe
             <button 
               onClick={onNew}
               disabled={isBanned}
-              className="px-6 py-2 bg-primary text-white rounded-xl font-black text-sm shadow-lg shadow-primary/20 flex items-center gap-2 hover:brightness-110 active:scale-95 disabled:opacity-50 transition-all"
+              className="px-6 py-2 bg-primary text-white rounded-[7px] font-black text-sm shadow-lg shadow-primary/20 flex items-center gap-2 hover:brightness-110 active:scale-95 disabled:opacity-50 transition-all"
             >
               <Plus size={18} strokeWidth={3} />
               Create
@@ -70,7 +70,7 @@ export function AutoList({ automations, onNew, onEdit, onDelete, onUpgrade, onMe
           </div>
 
           {/* List Table */}
-          <div className="bg-card border border-border rounded-lg overflow-hidden shadow-sm">
+          <div className="bg-card border border-border rounded-[8px] overflow-hidden shadow-sm">
             <div className="hidden md:grid grid-cols-12 gap-4 px-8 py-5 border-b border-border bg-muted/20">
               <div className="col-span-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Image</div>
               <div className="col-span-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Name</div>
@@ -98,7 +98,7 @@ export function AutoList({ automations, onNew, onEdit, onDelete, onUpgrade, onMe
                     <button 
                       onClick={onNew} 
                       disabled={isBanned}
-                      className="px-8 py-3 bg-primary text-white rounded-2xl font-black text-sm shadow-lg shadow-primary/20 flex items-center gap-2 mx-auto hover:scale-105 active:scale-95 disabled:opacity-50 transition-all"
+                      className="px-8 py-3 bg-primary text-white rounded-[7px] font-black text-sm shadow-lg shadow-primary/20 flex items-center gap-2 mx-auto hover:scale-105 active:scale-95 disabled:opacity-50 transition-all"
                     >
                       <Plus size={18} strokeWidth={3} />
                       Create Automation
@@ -203,8 +203,8 @@ export function AutoList({ automations, onNew, onEdit, onDelete, onUpgrade, onMe
                         </div>
                       </div>
                       <div className="flex items-center gap-1">
-                        <button onClick={() => onEdit(auto)} className="p-2 hover:bg-muted rounded-lg transition-colors"><Edit2 size={16} className="text-muted-foreground" /></button>
-                        <button onClick={() => setConfirmDelete(auto)} className="p-2 hover:bg-destructive/10 rounded-lg transition-colors"><Trash2 size={16} className="text-destructive/60" /></button>
+                        <button onClick={() => onEdit(auto)} className="p-2 hover:bg-muted rounded-[8px] transition-colors"><Edit2 size={16} className="text-muted-foreground" /></button>
+                        <button onClick={() => setConfirmDelete(auto)} className="p-2 hover:bg-destructive/10 rounded-[8px] transition-colors"><Trash2 size={16} className="text-destructive/60" /></button>
                       </div>
                     </div>
                   </div>
@@ -221,14 +221,14 @@ export function AutoList({ automations, onNew, onEdit, onDelete, onUpgrade, onMe
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setConfirmDelete(null)} className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative bg-card border border-border p-8 rounded-3xl w-full max-w-sm shadow-2xl">
-              <div className="w-12 h-12 bg-destructive/10 text-destructive rounded-2xl flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-destructive/10 text-destructive rounded-[8px] flex items-center justify-center mb-4">
                 <Trash2 size={24} />
               </div>
               <h3 className="text-xl font-black tracking-tight mb-1 text-foreground">Delete Flow?</h3>
               <p className="text-muted-foreground text-[13px] mb-8 font-medium">Are you sure you want to delete <span className="text-foreground font-bold italic">"{confirmDelete.name}"</span>? This action cannot be undone.</p>
               <div className="grid grid-cols-2 gap-3">
-                <button onClick={() => setConfirmDelete(null)} className="py-2.5 bg-muted text-foreground rounded-xl font-bold text-xs hover:bg-muted/70 transition-all">Cancel</button>
-                <button onClick={() => { onDelete(confirmDelete.id); setConfirmDelete(null); }} className="py-2.5 bg-destructive text-white rounded-xl font-bold text-xs hover:brightness-110 transition-all shadow-lg shadow-destructive/20">Delete</button>
+                <button onClick={() => setConfirmDelete(null)} className="py-2.5 bg-muted text-foreground rounded-[7px] font-bold text-xs hover:bg-muted/70 transition-all">Cancel</button>
+                <button onClick={() => { onDelete(confirmDelete.id); setConfirmDelete(null); }} className="py-2.5 bg-destructive text-white rounded-[7px] font-bold text-xs hover:brightness-110 transition-all shadow-lg shadow-destructive/20">Delete</button>
               </div>
             </motion.div>
           </div>

@@ -53,7 +53,7 @@ export function HomeView({ greeting, automations, onNew, igConnected, igUsername
             <motion.div 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="relative overflow-hidden group p-6 rounded-lg bg-gradient-to-r from-primary to-primary/80 text-white shadow-xl shadow-primary/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              className="relative overflow-hidden group p-6 rounded-[8px] bg-gradient-to-r from-primary to-primary/80 text-white shadow-xl shadow-primary/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
             >
               <div className="space-y-1 relative z-10">
                 <h3 className="text-xl font-black tracking-tight flex items-center gap-2">Unlock Pro Power!</h3>
@@ -62,7 +62,7 @@ export function HomeView({ greeting, automations, onNew, igConnected, igUsername
               <button 
                 onClick={onUpgrade}
                 disabled={isBanned}
-                className={`relative z-10 px-6 py-3 bg-white text-primary rounded-lg font-black text-xs shadow-lg hover:scale-105 active:scale-95 transition-all flex-shrink-0 ${isBanned ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+                className={`relative z-10 px-6 py-3 bg-white text-primary rounded-[8px] font-black text-xs shadow-lg hover:scale-105 active:scale-95 transition-all flex-shrink-0 ${isBanned ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
               >
                 Upgrade to Pro
               </button>
@@ -91,9 +91,9 @@ export function HomeView({ greeting, automations, onNew, igConnected, igUsername
             </div>
             <button 
               onClick={onNew}
-              className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl font-bold text-sm shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all group"
+              className="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-[8px] font-bold text-sm shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all group"
             >
-              <div className="w-5 h-5 rounded-lg bg-white/20 flex items-center justify-center group-hover:rotate-90 transition-transform">
+              <div className="w-5 h-5 rounded-[8px] bg-white/20 flex items-center justify-center group-hover:rotate-90 transition-transform">
                 <Plus size={14} strokeWidth={3} />
               </div>
               Create New
@@ -105,9 +105,9 @@ export function HomeView({ greeting, automations, onNew, igConnected, igUsername
               <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="relative z-30 bg-card border border-border p-6 md:p-8 rounded-[32px] shadow-2xl max-w-sm w-full text-center space-y-5"
+                className="relative z-30 bg-card border border-border p-6 md:p-8 rounded-[8px] shadow-2xl max-w-sm w-full text-center space-y-5"
               >
-                <div className="w-14 h-14 bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-pink-500/20">
+                <div className="w-14 h-14 bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] text-white rounded-[8px] flex items-center justify-center mx-auto shadow-lg shadow-pink-500/20">
                   <Instagram size={28} />
                 </div>
                 <div className="space-y-1.5">
@@ -119,7 +119,7 @@ export function HomeView({ greeting, automations, onNew, igConnected, igUsername
                 <button 
                   onClick={onConnect}
                   disabled={isBanned}
-                  className={`inline-flex items-center justify-center w-full py-3 bg-gradient-to-r from-[#f09433] via-[#dc2743] to-[#bc1888] text-white rounded-xl font-black text-xs shadow-lg shadow-pink-500/20 hover:brightness-110 active:scale-[0.98] transition-all ${isBanned ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+                  className={`inline-flex items-center justify-center w-full py-3 bg-gradient-to-r from-[#f09433] via-[#dc2743] to-[#bc1888] text-white rounded-[8px] font-black text-xs shadow-lg shadow-pink-500/20 hover:brightness-110 active:scale-[0.98] transition-all ${isBanned ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
                 >
                   Connect Now
                 </button>
@@ -133,10 +133,10 @@ export function HomeView({ greeting, automations, onNew, igConnected, igUsername
                   <motion.div 
                     key={stat.label}
                     whileHover={{ backgroundColor: "rgba(var(--primary-rgb), 0.02)" }}
-                    className="group p-5 rounded-xl bg-card border border-border transition-all duration-300 cursor-default hover:shadow-lg hover:shadow-primary/5 hover:border-primary/30"
+                    className="group p-5 rounded-[8px] bg-card border border-border transition-all duration-300 cursor-default hover:shadow-lg hover:shadow-primary/5 hover:border-primary/30"
                   >
                     <div className="flex justify-between items-start mb-3 sm:mb-4">
-                      <div className={`p-1.5 sm:p-2 rounded-lg bg-muted/50 ${stat.color} group-hover:bg-primary/10 transition-colors`}>
+                      <div className={`p-1.5 sm:p-2 rounded-[8px] bg-muted/50 ${stat.color} group-hover:bg-primary/10 transition-colors`}>
                         <stat.icon size={14} className="sm:w-4 sm:h-4" />
                       </div>
                       <span className="text-[10px] font-bold text-green-600 bg-green-500/5 px-1.5 py-0.5 rounded-md">
@@ -162,7 +162,7 @@ export function HomeView({ greeting, automations, onNew, igConnected, igUsername
                         <button 
                           key={a.id}
                           onClick={() => onNew({ triggerType: a.trigger })}
-                          className={`relative group p-6 rounded-lg bg-card border-2 transition-all text-left flex flex-col gap-4 hover:shadow-xl hover:-translate-y-1 ${a.isPro ? 'border-amber-400/20 hover:border-amber-400' : 'border-border hover:border-primary/40'}`}
+                          className={`relative group p-6 rounded-[8px] bg-card border-2 transition-all text-left flex flex-col gap-4 hover:shadow-xl hover:-translate-y-1 ${a.isPro ? 'border-amber-400/20 hover:border-amber-400' : 'border-border hover:border-primary/40'}`}
                         >
                           {a.badge && (
                             <span className={`absolute top-4 right-4 px-2.5 py-1 rounded-full text-[8px] font-black text-white uppercase tracking-widest ${a.badgeCol}`}>
@@ -170,7 +170,7 @@ export function HomeView({ greeting, automations, onNew, igConnected, igUsername
                             </span>
                           )}
                           
-                          <div className="w-12 h-12 rounded-2xl bg-muted/50 flex items-center justify-center text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-all">
+                          <div className="w-12 h-12 rounded-[8px] bg-muted/50 flex items-center justify-center text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-all">
                             <a.icon size={20} />
                           </div>
 
@@ -197,10 +197,10 @@ export function HomeView({ greeting, automations, onNew, igConnected, igUsername
                     <button onClick={onViewAutomations} className="text-[10px] font-bold text-primary hover:underline">View all +</button>
                   </div>
                   
-                  <div className="flex-1 bg-card border border-border rounded-lg p-4 lg:p-6 shadow-sm overflow-hidden flex flex-col">
+                  <div className="flex-1 bg-card border border-border rounded-[8px] p-4 lg:p-6 shadow-sm overflow-hidden flex flex-col">
                     {automations.filter(a => a.active).length === 0 ? (
                       <div className="flex-1 flex flex-col items-center justify-center text-center space-y-3">
-                        <div className="w-12 h-12 bg-muted/50 rounded-2xl flex items-center justify-center text-muted-foreground/30">
+                        <div className="w-12 h-12 bg-muted/50 rounded-[8px] flex items-center justify-center text-muted-foreground/30">
                           <Zap size={20} />
                         </div>
                         <div className="space-y-0.5">
@@ -211,8 +211,8 @@ export function HomeView({ greeting, automations, onNew, igConnected, igUsername
                     ) : (
                       <div className="flex-1 overflow-y-auto space-y-2.5 pr-2 custom-scrollbar">
                         {automations.filter(a => a.active).map(auto => (
-                          <div key={auto.id} className="group p-3 bg-muted/20 border border-border/50 rounded-[20px] flex items-center gap-3 hover:bg-muted/40 hover:border-primary/20 transition-all">
-                            <div className="w-9 h-9 rounded-xl bg-card border border-border flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                          <div key={auto.id} className="group p-3 bg-muted/20 border border-border/50 rounded-[8px] flex items-center gap-3 hover:bg-muted/40 hover:border-primary/20 transition-all">
+                            <div className="w-9 h-9 rounded-[8px] bg-card border border-border flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                               {auto.triggerType === 'comment' ? <Instagram size={16} /> : <MessageSquare size={16} />}
                             </div>
                             <div className="flex-1 min-w-0">
@@ -231,18 +231,18 @@ export function HomeView({ greeting, automations, onNew, igConnected, igUsername
               </div>
 
               {/* Growth Trend Section - Clean & Simple */}
-              <section className="bg-card border border-border rounded-lg p-6 lg:p-10 space-y-10 shadow-sm">
+              <section className="bg-card border border-border rounded-[8px] p-6 lg:p-10 space-y-10 shadow-sm">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="space-y-1">
                     <h3 className="text-xl font-bold tracking-tight text-foreground">Growth Trend</h3>
                     <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest opacity-70">Followers & Engagement over time</p>
                   </div>
-                  <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-2xl border border-border/10">
+                  <div className="flex items-center gap-1 bg-muted/40 p-1 rounded-[8px] border border-border/10">
                     {['7D', '30D', '90D'].map(t => (
                       <button 
                         key={t} 
                         onClick={() => setTimeframe(t)}
-                        className={`px-5 py-2 rounded-xl text-[10px] font-bold transition-all ${
+                        className={`px-5 py-2 rounded-[8px] text-[10px] font-bold transition-all ${
                           timeframe === t 
                             ? 'bg-primary text-white shadow-lg shadow-primary/20' 
                             : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
@@ -282,7 +282,7 @@ export function HomeView({ greeting, automations, onNew, igConnected, igUsername
 
                         {/* Interactive Tooltip */}
                         <div className="absolute -top-12 left-1/2 -translate-x-1/2 pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 z-30 scale-90 group-hover:scale-100">
-                          <div className="bg-foreground text-background px-3 py-2 rounded-xl text-[9px] font-bold shadow-2xl flex flex-col gap-1 min-w-[100px]">
+                          <div className="bg-foreground text-background px-3 py-2 rounded-[8px] text-[9px] font-bold shadow-2xl flex flex-col gap-1 min-w-[100px]">
                             <div className="flex justify-between gap-3">
                               <span className="text-muted-foreground/60 uppercase tracking-tighter">Followers</span>
                               <span>+{h}%</span>

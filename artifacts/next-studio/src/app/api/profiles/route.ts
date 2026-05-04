@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { db, profiles, users } from "@workspace/db";
+import { db, profiles, users, accounts } from "@workspace/db";
 import { desc, eq } from "drizzle-orm";
 import { sql } from "drizzle-orm";
 
@@ -17,9 +17,20 @@ export async function GET(req: NextRequest) {
 
 
   try {
-    // Raw SQL: NextAuth creates "user" table (singular). All 5 real users are here.
-    const usersResult = await db.execute(sql`SELECT id, name, email, "emailVerified" FROM "user" ORDER BY "emailVerified" DESC NULLS LAST`);
-    const allUsers = usersResult.rows as { id: string; name: string | null; email: string | null; emailVerified: string | null }[];
+    // Use Drizzle's query builder to avoid any SQL syntax/quoting issues
+    const usersResult = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        emailVerified: users.emailVerified,
+        provider: accounts.provider,
+      })
+      .from(users)
+      .leftJoin(accounts, eq(users.id, accounts.userId))
+      .orderBy(desc(users.emailVerified));
+
+    const allUsers = usersResult;
     const userCount = allUsers.length;
 
     // Try to get profiles - if table doesn't exist yet, gracefully skip
@@ -34,22 +45,25 @@ export async function GET(req: NextRequest) {
     // Build merged data: every registered user shows up with real or default data
     const data = allUsers.map(u => {
       const profile = profileMap.get(u.id);
-      return profile || {
-        id: `p_${u.id}`,
-        userId: u.id,
-        name: u.name || 'Unknown',
-        email: u.email || '',
-        plan: 'free',
-        status: 'active',
-        joined: u.emailVerified ? new Date(u.emailVerified).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'Recent',
-        dmsUsed: 0,
-        dmsLimit: 100,
-        followersCount: 0,
-        rev: 0,
-        autos: 0,
-        creditBonus: 0,
-        commentsCaught: 0,
-        igUsername: null,
+      return {
+        ...(profile || {
+          id: `p_${u.id}`,
+          userId: u.id,
+          name: u.name || 'Unknown',
+          email: u.email || '',
+          plan: 'free',
+          status: 'active',
+          joined: u.emailVerified ? new Date(u.emailVerified).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'Recent',
+          dmsUsed: 0,
+          dmsLimit: 100,
+          followersCount: 0,
+          rev: 0,
+          autos: 0,
+          creditBonus: 0,
+          commentsCaught: 0,
+          igUsername: null,
+        }),
+        provider: u.provider || 'credentials' // credentials = Direct Signup
       };
     });
 

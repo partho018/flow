@@ -8,7 +8,7 @@ import {
   Home, Plus, ChevronRight, X, CheckCircle, Ban, ArrowUpRight,
   ArrowDownRight, BarChart2, TrendingUp, Filter, Mail, UserSquare, Phone,
   Download, Search, Edit2, CreditCard, Save, ShoppingBag, Tag, Menu, Trash2,
-  Power, Bell
+  Power, Bell, FileText
 } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 
@@ -17,6 +17,7 @@ const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
+button,a,select,summary,[role="button"],input[type="submit"],input[type="reset"],input[type="button"],input[type="radio"],input[type="checkbox"],label[for]{cursor:pointer}
 :root{
   --bg:#FAFAF9;--s:#fff;--b:#F1F1EF;--b2:#E5E5E2;
   --ink:#0A0A09;--ink2:#262624;--ink3:#52524E;
@@ -142,6 +143,9 @@ textarea.inp{resize:vertical;min-height:100px;line-height:1.6}
 .eye-btn{position:absolute;right:16px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--mu2);display:flex;padding:4px;z-index:2;transition:all .2s}
 .eye-btn:hover{color:var(--ink)}
 .err-box{background:#FEF2F2;border:1px solid #FEE2E2;border-radius:12px;padding:12px 16px;color:var(--red);font-size:13px;display:flex;align-items:center;gap:10px;margin-bottom:20px;font-weight:700}
+.plan-card{padding:16px;background:var(--bg);border:1px solid var(--b);border-radius:16px;cursor:pointer;transition:all .2s;position:relative}
+.plan-card:hover{border-color:var(--acc2);background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.05)}
+.plan-card.sel{border-color:var(--ink);background:#fff;box-shadow:0 4px 12px rgba(0,0,0,.05)}
 `;
 
 /* ─── utils ─── */
@@ -534,7 +538,102 @@ function OrderDetailModal({ order, onClose }) {
         </div>
 
         {/* Footer - Fixed */}
-        <div style={{ padding: '20px 36px', borderTop: '1px solid var(--b)', display: 'flex', justifyContent: 'flex-end', background: 'var(--bg2)', borderBottomLeftRadius: 32, borderBottomRightRadius: 32, flexShrink: 0 }}>
+        <div style={{ padding: '20px 36px', borderTop: '1px solid var(--b)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg2)', borderBottomLeftRadius: 32, borderBottomRightRadius: 32, flexShrink: 0 }}>
+          <button 
+            className="btn-g" 
+            onClick={() => {
+              const win = window.open('', '_blank');
+              const statusCfg = getStatusConfig(order.status);
+              win.document.write(`
+                <html>
+                  <head>
+                    <title>Invoice - ${order.orderId}</title>
+                    <style>
+                      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+                      body { font-family: 'Inter', sans-serif; padding: 40px; color: #1a1a1a; line-height: 1.6; }
+                      .header { display: flex; justify-content: space-between; border-bottom: 2px solid #f1f1f1; padding-bottom: 30px; margin-bottom: 40px; }
+                      .logo { font-size: 24px; font-weight: 800; color: #1877f2; }
+                      .invoice-info { text-align: right; }
+                      .invoice-title { font-size: 32px; font-weight: 800; margin: 0; color: #000; }
+                      .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+                      .section-title { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #666; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+                      .data-row { margin-bottom: 12px; }
+                      .label { font-size: 11px; color: #888; font-weight: 600; }
+                      .value { font-size: 14px; font-weight: 600; }
+                      .total-box { background: #f8f9fc; padding: 30px; border-radius: 16px; text-align: right; margin-top: 40px; }
+                      .total-label { font-size: 12px; font-weight: 800; color: #666; text-transform: uppercase; }
+                      .total-amount { font-size: 36px; font-weight: 800; color: #1877f2; margin-top: 5px; }
+                      .footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #999; text-align: center; }
+                      @media print { .no-print { display: none; } }
+                    </style>
+                  </head>
+                  <body>
+                    <div class="header">
+                      <div class="logo">DM Studio</div>
+                      <div class="invoice-info">
+                        <h1 class="invoice-title">INVOICE</h1>
+                        <div style="margin-top: 8px; font-weight: 600; color: #666;">#${order.orderId}</div>
+                      </div>
+                    </div>
+
+                    <div class="grid">
+                      <div>
+                        <div class="section-title">Billed To</div>
+                        <div style="font-size: 18px; font-weight: 800; margin-bottom: 8px;">${order.billedName || order.userName || 'Customer'}</div>
+                        <div class="data-row"><div class="value">${order.userEmail}</div></div>
+                        <div class="data-row"><div class="value">${order.billedPhone || '—'}</div></div>
+                        <div class="data-row"><div class="value">${order.billedCountry || 'India'}</div></div>
+                      </div>
+                      <div style="text-align: right;">
+                        <div class="section-title">Payment Details</div>
+                        <div class="data-row"><div class="label">Date</div><div class="value">${new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</div></div>
+                        <div class="data-row"><div class="label">Status</div><div class="value" style="color: ${statusCfg.color}">${statusCfg.label}</div></div>
+                        <div class="data-row"><div class="label">Transaction ID</div><div class="value">${order.paymentId || '—'}</div></div>
+                      </div>
+                    </div>
+
+                    <div style="margin-top: 60px;">
+                      <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                          <tr style="text-align: left; border-bottom: 2px solid #000;">
+                            <th style="padding: 15px 0;">Description</th>
+                            <th style="padding: 15px 0; text-align: right;">Amount</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 20px 0;">
+                              <div style="font-weight: 700;">Subscription Plan Upgrade</div>
+                              <div style="font-size: 12px; color: #666; margin-top: 4px;">Premium features and automation access</div>
+                            </td>
+                            <td style="padding: 20px 0; text-align: right; font-weight: 700;">₹${order.amount}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <div class="total-box">
+                      <div class="total-label">Total Amount Paid</div>
+                      <div class="total-amount">₹${order.amount}</div>
+                    </div>
+
+                    <div class="footer">
+                      <p>Thank you for your business! This is a computer-generated invoice.</p>
+                      <p>DM Studio • Support: support@dmstudio.com</p>
+                    </div>
+
+                    <div class="no-print" style="position: fixed; bottom: 30px; right: 30px;">
+                      <button onclick="window.print()" style="background: #1877f2; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(24,119,242,0.3);">Print or Save as PDF</button>
+                    </div>
+                  </body>
+                </html>
+              `);
+              win.document.close();
+            }}
+            style={{ padding: '12px 24px', borderRadius: 14, fontWeight: 900, fontSize: '14px', display: 'flex', alignItems: 'center', gap: 8 }}
+          >
+            <FileText size={16} /> Download Invoice
+          </button>
           <button 
             className="btn-p" 
             onClick={onClose}
@@ -552,7 +651,6 @@ function OrderDetailModal({ order, onClose }) {
 function Overview({ users, totalReg, orders, onMenuToggle }) {
   const totalRev = orders.filter(o => o.status === 'completed' || o.status === 'success').reduce((s, o) => s + Number(o.amount), 0);
   const paid = users.filter(u => u.plan !== 'free').length;
-  
   const revData = getMonthlyRevenue(orders);
   const maxRev = Math.max(...revData.map(d => d.v), 1000);
   const activities = getRecentActivity(users, orders);
@@ -560,10 +658,7 @@ function Overview({ users, totalReg, orders, onMenuToggle }) {
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <div className="topbar">
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <button className="tb-menu" onClick={onMenuToggle}><Menu size={20} /></button>
-          <div className="tb-title">Dashboard Overview</div>
-        </div>
+        <div className="tb-title">Dashboard Overview</div>
         <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--mu)', fontFamily: 'var(--fb)', background: 'var(--bg)', padding: '6px 14px', borderRadius: 10 }}>
           {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
         </div>
@@ -590,56 +685,73 @@ function Overview({ users, totalReg, orders, onMenuToggle }) {
           ))}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 20, marginBottom: 20, alignItems: 'start' }}>
-          <div style={{ background: '#fff', border: '1px solid var(--b)', borderRadius: 24, padding: '28px', boxShadow: '0 1px 4px rgba(0,0,0,.02)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32 }}>
-              <div>
-                <div style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--mu)', fontFamily: 'var(--fb)', marginBottom: 8 }}>Revenue Analytics</div>
-                <div style={{ fontFamily: 'var(--fh)', fontSize: '32px', fontWeight: 900, color: 'var(--ink)', letterSpacing: '-1.5px', lineHeight: 1 }}>₹{revData[revData.length - 1].v.toLocaleString()}</div>
-                <div style={{ fontSize: '13px', color: 'var(--green)', fontWeight: 700, marginTop: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--green)20', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ArrowUpRight size={12} /></div>
-                  +27% from last month
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 20, marginBottom: 20 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {/* Revenue Analytics */}
+            <div style={{ background: '#fff', border: '1px solid var(--b)', borderRadius: 24, padding: '28px', boxShadow: '0 1px 4px rgba(0,0,0,.02)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32 }}>
+                <div>
+                  <div style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--mu)', fontFamily: 'var(--fb)', marginBottom: 8 }}>Revenue Analytics</div>
+                  <div style={{ fontFamily: 'var(--fh)', fontSize: '32px', fontWeight: 900, color: 'var(--ink)', letterSpacing: '-1.5px', lineHeight: 1 }}>₹{revData[revData.length - 1].v.toLocaleString()}</div>
+                  <div style={{ fontSize: '13px', color: 'var(--green)', fontWeight: 700, marginTop: 8, display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--green)20', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ArrowUpRight size={12} /></div>
+                    +27% from last month
+                  </div>
+                </div>
+                <div style={{ padding: '8px 16px', background: 'var(--bg)', borderRadius: 12, fontSize: '12px', fontWeight: 700, color: 'var(--mu2)' }}>Last 8 Months</div>
+              </div>
+              
+              <div className="rev-bars">
+                {revData.map((d, i) => {
+                  const total = d.v + d.p;
+                  const vPct = total > 0 ? (d.v / maxRev * 100) : 0;
+                  const pPct = total > 0 ? (d.p / maxRev * 100) : 0;
+                  return (
+                    <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12, height: '100%', justifyContent: 'flex-end' }}>
+                      <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+                        <div className="rev-bar" style={{ height: `${Math.max(pPct, d.p > 0 ? 5 : 0)}%`, background: 'var(--amber)', opacity: 0.4, borderRadius: d.v > 0 ? '0' : '8px 8px 4px 4px', marginBottom: -2 }} title={`Pending: ₹${d.p}`} />
+                        <div className={`rev-bar ${d.hi ? 'hi' : ''}`} style={{ height: `${Math.max(vPct, d.v > 0 ? 5 : 0)}%`, background: d.hi ? 'var(--acc)' : (d.v > 0 ? 'var(--mu2)' : 'var(--mu2)15') }} title={`Success: ₹${d.v}`} />
+                        {total === 0 && <div style={{ height: 2, background: 'var(--mu2)10', width: '100%', borderRadius: 2 }} />}
+                      </div>
+                      <div style={{ textAlign: 'center', fontSize: '10px', fontFamily: 'var(--fb)', color: d.hi ? 'var(--acc)' : 'var(--mu2)', fontWeight: 800, textTransform: 'uppercase', marginTop: 8 }}>{d.m}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Plan Distribution */}
+            <div style={{ background: '#fff', border: '1px solid var(--b)', borderRadius: 24, padding: '28px', boxShadow: '0 1px 4px rgba(0,0,0,.02)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                <div style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>Plan Distribution</div>
+                <div className="tabs">
+                  <div className="tab on">Active Users</div>
+                  <div className="tab">Revenue</div>
                 </div>
               </div>
-              <div style={{ padding: '8px 16px', background: 'var(--bg)', borderRadius: 12, fontSize: '12px', fontWeight: 700, color: 'var(--mu2)' }}>Last 8 Months</div>
-            </div>
-            
-            <div className="rev-bars">
-              {revData.map((d, i) => {
-                const total = d.v + d.p;
-                const vPct = total > 0 ? (d.v / maxRev * 100) : 0;
-                const pPct = total > 0 ? (d.p / maxRev * 100) : 0;
-                return (
-                  <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12, height: '100%', justifyContent: 'flex-end' }}>
-                    <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-                      {/* Pending Part */}
-                      <div className="rev-bar" 
-                        style={{ 
-                          height: `${Math.max(pPct, d.p > 0 ? 5 : 0)}%`, 
-                          background: 'var(--amber)', 
-                          opacity: 0.4,
-                          borderRadius: d.v > 0 ? '0' : '8px 8px 4px 4px',
-                          marginBottom: -2
-                        }} 
-                        title={`Pending: ₹${d.p}`} />
-                      {/* Success Part */}
-                      <div className={`rev-bar ${d.hi ? 'hi' : ''}`}
-                        style={{ 
-                          height: `${Math.max(vPct, d.v > 0 ? 5 : 0)}%`,
-                          background: d.hi ? 'var(--acc)' : (d.v > 0 ? 'var(--mu2)' : 'var(--mu2)15')
-                        }}
-                        title={`Success: ₹${d.v}`} />
-                      
-                      {/* Fallback line if both are 0 */}
-                      {total === 0 && <div style={{ height: 2, background: 'var(--mu2)10', width: '100%', borderRadius: 2 }} />}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
+                {PLANS_DEF.map(pl => {
+                  const count = users.filter(u => u.plan === pl.id).length;
+                  const rev = users.filter(u => u.plan === pl.id).reduce((s, u) => s + u.rev, 0);
+                  return (
+                    <div key={pl.id} style={{ padding: '24px', background: 'var(--bg)', border: '1px solid var(--b)', borderRadius: 20, transition: 'all .2s' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                        <PlanPill plan={pl.id} />
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontSize: '10px', fontWeight: 800, color: 'var(--mu)', textTransform: 'uppercase', marginBottom: 2 }}>Revenue</div>
+                          <div style={{ fontFamily: 'var(--fm)', fontSize: '14px', fontWeight: 800, color: rev > 0 ? 'var(--green)' : 'var(--mu2)' }}>₹{rev.toLocaleString()}</div>
+                        </div>
+                      </div>
+                      <div style={{ fontFamily: 'var(--fh)', fontSize: '42px', fontWeight: 900, color: 'var(--ink)', letterSpacing: '-2px', lineHeight: 1 }}>{count}</div>
+                      <div style={{ fontSize: '12px', color: 'var(--mu)', marginTop: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Total Subscribers</div>
                     </div>
-                    <div style={{ textAlign: 'center', fontSize: '10px', fontFamily: 'var(--fb)', color: d.hi ? 'var(--acc)' : 'var(--mu2)', fontWeight: 800, textTransform: 'uppercase', marginTop: 8 }}>{d.m}</div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
 
+          {/* Live Activity */}
           <div style={{ background: '#fff', border: '1px solid var(--b)', borderRadius: 24, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,.02)', display: 'flex', flexDirection: 'column' }}>
             <div style={{ padding: '24px', borderBottom: '1px solid var(--b)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--mu)', fontFamily: 'var(--fb)' }}>Live Activity</div>
@@ -664,35 +776,6 @@ function Overview({ users, totalReg, orders, onMenuToggle }) {
           </div>
         </div>
 
-        <div style={{ background: '#fff', border: '1px solid var(--b)', borderRadius: 24, padding: '28px', boxShadow: '0 1px 4px rgba(0,0,0,.02)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-            <div style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--mu)', fontFamily: 'var(--fm)' }}>Plan Distribution</div>
-            <div className="tabs">
-              <div className="tab on">Active Users</div>
-              <div className="tab">Revenue</div>
-            </div>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
-            {PLANS_DEF.map(pl => {
-              const count = users.filter(u => u.plan === pl.id).length;
-              const rev = users.filter(u => u.plan === pl.id).reduce((s, u) => s + u.rev, 0);
-              return (
-                <div key={pl.id} style={{ padding: '24px', background: 'var(--bg)', border: '1px solid var(--b)', borderRadius: 20, transition: 'all .2s' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                    <PlanPill plan={pl.id} />
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: '10px', fontWeight: 800, color: 'var(--mu)', textTransform: 'uppercase', marginBottom: 2 }}>Revenue</div>
-                      <div style={{ fontFamily: 'var(--fm)', fontSize: '14px', fontWeight: 800, color: rev > 0 ? 'var(--green)' : 'var(--mu2)' }}>₹{rev.toLocaleString()}</div>
-                    </div>
-                  </div>
-                  <div style={{ fontFamily: 'var(--fh)', fontSize: '42px', fontWeight: 900, color: 'var(--ink)', letterSpacing: '-2px', lineHeight: 1 }}>{count}</div>
-                  <div style={{ fontSize: '12px', color: 'var(--mu)', marginTop: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Total Subscribers</div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
       </div></div>
     </div>
   );
@@ -705,6 +788,9 @@ function UsersView({ users, onManage, onMenuToggle }) {
   const FLTS = [{ id: 'all', l: 'All Users' }, { id: 'pro', l: 'Pro' }, { id: 'business', l: 'Business' }, { id: 'free', l: 'Free' }, { id: 'banned', l: 'Banned' }];
 
   const filtered = users.filter(u => {
+    const isInstagram = u.email?.toLowerCase().endsWith('@instagram.com');
+    if (isInstagram) return false;
+
     const ms = u.name.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase());
     const mf = flt === 'all' || u.plan === flt || u.status === flt;
     return ms && mf;
@@ -713,10 +799,7 @@ function UsersView({ users, onManage, onMenuToggle }) {
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <div className="topbar">
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <button className="tb-menu" onClick={onMenuToggle}><Menu size={20} /></button>
-          <div className="tb-title">User Management <span style={{ fontFamily: 'var(--fm)', fontSize: '13px', color: 'var(--mu2)', fontWeight: 700 }}>({users.length})</span></div>
-        </div>
+        <div className="tb-title">User Management</div>
         <div style={{ display: 'flex', gap: 12 }}>
           <button className="btn-g" onClick={() => exportToCSV(users, 'users')}><Download size={14} /> Export CSV</button>
           <button className="btn-p sm acc"><UserPlus size={14} /> Invite User</button>
@@ -802,10 +885,7 @@ function OrdersView({ orders, orderError, loadingOrders, fetchOrders, onMenuTogg
       {selOrder && <OrderDetailModal order={selOrder} onClose={() => setSelOrder(null)} />}
 
       <div className="topbar">
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <button className="tb-menu" onClick={onMenuToggle}><Menu size={20} /></button>
-          <div className="tb-title">Orders Management <span style={{ fontFamily: 'var(--fm)', fontSize: '13px', color: 'var(--mu2)', fontWeight: 700 }}>({orders.length})</span></div>
-        </div>
+        <div className="tb-title">Orders Management</div>
         <button className="btn-g" onClick={() => exportToCSV(orders, 'orders')}><Download size={14} /> Export CSV</button>
       </div>
       <div className="scroll"><div style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }}>
@@ -890,23 +970,37 @@ function OrdersView({ orders, orderError, loadingOrders, fetchOrders, onMenuTogg
 function PricingView({ pricing, onSave, onMenuToggle }) {
   const [p, setP] = useState({ ...pricing });
   const [load, setLoad] = useState(false);
+  const [showSaved, setShowSaved] = useState(false);
+  const [error, setError] = useState(null);
 
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <div className="topbar">
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <button className="tb-menu" onClick={onMenuToggle}><Menu size={20} /></button>
-          <div className="tb-title">Subscription Pricing</div>
+        <div className="tb-title">Subscription Pricing</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          {error && <div style={{ color: 'var(--red)', fontSize: '13px', fontWeight: 800 }}>⚠ {error}</div>}
+          {showSaved && <div style={{ color: 'var(--green)', fontSize: '13px', fontWeight: 800 }}>✓ Updated</div>}
+          <button 
+            className="btn-p sm acc" 
+            style={{ borderRadius: 12, padding: '10px 20px' }}
+            onClick={async () => { 
+              setLoad(true); 
+              setError(null);
+              try {
+                await onSave(p); 
+                setShowSaved(true);
+                setTimeout(() => setShowSaved(false), 3000);
+              } catch (e) {
+                setError("Failed to update");
+              }
+              setLoad(false); 
+            }}
+            disabled={load}
+          >
+            {load ? <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={14} />}
+            Update Pricing
+          </button>
         </div>
-        <button 
-          className="btn-p sm acc" 
-          style={{ borderRadius: 12, padding: '10px 20px' }}
-          onClick={async () => { setLoad(true); await onSave(p); setLoad(false); }}
-          disabled={load}
-        >
-          {load ? <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={14} />}
-          Update Pricing
-        </button>
       </div>
       <div className="scroll"><div style={{ padding: '40px 32px', maxWidth: 800, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 32 }}>
         
@@ -954,6 +1048,99 @@ function PricingView({ pricing, onSave, onMenuToggle }) {
           <p style={{ fontSize: '13px', color: 'var(--blue)', lineHeight: 1.6, fontWeight: 600 }}>
             Pricing changes are applied globally and take effect for all new subscription attempts. Existing active subscriptions are not affected.
           </p>
+        </div>
+
+        <div className="fi" style={{ background: '#fff', border: '1px solid var(--b)', borderRadius: 24, padding: '32px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+            <div>
+              <div className="ilbl" style={{ marginBottom: 12, color: 'var(--amber)' }}><Tag size={14} /> Promotional Campaigns</div>
+              <h3 style={{ fontFamily: 'var(--fh)', fontSize: '20px', fontWeight: 900, marginBottom: 8, letterSpacing: '-0.5px' }}>Multi-Coupon Management</h3>
+              <p style={{ color: 'var(--mu)', fontSize: '14px', fontWeight: 500 }}>Create and manage multiple active coupon codes for your users.</p>
+            </div>
+            <button 
+              className="btn-p sm acc" 
+              onClick={() => setP({ ...p, coupons: [...(p.coupons || []), { code: '', type: 'percentage', value: 10 }] })}
+            >
+              <Plus size={14} /> Add New Coupon
+            </button>
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {(!p.coupons || p.coupons.length === 0) ? (
+              <div style={{ padding: '40px', textAlign: 'center', background: 'var(--bg)', borderRadius: 16, border: '1px dashed var(--b2)' }}>
+                <Gift size={32} color="var(--mu2)" style={{ marginBottom: 12 }} />
+                <p style={{ fontSize: '14px', color: 'var(--mu)', fontWeight: 600 }}>No active coupons. Click 'Add New' to create one.</p>
+              </div>
+            ) : p.coupons.map((c, i) => (
+              <div key={i} className="fi" style={{ padding: '20px', background: 'var(--bg)', border: '1px solid var(--b)', borderRadius: 16, display: 'flex', gap: 20, alignItems: 'flex-end' }}>
+                <div style={{ flex: 2 }}>
+                  <div className="ilbl">Coupon Code</div>
+                  <input 
+                    className="inp" 
+                    style={{ textTransform: 'uppercase', fontWeight: 800 }} 
+                    value={c.code} 
+                    placeholder="e.g. SAVE20"
+                    onChange={e => {
+                      const newC = [...p.coupons];
+                      newC[i].code = e.target.value.toUpperCase();
+                      setP({ ...p, coupons: newC });
+                    }}
+                  />
+                </div>
+                <div style={{ flex: 1.5 }}>
+                  <div className="ilbl">Discount Type</div>
+                  <select 
+                    className="inp" 
+                    style={{ fontWeight: 700 }}
+                    value={c.type}
+                    onChange={e => {
+                      const newC = [...p.coupons];
+                      newC[i].type = e.target.value;
+                      setP({ ...p, coupons: newC });
+                    }}
+                  >
+                    <option value="percentage">Percentage (%)</option>
+                    <option value="fixed">Fixed Amount (₹)</option>
+                  </select>
+                </div>
+                <div style={{ flex: 1.5 }}>
+                  <div className="ilbl">Value</div>
+                  <div className="inp-wrap" style={{ marginBottom: 0 }}>
+                    <input 
+                      className="inp" 
+                      type="number" 
+                      value={c.value}
+                      onChange={e => {
+                        const newC = [...p.coupons];
+                        newC[i].value = parseInt(e.target.value);
+                        setP({ ...p, coupons: newC });
+                      }}
+                    />
+                    <span style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', fontWeight: 900, color: 'var(--mu2)', fontSize: '14px' }}>
+                      {c.type === 'percentage' ? '%' : '₹'}
+                    </span>
+                  </div>
+                </div>
+                <button 
+                  className="btn-red" 
+                  style={{ padding: '12px', height: 46 }}
+                  onClick={() => {
+                    const newC = p.coupons.filter((_, idx) => idx !== i);
+                    setP({ ...p, coupons: newC });
+                  }}
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {p.coupons?.length > 0 && (
+            <div style={{ marginTop: 24, padding: '16px', background: 'rgba(16,185,129,0.04)', borderRadius: 12, border: '1px solid rgba(16,185,129,0.1)', display: 'flex', gap: 12 }}>
+              <CheckCircle size={16} color="var(--green)" />
+              <p style={{ fontSize: '12px', color: 'var(--green)', fontWeight: 600 }}>All active coupons listed above will be valid for users during checkout.</p>
+            </div>
+          )}
         </div>
 
       </div></div>
@@ -1040,10 +1227,7 @@ function AdminSettings({ announcement, onSave, onMenuToggle }) {
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <div className="topbar">
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <button className="tb-menu" onClick={onMenuToggle}><Menu size={20} /></button>
-          <div className="tb-title">Global Configuration</div>
-        </div>
+        <div className="tb-title">Global Configuration</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           {error && <div style={{ color: 'var(--red)', fontSize: '13px', fontWeight: 800 }}>⚠ {error}</div>}
           {showSaved && <div style={{ color: 'var(--green)', fontSize: '13px', fontWeight: 800 }}>✓ Changes Applied</div>}
@@ -1111,26 +1295,63 @@ function AdminSettings({ announcement, onSave, onMenuToggle }) {
 
 /* ─────────── DELETE MODAL ─────────── */
 function DeleteConfirmModal({ user, onClose, onConfirm }) {
-  const [pw, setPw] = useState('');
-  const [err, setErr] = useState(false);
-  const handleConfirm = () => { pw === '0000' ? onConfirm() : (setErr(true), setTimeout(() => setErr(false), 2000)); };
   return (
-    <div className="modal-bg" onClick={onClose} style={{ backdropFilter: 'blur(4px)', background: 'rgba(0,0,0,0.3)' }}>
-      <div className="modal fi" onClick={e => e.stopPropagation()} style={{ maxWidth: 380, borderRadius: 24, padding: 8 }}>
-        <div style={{ padding: '32px 24px 24px', textAlign: 'center' }}>
-          <div style={{ width: 54, height: 54, borderRadius: 18, background: '#FFF1F2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', color: '#E11D48' }}>
-            <Trash2 size={24} />
+    <div className="modal-bg" onClick={onClose} style={{ backdropFilter: 'blur(8px)', background: 'rgba(0,0,0,0.4)' }}>
+      <div className="modal fi" onClick={e => e.stopPropagation()} style={{ maxWidth: 400, borderRadius: 32, padding: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+        <div style={{ padding: '40px 32px 32px', textAlign: 'center' }}>
+          <div style={{ 
+            width: 72, 
+            height: 72, 
+            borderRadius: 24, 
+            background: '#FFF1F2', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            margin: '0 auto 24px', 
+            color: '#E11D48',
+            boxShadow: '0 12px 24px rgba(225,29,72,0.15)'
+          }}>
+            <Trash2 size={32} />
           </div>
-          <h3 style={{ fontFamily: 'var(--fh)', fontSize: '20px', fontWeight: 800, marginBottom: 8 }}>Delete User?</h3>
-          <p style={{ fontSize: '13.5px', color: 'var(--mu)', marginBottom: 28 }}>Permanently wipe <strong>{user.name || user.email}</strong>. This is irreversible.</p>
-          <div style={{ textAlign: 'left' }}>
-            <div className="ilbl">Verify Admin Access Key</div>
-            <input className="inp" type="password" value={pw} onChange={e => setPw(e.target.value)} placeholder="••••" style={{ textAlign: 'center', fontSize: '20px', letterSpacing: '8px', height: 54, borderRadius: 14, borderColor: err ? 'var(--red)' : 'var(--b2)' }} autoFocus />
-          </div>
+          <h3 style={{ fontFamily: 'var(--fh)', fontSize: '24px', fontWeight: 900, marginBottom: 12, color: 'var(--ink)' }}>Confirm Deletion</h3>
+          <p style={{ fontSize: '15px', color: 'var(--mu)', lineHeight: 1.6, marginBottom: 0 }}>
+            Are you sure you want to permanently delete <strong>{user.name || user.email}</strong>? This action cannot be undone.
+          </p>
         </div>
-        <div style={{ display: 'flex', gap: 10, padding: '0 16px 16px' }}>
-          <button className="btn-g" style={{ flex: 1, padding: '14px' }} onClick={onClose}>Cancel</button>
-          <button className="btn-p" style={{ flex: 1, padding: '14px', background: '#E11D48' }} onClick={handleConfirm}>Confirm Delete</button>
+        <div style={{ display: 'flex', gap: 12, padding: '0 24px 24px' }}>
+          <button 
+            className="btn-g" 
+            style={{ 
+              flex: 1, 
+              padding: '16px', 
+              borderRadius: 16, 
+              fontSize: '14px', 
+              fontWeight: 800,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }} 
+            onClick={onClose}
+          >
+            No, Keep User
+          </button>
+          <button 
+            className="btn-p" 
+            style={{ 
+              flex: 1, 
+              padding: '16px', 
+              borderRadius: 16, 
+              fontSize: '14px', 
+              fontWeight: 800, 
+              background: '#E11D48',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }} 
+            onClick={onConfirm}
+          >
+            Yes, Delete
+          </button>
         </div>
       </div>
     </div>
@@ -1140,14 +1361,18 @@ function DeleteConfirmModal({ user, onClose, onConfirm }) {
 /* ─────────── REGISTRATIONS LIST ─────────── */
 function RegistrationsList({ users, onDelete, onMenuToggle }) {
   const [search, setSearch] = useState('');
-  const filtered = users.filter(u => u.email.toLowerCase().includes(search.toLowerCase()) || (u.name && u.name.toLowerCase().includes(search.toLowerCase())));
+  const filtered = users.filter(u => {
+    const isInstagram = u.email?.toLowerCase().endsWith('@instagram.com');
+    if (isInstagram) return false;
+    
+    const searchMatch = u.email.toLowerCase().includes(search.toLowerCase()) || 
+                       (u.name && u.name.toLowerCase().includes(search.toLowerCase()));
+    return searchMatch;
+  });
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <div className="topbar">
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <button className="tb-menu" onClick={onMenuToggle}><Menu size={20} /></button>
-          <div className="tb-title">Registrations <span style={{ fontFamily: 'var(--fm)', fontSize: '13px', color: 'var(--mu2)', fontWeight: 700 }}>({users.length})</span></div>
-        </div>
+        <div className="tb-title">Registrations</div>
       </div>
       <div className="scroll"><div style={{ padding: '32px', maxWidth: 1100, margin: '0 auto' }}>
         <div className="tbl-wrap" style={{ borderRadius: 28 }}>
@@ -1176,7 +1401,9 @@ function RegistrationsList({ users, onDelete, onMenuToggle }) {
                 </div>
                 <div style={{ flex: 1.5 }}>
                   <div style={{ fontSize: '13.5px', fontWeight: 700 }}>{u.joined || 'Recent'}</div>
-                  <div style={{ fontSize: '10px', color: 'var(--mu2)', fontWeight: 800, textTransform: 'uppercase', marginTop: 3 }}>Direct Signup</div>
+                  <div style={{ fontSize: '10px', color: 'var(--mu2)', fontWeight: 800, textTransform: 'uppercase', marginTop: 3 }}>
+                    {u.provider === 'google' ? 'Login with Google' : 'Direct Signup'}
+                  </div>
                 </div>
                 <div style={{ width: 120 }}><div className="sp sp-a">Verified</div></div>
                 <div style={{ width: 50, display: 'flex', justifyContent: 'flex-end' }}>
@@ -1223,7 +1450,12 @@ export default function AdminApp() {
   const [totalReg, setTotalReg] = useState(0);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [pricing, setPricing] = useState({ monthly: 499, yearly: 399, totalYearly: 4788 });
+  const [pricing, setPricing] = useState({ 
+    monthly: 499, 
+    yearly: 399, 
+    totalYearly: 4788, 
+    coupons: [{ code: 'SAVE50', type: 'percentage', value: 50 }] 
+  });
   const [announcement, setAnnouncement] = useState({ enabled: false, text: '', type: 'update' });
 
   useEffect(() => { if (authed) { fetchUsers(); fetchPricing(); fetchOrders(); } }, [authed]);
@@ -1265,10 +1497,12 @@ export default function AdminApp() {
     setLoadingOrders(false);
   };
 
+  const realUsers = users.filter(u => !u.email?.toLowerCase().endsWith('@instagram.com'));
+
   const NAV = [
     { id: 'overview', icon: <Home size={18} />, label: 'Overview' },
-    { id: 'users', icon: <Users size={18} />, label: 'Users', count: users.length },
-    { id: 'registrations', icon: <UserPlus size={18} />, label: 'Registrations', count: totalReg },
+    { id: 'users', icon: <Users size={18} />, label: 'Users', count: realUsers.length },
+    { id: 'registrations', icon: <UserPlus size={18} />, label: 'Registrations', count: realUsers.length },
     { id: 'orders', icon: <ShoppingBag size={18} />, label: 'Orders', count: orders.length },
     { id: 'pricing', icon: <Tag size={18} />, label: 'Pricing' },
     { id: 'settings', icon: <Settings size={18} />, label: 'Settings' },
@@ -1279,9 +1513,13 @@ export default function AdminApp() {
       const res = await fetch('/api/settings?global=true');
       let cur = res.ok ? (await res.json()).settings || {} : {};
       const updated = { ...cur, pricing: p || pricing, announcement: a || announcement, config: c || cur.config || { maintenance: false, signups: true, notifications: true } };
-      await fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-auth': '0000' }, body: JSON.stringify({ settings: updated, global: true }) });
+      const saveRes = await fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-auth': '0000' }, body: JSON.stringify({ settings: updated, global: true }) });
+      if (!saveRes.ok) throw new Error("Save failed");
       if (p) setPricing(p); if (a) setAnnouncement(a);
-    } catch (e) {}
+    } catch (e) {
+      console.error("Admin save error:", e);
+      throw e;
+    }
   };
 
   const handleSave = async u => {
