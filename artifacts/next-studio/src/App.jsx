@@ -9,7 +9,6 @@ import { Sidebar } from "./components/Sidebar";
 import { HomeView as HomeViewNew } from "./components/HomeView";
 import { AutoList } from "./components/AutoList";
 import { Builder } from "./components/Builder";
-import { Login } from "./components/Login";
 import { SettingsView } from "./components/SettingsView";
 import { ContactsView } from "./components/ContactsView";
 import { InstagramConnect } from "./components/InstagramConnect";
@@ -46,10 +45,8 @@ export default function App() {
   const [isMaintenance, setIsMaintenance] = useState(false);
   const [systemLoading, setSystemLoading] = useState(true);
 
-
-
   const [pageLoading, setPageLoading] = useState(true);
-  const [authed, setAuthed] = useState(false);
+  const [authed, setAuthed] = useState(true);
 
   const { data: session, status } = useSession();
   const [userName, setUserName] = useState('');
@@ -501,8 +498,6 @@ export default function App() {
   }
 
 
-  if (status === 'unauthenticated' && !authed) return <Login onLogin={() => setAuthed(true)} />;
-
   const isBuilder = editing !== null;
   const isBanned = userStatus === 'banned';
 
@@ -518,17 +513,6 @@ export default function App() {
 
           >
             <LoadingScreen message="Optimizing Experience" />
-          </motion.div>
-        ) : !authed ? (
-
-          <motion.div
-            key="login"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Login onLogin={() => setAuthed(true)} />
           </motion.div>
         ) : (
           <motion.div 
@@ -798,194 +782,123 @@ export default function App() {
 
                       <div className="space-y-3 md:space-y-4">
                         {/* Full Name */}
-                        <div>
-                          <label className="block text-[10px] md:text-[11px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1">Full Name</label>
-                          <div className={`flex items-center rounded-[8px] border transition-all duration-200 ${
-                            billingErrors.fullName ? 'border-destructive bg-destructive/5' : 'border-border bg-muted/20 focus-within:bg-background focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10'
-                          }`}>
-                            <input
-                              type="text"
-                              placeholder="Your full name"
-                              value={billingDetails.fullName}
-                              onChange={e => { setBillingDetails(p => ({...p, fullName: e.target.value})); setBillingErrors(p => ({...p, fullName: ''})); }}
-                              className="flex-1 px-4 md:px-5 py-3.5 md:py-4 text-sm font-black bg-transparent outline-none placeholder:text-muted-foreground/30"
+                        <div className="space-y-1.5 md:space-y-2">
+                          <label className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                            <Users size={12} /> Full Name
+                          </label>
+                          <input 
+                            type="text"
+                            value={billingDetails.fullName}
+                            onChange={(e) => setBillingDetails({ ...billingDetails, fullName: e.target.value })}
+                            placeholder="John Doe"
+                            className={`w-full p-3 md:p-4 bg-muted/30 border ${billingErrors.fullName ? 'border-destructive' : 'border-border'} rounded-[12px] text-sm focus:bg-background transition-all outline-none`}
+                          />
+                        </div>
+
+                        {/* Phone */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                          <div className="space-y-1.5 md:space-y-2">
+                            <label className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                              <Activity size={12} /> Country
+                            </label>
+                            <CountrySelector 
+                              value={billingDetails.phoneCountry} 
+                              onChange={(val) => setBillingDetails({ ...billingDetails, phoneCountry: val, billingCountry: val })} 
                             />
                           </div>
-                          {billingErrors.fullName && <p className="text-destructive text-[10px] font-bold mt-1.5 ml-1">{billingErrors.fullName}</p>}
+                          <div className="space-y-1.5 md:space-y-2">
+                            <label className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                              Phone Number
+                            </label>
+                            <PhoneInput 
+                              country={billingDetails.phoneCountry}
+                              value={billingDetails.phone}
+                              onChange={(val) => setBillingDetails({ ...billingDetails, phone: val })}
+                              error={billingErrors.phone}
+                            />
+                          </div>
                         </div>
 
-                        {/* Phone Number */}
-                        <div>
-                          <label className="block text-[10px] md:text-[11px] font-black uppercase tracking-widest text-muted-foreground mb-2 ml-1">Phone Number</label>
-                          <PhoneInput
-                            value={billingDetails.phone}
-                            country={billingDetails.phoneCountry}
-                            onPhoneChange={val => { setBillingDetails(p => ({...p, phone: val})); setBillingErrors(p => ({...p, phone: ''})); }}
-                            onCountryChange={c => setBillingDetails(p => ({...p, phoneCountry: c.name}))}
-                            error={billingErrors.phone}
+                        {/* State */}
+                        <div className="space-y-1.5 md:space-y-2">
+                          <label className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-muted-foreground">State / Province (Optional)</label>
+                          <input 
+                            type="text"
+                            value={billingDetails.state}
+                            onChange={(e) => setBillingDetails({ ...billingDetails, state: e.target.value })}
+                            placeholder="e.g. West Bengal"
+                            className="w-full p-3 md:p-4 bg-muted/30 border border-border rounded-[12px] text-sm focus:bg-background transition-all outline-none"
                           />
-                          {billingErrors.phone && <p className="text-destructive text-[10px] font-bold mt-1.5 ml-1">{billingErrors.phone}</p>}
-                        </div>
-
-                        <div className="pt-5 md:pt-6 mt-5 md:mt-6 border-t border-border/50">
-                          <div className="flex items-center gap-3 mb-5 md:mb-6">
-                            <div className="p-2 md:p-2.5 bg-primary/10 rounded-[8px]">
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-primary">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-                              </svg>
-                            </div>
-                            <div>
-                              <h3 className="text-base md:text-lg font-black tracking-tight text-foreground">Billing Address</h3>
-                              <p className="text-[9px] md:text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Global Support</p>
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <label className="block text-[10px] md:text-[11px] font-black uppercase tracking-widest text-muted-foreground mb-1 ml-1">Country</label>
-                              <CountrySelector
-                                value={billingDetails.billingCountry}
-                                onChange={c => { setBillingDetails(p => ({...p, billingCountry: c.name})); setBillingErrors(p => ({...p, country: ''})); }}
-                                error={billingErrors.country}
-                              />
-                              {billingErrors.country && <p className="text-destructive text-[10px] font-bold mt-1.5 ml-1">{billingErrors.country}</p>}
-                            </div>
-
-                            <div>
-                              <label className="block text-[10px] md:text-[11px] font-black uppercase tracking-widest text-muted-foreground mb-1 ml-1">State / Province</label>
-                              <div className="flex items-center rounded-[8px] border border-border bg-muted/20 focus-within:bg-background focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all duration-200">
-                                <input
-                                  type="text"
-                                  placeholder="e.g. New York"
-                                  value={billingDetails.state}
-                                  onChange={e => setBillingDetails(p => ({...p, state: e.target.value}))}
-                                  className="flex-1 px-4 md:px-5 py-3.5 md:py-4 text-sm font-black bg-transparent outline-none placeholder:text-muted-foreground/30"
-                                />
-                              </div>
-                            </div>
-                          </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Right Side: Summary Card */}
-                    <div className="w-full md:w-[360px] bg-muted/30 p-6 md:p-10 border-t md:border-t-0 md:border-l border-border flex flex-col justify-between relative md:overflow-y-auto custom-scrollbar">
-                      <div className="absolute top-[-10%] right-[-10%] w-[150px] md:w-[200px] h-[150px] md:h-[200px] bg-primary/10 blur-[60px] md:blur-[80px] rounded-full" />
-                      
-                      <div className="relative z-10">
-                        <div className="mb-4 md:mb-6 flex justify-between items-center">
-                          <h3 className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">Order Summary</h3>
-                          <button onClick={() => setShowBillingModal(false)} className="p-2 -mr-2 rounded-full hover:bg-muted transition-colors text-muted-foreground">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                          </button>
-                        </div>
-                        
-                        <div className="bg-background border border-border rounded-[8px] p-3 md:p-4 shadow-xl shadow-primary/5 mb-4 md:mb-5">
-                          <div className="flex items-center gap-2.5 mb-3">
-                            <div className="w-8 h-8 bg-primary rounded-[8px] flex items-center justify-center text-white shadow-lg shadow-primary/20">
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 12l10 5 10-5M2 17l10 5 10-5"/></svg>
+                    {/* Right Side: Summary */}
+                    <div className="w-full md:w-[320px] bg-muted/30 border-t md:border-t-0 md:border-l border-border p-6 md:p-10 flex flex-col justify-between">
+                      <div className="space-y-6 md:space-y-8">
+                        <div>
+                          <h3 className="text-base md:text-lg font-black tracking-tight mb-4">Summary</h3>
+                          <div className="space-y-2 md:space-y-3">
+                            <div className="flex justify-between text-xs md:text-sm font-bold text-muted-foreground">
+                              <span>Plan</span>
+                              <span className="text-foreground">Pro Studio</span>
                             </div>
-                            <div>
-                              <h4 className="text-xs font-black text-foreground uppercase tracking-tight">{billingCycle === 'monthly' ? 'Monthly' : 'Annual'} Plan</h4>
-                              <p className="text-[9px] font-bold text-muted-foreground">Premium Access</p>
+                            <div className="flex justify-between text-xs md:text-sm font-bold text-muted-foreground">
+                              <span>Billing</span>
+                              <span className="text-foreground capitalize">{billingCycle}</span>
                             </div>
-                          </div>
-                          <div className="pt-3 border-t border-border/50 flex justify-between items-end">
-                            <div>
-                              <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">Total Payable</span>
-                              <p className="text-xl font-black text-foreground tracking-tight leading-none mt-1">₹{billingCycle === 'monthly' ? pricing.monthly : pricing.totalYearly}</p>
+                            <div className="flex justify-between text-xs md:text-sm font-bold text-muted-foreground">
+                              <span>Base Price</span>
+                              <span className="text-foreground">₹{billingCycle === 'monthly' ? pricing.monthly : pricing.totalYearly}</span>
                             </div>
-                            {billingCycle === 'yearly' && (
-                              <div className="px-1.5 py-0.5 bg-green-500/10 text-green-500 rounded-[8px] text-[8px] font-black uppercase">Save 20%</div>
+                            
+                            {appliedCoupon && (
+                              <div className="flex justify-between text-xs md:text-sm font-bold text-green-600">
+                                <span className="flex items-center gap-1.5"><Zap size={12} /> Discount ({appliedCoupon.code})</span>
+                                <span>-{appliedCoupon.type === 'percentage' ? `${appliedCoupon.value}%` : `₹${appliedCoupon.value}`}</span>
+                              </div>
                             )}
                           </div>
                         </div>
-                        
-                        {/* Coupon Section */}
-                        <div className="mb-4 md:mb-6 space-y-2">
-                           <label className="block text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Have a coupon?</label>
+
+                        <div className="space-y-3 md:space-y-4">
+                           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Promo Code</label>
                            <div className="flex gap-2">
-                             <div className="flex-1 flex items-center rounded-[8px] border border-border bg-background focus-within:border-primary transition-all px-3">
-                               <input 
-                                 type="text" 
-                                 placeholder="Enter code"
-                                 value={couponInput}
-                                 onChange={e => setCouponInput(e.target.value.toUpperCase())}
-                                 className="w-full bg-transparent border-none outline-none text-xs font-black uppercase py-2.5 placeholder:text-muted-foreground/30"
-                               />
-                             </div>
-                             <button 
-                               onClick={handleApplyCoupon}
-                               className="px-4 py-2 bg-foreground text-background rounded-[8px] text-[10px] font-black uppercase hover:opacity-90 transition-all"
-                             >
-                               Apply
-                             </button>
+                             <input 
+                              type="text"
+                              value={couponInput}
+                              onChange={(e) => setCouponInput(e.target.value)}
+                              placeholder="CODE"
+                              className="flex-1 bg-background border border-border px-3 py-2 rounded-[8px] text-xs font-black outline-none"
+                             />
+                             <button onClick={handleApplyCoupon} className="px-4 py-2 bg-foreground text-background rounded-[8px] text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all">Apply</button>
                            </div>
-                           {couponError && <p className="text-[10px] font-bold text-destructive ml-1">{couponError}</p>}
-                           {appliedCoupon && (
-                             <div className="flex items-center justify-between px-3 py-2 bg-green-500/10 border border-green-500/20 rounded-[8px]">
-                               <div className="flex items-center gap-2">
-                                 <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                                 <span className="text-[10px] font-black text-green-600 uppercase tracking-widest">Coupon Applied: {appliedCoupon.code}</span>
-                               </div>
-                               <button 
-                                 onClick={() => setAppliedCoupon(null)}
-                                 className="text-[10px] font-black text-green-600 hover:underline"
-                               >
-                                 Remove
-                               </button>
-                             </div>
-                           )}
+                           {couponError && <p className="text-[10px] font-bold text-destructive">{couponError}</p>}
                         </div>
+                      </div>
 
-                        <div className="space-y-4 px-2">
-
-                          {appliedCoupon && (
-                            <div className="flex justify-between items-center">
-                              <span className="text-xs font-bold text-green-600">Discount ({appliedCoupon.type === 'percentage' ? appliedCoupon.value + '%' : '₹' + appliedCoupon.value})</span>
-                              <span className="text-xs font-black text-green-600">
-                                -₹{appliedCoupon.type === 'percentage' 
-                                  ? Math.round((billingCycle === 'monthly' ? pricing.monthly : pricing.totalYearly) * (appliedCoupon.value / 100))
-                                  : appliedCoupon.value}
-                              </span>
-                            </div>
-                          )}
-
-                          <div className="pt-4 border-t border-border/50 flex justify-between items-center mb-6">
-                            <span className="text-sm font-black text-foreground uppercase tracking-tight">Total</span>
-                            <span className="text-lg font-black text-primary tracking-tight">
-                              ₹{(() => {
-                                const base = billingCycle === 'monthly' ? pricing.monthly : pricing.totalYearly;
-                                if (!appliedCoupon) return base;
-                                if (appliedCoupon.type === 'percentage') return Math.round(base * (1 - appliedCoupon.value / 100));
-                                return Math.max(0, base - appliedCoupon.value);
-                              })()}
-                            </span>
-                          </div>
-
-                          <div className="relative z-10 pt-2">
-                            <button
-                              onClick={handleProceedToPayment}
-                              disabled={isProcessing}
-                              className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-[8px] font-black text-sm shadow-xl shadow-primary/30 transition-all active:scale-[0.98] disabled:opacity-50 group flex items-center justify-center gap-2"
-                            >
-                              {isProcessing ? (
-                                <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-                              ) : (
-                                <>
-                                  <span>Proceed to Pay</span>
-                                  <svg className="group-hover:translate-x-1 transition-transform" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                                </>
-                              )}
-                            </button>
-                            <div className="mt-4 flex flex-col items-center gap-2 pb-4">
-                              <div className="flex items-center gap-1.5 opacity-40">
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                                <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest text-center">Secured by Razorpay</p>
-                              </div>
-                            </div>
-                          </div>
+                      <div className="pt-6 md:pt-10 border-t border-border mt-6 md:mt-0">
+                        <div className="flex justify-between items-end mb-4 md:mb-6">
+                           <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest text-muted-foreground">Total to pay</span>
+                           <span className="text-2xl md:text-3xl font-black tracking-tight text-primary">
+                             ₹{(() => {
+                                let base = billingCycle === 'monthly' ? pricing.monthly : pricing.totalYearly;
+                                if (appliedCoupon) {
+                                  if (appliedCoupon.type === 'percentage') base = Math.round(base * (1 - appliedCoupon.value / 100));
+                                  else base = Math.max(0, base - appliedCoupon.value);
+                                }
+                                return base;
+                             })()}
+                           </span>
                         </div>
+                        <button 
+                          onClick={handleProceedToPayment}
+                          disabled={isProcessing}
+                          className="w-full py-3 md:py-4 bg-primary text-primary-foreground rounded-[12px] font-black text-sm shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
+                        >
+                          {isProcessing ? "Processing..." : "Pay with Razorpay"}
+                        </button>
+                        <p className="text-[9px] text-center text-muted-foreground font-medium mt-3 md:mt-4 px-2">Secure encrypted payment processing.</p>
                       </div>
                     </div>
                   </div>

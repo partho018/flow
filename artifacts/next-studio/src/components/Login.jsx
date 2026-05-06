@@ -8,19 +8,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { signIn } from "next-auth/react";
 
-const Logo = () => (
-  <div className="flex items-center gap-2 mb-8 justify-center">
-    <div className="relative flex items-center justify-center">
-      <div className="w-10 h-10 bg-[#1877f2] rounded-[8px] flex items-center justify-center transform rotate-12 absolute -z-10 opacity-20" />
-      <div className="w-10 h-10 bg-[#1877f2] rounded-[8px] flex items-center justify-center shadow-lg shadow-primary/20">
-        <Heart size={22} className="text-white fill-white" />
-      </div>
-    </div>
-    <span className="text-2xl font-bold tracking-tight text-[#1a1a1a]">FlowStudio</span>
-  </div>
-);
-
-export function Login({ onLogin }) {
+export function Login({ onLogin, onBack }) {
   const [mode, setMode] = useState('sign-in'); // sign-in, sign-up
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
@@ -136,11 +124,21 @@ export function Login({ onLogin }) {
             animate={{ opacity: 1, y: 0 }}
             className="w-full max-w-[420px] mx-auto py-8 sm:py-0"
           >
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-9 h-9 bg-[#1877f2] rounded-[8px] flex items-center justify-center shadow-lg shadow-primary/20">
-                <Heart size={20} className="text-white fill-white" />
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 bg-[#1877f2] rounded-[8px] flex items-center justify-center shadow-lg shadow-primary/20">
+                  <Heart size={20} className="text-white fill-white" />
+                </div>
+                <span className="text-xl font-bold tracking-tight text-[#1a1a1a]">FlowStudio</span>
               </div>
-              <span className="text-xl font-bold tracking-tight text-[#1a1a1a]">FlowStudio</span>
+              {onBack && (
+                <button 
+                  onClick={onBack}
+                  className="p-2 text-gray-400 hover:text-gray-900 transition-colors flex items-center gap-1.5 text-xs font-black uppercase tracking-widest"
+                >
+                  <ChevronRight className="rotate-180" size={14} /> Back
+                </button>
+              )}
             </div>
 
             <div className="mb-6">

@@ -49,7 +49,7 @@
   --color-sidebar-ring: hsl(var(--sidebar-ring));
 
   --font-sans: var(--font-dm-sans), system-ui, sans-serif;
-  --font-heading: var(--font-dm-sans), system-ui, sans-serif;
+  --font-heading: 'ManyChatGravity', var(--font-dm-sans), system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   --radius: 0.5rem;
