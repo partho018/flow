@@ -177,8 +177,11 @@ export default function App() {
         })
         .catch(err => console.error("Failed to load user settings:", err));
 
-      // Fetch IG Stats
-      fetch('/api/stats')
+      // Fetch IG Stats with referral code if present in localStorage
+      const ref = localStorage.getItem('referral_code');
+      const statsUrl = ref ? `/api/stats?ref=${encodeURIComponent(ref)}` : '/api/stats';
+      
+      fetch(statsUrl)
         .then(res => {
           if (res.status === 404 || res.status === 401) {
             signOut(); // User deleted or unauthorized, kick them out

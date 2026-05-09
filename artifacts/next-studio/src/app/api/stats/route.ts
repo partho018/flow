@@ -10,7 +10,8 @@ export async function GET(req: NextRequest) {
   try {
     const session = await auth();
     const cookieStore = await cookies();
-    const referralCode = cookieStore.get("referral_code")?.value;
+    const urlRef = req.nextUrl.searchParams.get("ref");
+    const referralCode = urlRef || cookieStore.get("referral_code")?.value;
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
