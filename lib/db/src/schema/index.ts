@@ -26,6 +26,7 @@ export const profiles = pgTable("profiles", {
   commentsCaught: integer("comments_caught").notNull().default(0),
   igUsername: text("ig_username"),
   igImage: text("ig_image"),
+  referredBy: text("referred_by"),
   followsCount: integer("follows_count").notNull().default(0),
   mediaCount: integer("media_count").notNull().default(0),
   accessToken: text("access_token"),

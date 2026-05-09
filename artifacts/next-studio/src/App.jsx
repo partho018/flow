@@ -15,6 +15,7 @@ import { InstagramConnect } from "./components/InstagramConnect";
 import { ProductsView } from "./components/ProductsView";
 import { CountrySelector, PhoneInput, COUNTRIES } from "./components/CountrySelector";
 import { LoadingScreen } from "./components/LoadingScreen";
+import { ReferView } from "./components/ReferView";
 
 
 const PLAN_LIMITS = { free: 1, creator: 10, pro: 100, business: Infinity };
@@ -613,6 +614,8 @@ export default function App() {
                 <ContactsView igConnected={igConnected} onMenuToggle={() => setMenuOpen(true)} isBanned={isBanned} />
               ) : view === 'products' ? (
                 <ProductsView onMenuToggle={() => setMenuOpen(true)} />
+              ) : view === 'refer' ? (
+                <ReferView onMenuToggle={() => setMenuOpen(true)} userName={userName} />
               ) : (view === 'settings' || view === 'billing') ? (
                 <SettingsView 
                   plan={plan} 

@@ -1,5 +1,5 @@
 "use client";
-import { Zap, Home, MessageSquare, Users, Settings, LogOut, Sun, Moon, Crown, Instagram, Send, UserSquare, CreditCard, X, ShoppingBag, Plus } from "lucide-react";
+import { Zap, Home, MessageSquare, Users, Settings, LogOut, Sun, Moon, Crown, Instagram, Send, UserSquare, CreditCard, X, ShoppingBag, Plus, CircleDollarSign } from "lucide-react";
 import { motion } from "framer-motion";
 
 export function Sidebar({ activeView, onViewChange, isDarkMode, onToggleDarkMode, plan, igUsername, igImage, igConnected, userEmail, onUpgrade, onLogout, isOpen, onClose, onNew }) {
@@ -7,7 +7,8 @@ export function Sidebar({ activeView, onViewChange, isDarkMode, onToggleDarkMode
     { id: 'home', icon: Home, label: 'Home' },
     { id: 'automations', icon: Zap, label: 'Automations' },
     { id: 'contacts', icon: UserSquare, label: 'Contacts' },
-    { id: 'products', icon: ShoppingBag, label: 'Products', badge: 'New' },
+    { id: 'products', icon: ShoppingBag, label: 'Products' },
+    { id: 'refer', icon: CircleDollarSign, label: 'Refer and Earn', badge: 'New' },
     { id: 'billing', icon: CreditCard, label: 'Billing' },
     { id: 'settings', icon: Settings, label: 'Settings' },
   ];

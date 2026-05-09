@@ -177,7 +177,7 @@ export function Builder({ automation, onBack, onSave }) {
               placeholder="Automation Name"
               className="bg-transparent border-none focus:outline-none text-[11px] sm:text-sm font-bold text-foreground w-full sm:w-48 placeholder:text-muted-foreground/50 truncate"
             />
-            <Edit2 size={12} className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block" />
+            <Edit2 size={12} className="text-muted-foreground opacity-60 hidden sm:block" />
           </div>
         </div>
         <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">

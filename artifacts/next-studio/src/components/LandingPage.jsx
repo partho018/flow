@@ -14,6 +14,15 @@ export function LandingPage({ onLoginClick, onGetStarted }) {
   const stackContainerRef = useRef(null);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get("ref");
+    if (ref) {
+      localStorage.setItem("referral_code", ref);
+      document.cookie = `referral_code=${ref}; path=/; max-age=2592000`; // 30 days
+    }
+  }, []);
+
+  useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);

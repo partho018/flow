@@ -4,10 +4,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { db, followers, profiles, users } from "@workspace/db";
 import { count, eq } from "drizzle-orm";
 import { auth } from "@/auth";
+import { cookies } from "next/headers";
 
 export async function GET(req: NextRequest) {
   try {
     const session = await auth();
+    const cookieStore = await cookies();
+    const referralCode = cookieStore.get("referral_code")?.value;
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -40,7 +43,8 @@ export async function GET(req: NextRequest) {
         rev: 0,
         autos: 0,
         creditBonus: 0,
-        commentsCaught: 0
+        commentsCaught: 0,
+        referredBy: referralCode || null
       };
       await db.insert(profiles).values(newProfile);
       profile = newProfile as any;
