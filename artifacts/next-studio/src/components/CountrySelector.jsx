@@ -259,7 +259,7 @@ export function CountrySelector({ value, onChange, error }) {
                 placeholder="Search country name or code..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-background border border-border rounded-xl text-xs font-bold outline-none focus:border-primary transition-all placeholder:text-muted-foreground/50"
+                className="w-full pl-10 pr-4 py-2.5 bg-background border border-border rounded-xl text-xs font-bold text-foreground outline-none focus:border-primary transition-all placeholder:text-muted-foreground/50"
               />
             </div>
           </div>
@@ -362,7 +362,7 @@ export function PhoneInput({ value, country, onPhoneChange, onCountryChange, err
                   placeholder="Search code..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-8 pr-3 py-2 bg-background border border-border rounded-xl text-[11px] font-bold outline-none focus:border-primary"
+                  className="w-full pl-8 pr-3 py-2 bg-background border border-border rounded-xl text-[11px] font-bold text-foreground outline-none focus:border-primary"
                 />
               </div>
             </div>
@@ -400,7 +400,7 @@ export function PhoneInput({ value, country, onPhoneChange, onCountryChange, err
         placeholder="Phone number"
         value={value}
         onChange={(e) => onPhoneChange(e.target.value)}
-        className="flex-1 px-5 py-3.5 text-sm font-black bg-transparent outline-none placeholder:text-muted-foreground/30 placeholder:font-bold tracking-tight"
+        className="flex-1 px-5 py-3.5 text-sm font-black bg-transparent text-foreground outline-none placeholder:text-muted-foreground/30 placeholder:font-bold tracking-tight"
       />
     </div>
   );

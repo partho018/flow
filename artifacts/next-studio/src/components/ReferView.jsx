@@ -91,7 +91,7 @@ export function ReferView({ onMenuToggle, userName }) {
                   type="text" 
                   readOnly 
                   value={referralLink}
-                  className="w-full h-12 px-4 rounded-[12px] bg-muted/30 border border-border text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  className="w-full h-12 px-4 rounded-[12px] bg-muted/30 border border-border text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                 />
               </div>
               <button 

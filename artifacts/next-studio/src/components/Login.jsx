@@ -188,14 +188,14 @@ export function Login({ onLogin, onBack }) {
                         value={fName}
                         onChange={e => setFName(e.target.value)}
                         placeholder="First Name"
-                        className="w-full px-5 py-3 bg-white border border-gray-300 rounded-[8px] text-[15px] focus:bg-white focus:border-[#1877f2]/50 focus:ring-4 focus:ring-[#1877f2]/5 transition-all outline-none placeholder:text-[#9ca3af]"
+                        className="w-full px-5 py-3 bg-white border border-gray-300 rounded-[8px] text-[15px] text-[#1a1a1a] focus:bg-white focus:border-[#1877f2]/50 focus:ring-4 focus:ring-[#1877f2]/5 transition-all outline-none placeholder:text-[#9ca3af]"
                       />
                       <input 
                         required
                         value={lName}
                         onChange={e => setLName(e.target.value)}
                         placeholder="Last Name"
-                        className="w-full px-5 py-3 bg-white border border-gray-300 rounded-[8px] text-[15px] focus:bg-white focus:border-[#1877f2]/50 focus:ring-4 focus:ring-[#1877f2]/5 transition-all outline-none placeholder:text-[#9ca3af]"
+                        className="w-full px-5 py-3 bg-white border border-gray-300 rounded-[8px] text-[15px] text-[#1a1a1a] focus:bg-white focus:border-[#1877f2]/50 focus:ring-4 focus:ring-[#1877f2]/5 transition-all outline-none placeholder:text-[#9ca3af]"
                       />
                     </motion.div>
                   )}
@@ -207,7 +207,7 @@ export function Login({ onLogin, onBack }) {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder={mode === 'sign-in' ? "Email" : "Email Address"}
-                  className="w-full px-5 py-3 bg-white border border-gray-300 rounded-[8px] text-[15px] focus:bg-white focus:border-[#1877f2]/50 focus:ring-4 focus:ring-[#1877f2]/5 transition-all outline-none placeholder:text-[#9ca3af]"
+                  className="w-full px-5 py-3 bg-white border border-gray-300 rounded-[8px] text-[15px] text-[#1a1a1a] focus:bg-white focus:border-[#1877f2]/50 focus:ring-4 focus:ring-[#1877f2]/5 transition-all outline-none placeholder:text-[#9ca3af]"
                 />
 
                 <div className="relative">
@@ -217,7 +217,7 @@ export function Login({ onLogin, onBack }) {
                     value={pw}
                     onChange={e => setPw(e.target.value)}
                     placeholder="Password"
-                    className="w-full px-5 py-3 bg-white border border-gray-300 rounded-[8px] text-[15px] focus:bg-white focus:border-[#1877f2]/50 focus:ring-4 focus:ring-[#1877f2]/5 transition-all outline-none placeholder:text-[#9ca3af]"
+                    className="w-full px-5 py-3 bg-white border border-gray-300 rounded-[8px] text-[15px] text-[#1a1a1a] focus:bg-white focus:border-[#1877f2]/50 focus:ring-4 focus:ring-[#1877f2]/5 transition-all outline-none placeholder:text-[#9ca3af]"
                   />
                   <button 
                     type="button" 
